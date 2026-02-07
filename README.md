@@ -1,6 +1,6 @@
 # NoMoreLaps
 
-![NoMoreLaps Logo](Images/logo.png)
+![NoMoreLaps Logo](Images/Logo.png)
 
 NoMoreLaps es una plataforma de movilidad urbana compuesta por un ecosistema de aplicaciones que comparten una misma API backend y conviven dentro de un único repositorio GitHub, facilitando el desarrollo, mantenimiento y despliegue del sistema.
 
