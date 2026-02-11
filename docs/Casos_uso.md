@@ -23,7 +23,7 @@
 | Descripción | Usuario con cuenta que puede reservar plazas de aparcamiento. |
 | Características |Autenticado mediante JWT| 
 | Relaciones | Usuario No Registrado | 
-| Referencias | Reservar plaza, gestionar reservas| 
+| Referencias | Iniciar sesión, reservar plaza, sincronizar calendario| 
 | Notas | Puede sincronizar calendario | 
 | Autor | Nicolás Expósito Hernández | 
 |Fecha |  10/02/2026 |
@@ -35,7 +35,7 @@
 | Descripción | Empresa propietaria de aparcamientos que gestiona plazas y precios. |
 | Características |Acceso a panel de gestión| 
 | Relaciones |Usuario Registrado | 
-| Referencias | Gestionar aparcamientos, precios y reservas| 
+| Referencias | Registrase, gestionar aparcamientos, definir precios, gestionar reservas e integrar api| 
 | Notas | Puede usar la API sin la app | 
 | Autor | Nicolás Expósito Hernández | 
 |Fecha |  10/02/2026 |
@@ -47,7 +47,7 @@
 | Descripción | Responsable del mantenimiento y control de la plataforma. |
 | Características |Acceso total| 
 | Relaciones |Empresa, Usuario | 
-| Referencias | Supervisar sistema| 
+| Referencias | Aplicar sanción automática, gestionar disponibilidad| 
 | Notas | Uso interno | 
 | Autor | Nicolás Expósito Hernández | 
 |Fecha |  10/02/2026 |
@@ -113,9 +113,7 @@
   | Autor  | nexphernandez |
   |Fecha | 10/02/2026 |
 
-
 #### Sincronizar calendario
-
 |  Caso de Uso CU.U5 | Sincronizar calendario |
   |---|---|
   | Fuentes  |  |
@@ -129,6 +127,7 @@
   | Autor  | nexphernandez |
   |Fecha | 10/02/2026 |
 
+### App backend
 #### Aplicar sanción por incumplimiento
 |  Caso de Uso CU.U6 | Aplicar sanción automática |
   |---|---|
@@ -140,6 +139,20 @@
   | Post-condiciones  | Sanción registrada y asociada al usuario |  
   |  Requerimientos | Control de tiempo y estado de la plaza |
   |  Notas | El usuario no interviene en el proceso |
+  | Autor  | nexphernandez |
+  |Fecha | 10/02/2026 |
+
+#### Gestionar disponibilidad de plazas
+|  Caso de Uso CU.U7 | Gestionar disponibilidad |
+  |---|---|
+  | Fuentes  |  |
+  | Actor  | Sistema |
+  | Descripción | El sistema actualiza automáticamente la disponibilidad de las plazas en función de las reservas y el tiempo transcurrido |
+  | Flujo básico |Reserva → actualización inmediata → comprobación de estado cada minuto |
+  | Pre-condiciones |Reservas activas y finalizadas |  
+  | Post-condiciones  | Disponibilidad actualizada en tiempo real |  
+  |  Requerimientos | Control de estado de plazas y temporización |
+  |  Notas | Garantiza información precisa para los usuarios |
   | Autor  | nexphernandez |
   |Fecha | 10/02/2026 |
 
