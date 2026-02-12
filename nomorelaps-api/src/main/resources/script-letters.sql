@@ -14,14 +14,6 @@ CREATE TABLE user (
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE user_role (
-    user_id INTEGER NOT NULL,
-    role_id INTEGER NOT NULL,
-    PRIMARY KEY (user_id, role_id),
-    FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE,
-    FOREIGN KEY (role_id) REFERENCES role(id) ON DELETE CASCADE
-);
-
 CREATE TABLE company (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER NOT NULL UNIQUE,
@@ -85,7 +77,6 @@ CREATE TABLE reservation (
 CREATE TABLE sanction (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     reservation_id INTEGER NOT NULL UNIQUE,
-    user_id INTEGER NOT NULL,
     amount REAL NOT NULL,
     reason TEXT NOT NULL,
     paid BOOLEAN NOT NULL DEFAULT 0,
