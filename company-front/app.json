@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "nomorelaps-front",
-    "slug": "nomorelaps-front",
+    "name": "company-front",
+    "slug": "company-front",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",

@@ -3,7 +3,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.nomorelaps</groupId>
-	<artifactId>nomorelaps-api</artifactId>
+	<artifactId>api-back</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>NoMoreLaps</name>
 	<description>API REST centralizada para la plataforma NoMoreLaps, gestionando usuarios, empresas, aparcamientos y reservas</description>
