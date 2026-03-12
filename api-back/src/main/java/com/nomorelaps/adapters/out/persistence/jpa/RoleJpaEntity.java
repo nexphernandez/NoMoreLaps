@@ -1,4 +1,4 @@
-package com.nomorelaps.adapters.out.jpa;
+package com.nomorelaps.adapters.out.persistence.jpa;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

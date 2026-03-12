@@ -1,4 +1,4 @@
-package com.nomorelaps.adapters.out.jpa;
+package com.nomorelaps.adapters.out.persistence.jpa;
 
 import java.time.LocalDate;
 import java.util.Objects;
