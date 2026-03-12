@@ -1,14 +1,11 @@
 package com.nomorelaps.adapters.out.persistence.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-
-import com.nomorelaps.adapters.out.persistence.jpa.UserJpaEntity;
 /**
  * @author nexphernandez
  * @version 1.0.0
- * User jpa interface
+ * Sanction jpa interface
  */
-public interface UserJpaRepository extends JpaRepository<UserJpaEntity,Long>{
+public interface SanctionJpaRepository extends JpaRepository<RoleJpaRepository,Long> {
 
-    
 }
