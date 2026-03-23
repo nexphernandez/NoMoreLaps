@@ -1,30 +1,40 @@
 package com.nomorelaps.adapters.out.persistence.jpa;
 
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Set;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 /**
+ * JPA Entity representing a Company in the database.
+ * 
  * @author nexphernandez DiazLuisAlejandro
  * @version 1.0.0
  */
-@Entity(name = "company")
+@Entity
+@Table(name = "company")
 public class CompanyJpaEntity {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "name")
     private String name;
 
-    @Column(name = "api_key")
+    @Column(name = "password")
     private String password;
+
+    @Column(name = "api_key", unique = true)
+    private String apiKey;
 
     @Column(name = "phone")
     private String phone;
@@ -36,14 +46,14 @@ public class CompanyJpaEntity {
     private String cif;
 
     @Column(name = "created_at")
-    private LocalDate registerDay;
+    private LocalDateTime registerDay;
 
     @ManyToOne
     @JoinColumn(name="user_id")
     private UserJpaEntity user;
     
-    @OneToMany(mappedBy = "parking")
-    private Set<ParkingJpaEntity>parkins;
+    @OneToMany(mappedBy = "company")
+    private Set<ParkingJpaEntity>parkings;
 
 
     /**
@@ -66,24 +76,27 @@ public class CompanyJpaEntity {
      * @param user ompany user
      * @param name company name
      * @param password company password
+     * @param apiKey company apiKey
      * @param phone company phone
      * @param email company email
      * @param cif company cif
      * @param registerDay company register day
      * @param user company user
-     * @param parkins company parkins
+     * @param parkings company parkins
      */
-    public CompanyJpaEntity(Long id, String name, String password, String phone, String email, String cif, LocalDate registerDay, 
-        UserJpaEntity user, Set<ParkingJpaEntity> parkins) {
+    public CompanyJpaEntity(Long id, String name, String password,String apiKey, String phone, 
+            String email, String cif, LocalDateTime registerDay, 
+            UserJpaEntity user, Set<ParkingJpaEntity> parkings) {
         this.id = id;
         this.name = name;
         this.password = password;
+        this.apiKey = apiKey;
         this.phone = phone;
         this.email = email;
         this.cif = cif;
         this.registerDay = registerDay;
         this.user = user;
-        this.parkins = parkins;
+        this.parkings = parkings;
     }
 
     public Long getId() {
@@ -110,6 +123,14 @@ public class CompanyJpaEntity {
         this.password = password;
     }
 
+        public String getApiKey() {
+        return apiKey;
+    }
+
+    public void setApiKey(String apiKey) {
+        this.apiKey = apiKey;
+    }
+
     public String getPhone() {
         return this.phone;
     }
@@ -134,11 +155,11 @@ public class CompanyJpaEntity {
         this.cif = cif;
     }
 
-    public LocalDate getRegisterDay() {
+    public LocalDateTime getRegisterDay() {
         return this.registerDay;
     }
 
-    public void setRegisterDay(LocalDate registerDay) {
+    public void setRegisterDay(LocalDateTime registerDay) {
         this.registerDay = registerDay;
     }
 
@@ -150,12 +171,12 @@ public class CompanyJpaEntity {
         this.user = user;
     }
 
-    public Set<ParkingJpaEntity> getParkins() {
-        return this.parkins;
+    public Set<ParkingJpaEntity> getParkings() {
+        return this.parkings;
     }
 
-    public void setParkins(Set<ParkingJpaEntity> parkins) {
-        this.parkins = parkins;
+    public void setParkings(Set<ParkingJpaEntity> parkings) {
+        this.parkings = parkings;
     }
 
     @Override

@@ -1,23 +1,31 @@
 package com.nomorelaps.adapters.out.persistence.jpa;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Set;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+
 import java.util.Objects;
 
 /**
+ * JPA Entity representing a Parking in the database.
+ * 
  * @author nexphernandez DiazLuisAlejandro
  * @version 1.0.0
  */
-@Entity(name = "parking")
+@Entity
+@Table(name = "parking")
 public class ParkingJpaEntity {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "address")
@@ -33,22 +41,22 @@ public class ParkingJpaEntity {
     private Double longitude;
 
     @Column(name = "opening_time")
-    private LocalDate openingTime;
+    private LocalDateTime openingTime;
 
     @Column(name = "closing_time")
-    private LocalDate closingTime;
+    private LocalDateTime closingTime;
 
     @Column(name = "created_at")
-    private LocalDate createdAt;
+    private LocalDateTime createdAt;
 
     @ManyToOne
     @JoinColumn(name = "company_id")
     private CompanyJpaEntity company;
 
-    @OneToMany(mappedBy = "parking_spot")
+    @OneToMany(mappedBy = "parking")
     private Set<ParkingSpotJpaEntity> parkingSpots;
 
-    @OneToMany(mappedBy = "dynamic_price")
+    @OneToMany(mappedBy = "parking")
     private Set<DynamicPriceJpaEntity> dynamicPrice;
 
     /**
@@ -79,8 +87,8 @@ public class ParkingJpaEntity {
      * @param parkingSpots parking spots
      * @param dynamicPrice parking dynamicPrice
      */
-    public ParkingJpaEntity(Long id, String address, String name, Double latitude, Double longitude, LocalDate openingTime, 
-        LocalDate closingTime, LocalDate createdAt, CompanyJpaEntity company, Set<ParkingSpotJpaEntity> parkingSpots, 
+    public ParkingJpaEntity(Long id, String address, String name, Double latitude, Double longitude, LocalDateTime openingTime, 
+        LocalDateTime closingTime, LocalDateTime createdAt, CompanyJpaEntity company, Set<ParkingSpotJpaEntity> parkingSpots, 
         Set<DynamicPriceJpaEntity> dynamicPrice) {
         this.id = id;
         this.address = address;
@@ -135,27 +143,27 @@ public class ParkingJpaEntity {
         this.longitude = longitude;
     }
 
-    public LocalDate getOpeningTime() {
+    public LocalDateTime getOpeningTime() {
         return this.openingTime;
     }
 
-    public void setOpeningTime(LocalDate openingTime) {
+    public void setOpeningTime(LocalDateTime openingTime) {
         this.openingTime = openingTime;
     }
 
-    public LocalDate getClosingTime() {
+    public LocalDateTime getClosingTime() {
         return this.closingTime;
     }
 
-    public void setClosingTime(LocalDate closingTime) {
+    public void setClosingTime(LocalDateTime closingTime) {
         this.closingTime = closingTime;
     }
 
-    public LocalDate getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return this.createdAt;
     }
 
-    public void setCreatedAt(LocalDate createdAt) {
+    public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 

@@ -4,9 +4,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.nomorelaps.adapters.out.persistence.jpa.RoleJpaEntity;
 /**
- * @author nexphernandez
+ * JPA Repository for {@link RoleJpaEntity}.
+ * Provides database access and CRUD operations via Spring Data.
+ * 
+ * @author nexphernandez DiazLuisAlejandro
  * @version 1.0.0
- * Role jpa interface
  */
 public interface RoleJpaRepository extends JpaRepository<RoleJpaEntity,Long>{
 

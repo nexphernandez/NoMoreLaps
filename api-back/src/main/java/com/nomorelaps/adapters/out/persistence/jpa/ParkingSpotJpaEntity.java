@@ -1,40 +1,47 @@
 package com.nomorelaps.adapters.out.persistence.jpa;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Set;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 
 /**
+ * JPA Entity representing a ParkingSpot in the database.
+ * 
  * @author nexphernandez DiazLuisAlejandro
  * @version 1.0.0
  */
-@Entity(name = "parking_spot")
+@Entity
+@Table(name = "parking_spot")
 public class ParkingSpotJpaEntity {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "state")
-    private boolean state;
+    private boolean state = true;
 
     @Column(name = "spot_number")
     private int number;
 
     @Column(name = "created_at")
-    private LocalDate registerDate;
+    private LocalDateTime registerDate;
 
     @ManyToOne
     @JoinColumn(name = "parking_id")
     private ParkingJpaEntity parking;
 
-    @OneToMany(mappedBy = "reservation")
+    @OneToMany(mappedBy = "parkingSpot")
     private Set<ReservationJpaEntity> reservations;
 
     /**
@@ -60,7 +67,7 @@ public class ParkingSpotJpaEntity {
      * @param parking parking of parkingSpot
      * @param reservations parkingSpot reservations
      */
-    public ParkingSpotJpaEntity(Long id, boolean state, int number, LocalDate registerDate, 
+    public ParkingSpotJpaEntity(Long id, boolean state, int number, LocalDateTime registerDate, 
         ParkingJpaEntity parking, Set<ReservationJpaEntity> reservations) {
         this.id = id;
         this.state = state;
@@ -98,11 +105,11 @@ public class ParkingSpotJpaEntity {
         this.number = number;
     }
 
-    public LocalDate getRegisterDate() {
+    public LocalDateTime getRegisterDate() {
         return this.registerDate;
     }
 
-    public void setRegisterDate(LocalDate registerDate) {
+    public void setRegisterDate(LocalDateTime registerDate) {
         this.registerDate = registerDate;
     }
 

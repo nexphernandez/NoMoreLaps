@@ -1,21 +1,30 @@
 package com.nomorelaps.adapters.out.persistence.jpa;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+
 import java.util.Objects;
 
 /**
+ * JPA Entity representing a Sanction in the database.
+ * 
  * @author nexphernandez DiazLuisAlejandro
  * @version 1.0.0
  */
-@Entity(name = "sanction")
+@Entity
+@Table(name = "sanction")
 public class SanctionJpaEntity {
+    
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "amount")
@@ -25,10 +34,10 @@ public class SanctionJpaEntity {
     private String reason;
 
     @Column(name = "paid")
-    private boolean paid;
+    private boolean paid = false;
 
     @Column(name = "created_at")
-    private LocalDate arrivalTime;
+    private LocalDateTime arrivalTime;
 
     @ManyToOne
     @JoinColumn(name = "reservation_id")
@@ -39,13 +48,14 @@ public class SanctionJpaEntity {
     private UserJpaEntity user;
 
     /**
-     * Empty constructor 
+     * Empty constructor
      */
     public SanctionJpaEntity() {
     }
 
     /**
      * Constructor with the sanction primary key
+     * 
      * @param id sanction id
      */
     public SanctionJpaEntity(Long id) {
@@ -54,16 +64,17 @@ public class SanctionJpaEntity {
 
     /**
      * Constructor with the sanction atributes
-     * @param id sanction id
-     * @param amount sanction amount
-     * @param reason sanction reason
-     * @param paid sanction paid
+     * 
+     * @param id          sanction id
+     * @param amount      sanction amount
+     * @param reason      sanction reason
+     * @param paid        sanction paid
      * @param arrivalTime sanction arrivalTime
      * @param reservation sanction reservation
-     * @param user sanction user
+     * @param user        sanction user
      */
-    public SanctionJpaEntity(Long id, double amount, String reason, boolean paid, LocalDate arrivalTime, 
-        ReservationJpaEntity reservation, UserJpaEntity user) {
+    public SanctionJpaEntity(Long id, double amount, String reason, boolean paid, LocalDateTime arrivalTime,
+            ReservationJpaEntity reservation, UserJpaEntity user) {
         this.id = id;
         this.amount = amount;
         this.reason = reason;
@@ -109,11 +120,11 @@ public class SanctionJpaEntity {
         this.paid = paid;
     }
 
-    public LocalDate getArrivalTime() {
+    public LocalDateTime getArrivalTime() {
         return this.arrivalTime;
     }
 
-    public void setArrivalTime(LocalDate arrivalTime) {
+    public void setArrivalTime(LocalDateTime arrivalTime) {
         this.arrivalTime = arrivalTime;
     }
 

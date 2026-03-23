@@ -1,22 +1,30 @@
 package com.nomorelaps.adapters.out.persistence.jpa;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+
 import java.util.Objects;
 
 /**
+ * JPA Entity representing a DynamicPrice in the database.
+ * 
  * @author nexphernandez DiazLuisAlejandro
  * @version 1.0.0
  */
-@Entity(name = "dynamic_price")
+@Entity
+@Table(name = "dynamic_price")
 public class DynamicPriceJpaEntity {
     
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "day_of_week")
@@ -35,7 +43,7 @@ public class DynamicPriceJpaEntity {
     private double maxPrice;
 
     @Column(name = "created_at")
-    private LocalDate createAt;
+    private LocalDateTime createAt;
 
     @ManyToOne
     @JoinColumn(name = "parking_id")
@@ -67,8 +75,8 @@ public class DynamicPriceJpaEntity {
      * @param createAt dynamic price createAt
      * @param parking dynamic price parking
      */
-    public DynamicPriceJpaEntity(Long id, int dayOfWeek, String startHour, String endHour, double minPrice, double maxPrice, 
-        LocalDate createAt, ParkingJpaEntity parking) {
+    public DynamicPriceJpaEntity(Long id, int dayOfWeek, String startHour, String endHour, 
+            double minPrice, double maxPrice, LocalDateTime createAt, ParkingJpaEntity parking) {
         this.id = id;
         this.dayOfWeek = dayOfWeek;
         this.startHour = startHour;
@@ -127,11 +135,11 @@ public class DynamicPriceJpaEntity {
         this.maxPrice = maxPrice;
     }
 
-    public LocalDate getCreateAt() {
+    public LocalDateTime getCreateAt() {
         return this.createAt;
     }
 
-    public void setCreateAt(LocalDate createAt) {
+    public void setCreateAt(LocalDateTime createAt) {
         this.createAt = createAt;
     }
 
