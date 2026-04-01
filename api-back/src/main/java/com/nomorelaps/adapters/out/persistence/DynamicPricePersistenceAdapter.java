@@ -12,6 +12,13 @@ import com.nomorelaps.adapters.out.persistence.jpa.DynamicPriceJpaEntity;
 import com.nomorelaps.adapters.out.persistence.repository.DynamicPriceJpaRepository;
 import com.nomorelaps.domain.models.DynamicPrice;
 
+/**
+ * Persistence implementation for DynamicPrice via Spring Data repositories.
+ * Uses the Mapper internally to isolate the JpaEntity.
+ *
+ * @author nexphernandez DiazLuisAlejandro
+ * @version 1.0.0
+ */
 @Component
 public class DynamicPricePersistenceAdapter 
         extends BasePersistenceAdapter<DynamicPrice, DynamicPriceJpaEntity, Long, DynamicPriceJpaRepository> 

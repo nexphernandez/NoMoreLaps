@@ -12,6 +12,13 @@ import com.nomorelaps.adapters.out.persistence.jpa.SanctionJpaEntity;
 import com.nomorelaps.adapters.out.persistence.repository.SanctionJpaRepository;
 import com.nomorelaps.domain.models.Sanction;
 
+/**
+ * Persistence implementation for Sanction via Spring Data repositories.
+ * Uses the Mapper internally to isolate the JpaEntity.
+ *
+ * @author nexphernandez DiazLuisAlejandro
+ * @version 1.0.0
+ */
 @Component
 public class SanctionPersistenceAdapter 
         extends BasePersistenceAdapter<Sanction, SanctionJpaEntity, Long, SanctionJpaRepository> 

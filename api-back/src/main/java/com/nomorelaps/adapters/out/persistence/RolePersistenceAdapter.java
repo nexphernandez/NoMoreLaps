@@ -10,6 +10,13 @@ import com.nomorelaps.adapters.out.persistence.jpa.RoleJpaEntity;
 import com.nomorelaps.adapters.out.persistence.repository.RoleJpaRepository;
 import com.nomorelaps.domain.models.Role;
 
+/**
+ * Persistence implementation for Role via Spring Data repositories.
+ * Uses the Mapper internally to isolate the JpaEntity.
+ *
+ * @author nexphernandez DiazLuisAlejandro
+ * @version 1.0.0
+ */
 @Component
 public class RolePersistenceAdapter 
         extends BasePersistenceAdapter<Role, RoleJpaEntity, Long, RoleJpaRepository> 

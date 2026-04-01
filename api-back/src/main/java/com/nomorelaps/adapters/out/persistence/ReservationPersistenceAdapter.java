@@ -12,6 +12,13 @@ import com.nomorelaps.adapters.out.persistence.jpa.ReservationJpaEntity;
 import com.nomorelaps.adapters.out.persistence.repository.ReservationJpaRepository;
 import com.nomorelaps.domain.models.Reservation;
 
+/**
+ * Persistence implementation for Reservation via Spring Data repositories.
+ * Uses the Mapper internally to isolate the JpaEntity.
+ *
+ * @author nexphernandez DiazLuisAlejandro
+ * @version 1.0.0
+ */
 @Component
 public class ReservationPersistenceAdapter 
         extends BasePersistenceAdapter<Reservation, ReservationJpaEntity, Long, ReservationJpaRepository> 

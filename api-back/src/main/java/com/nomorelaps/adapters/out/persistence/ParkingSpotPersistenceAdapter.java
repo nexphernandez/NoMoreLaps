@@ -12,6 +12,13 @@ import com.nomorelaps.adapters.out.persistence.jpa.ParkingSpotJpaEntity;
 import com.nomorelaps.adapters.out.persistence.repository.ParkingSpotJpaRepository;
 import com.nomorelaps.domain.models.ParkingSpot;
 
+/**
+ * Persistence implementation for ParkingSpot via Spring Data repositories.
+ * Uses the Mapper internally to isolate the JpaEntity.
+ *
+ * @author nexphernandez DiazLuisAlejandro
+ * @version 1.0.0
+ */
 @Component
 public class ParkingSpotPersistenceAdapter 
         extends BasePersistenceAdapter<ParkingSpot, ParkingSpotJpaEntity, Long, ParkingSpotJpaRepository> 

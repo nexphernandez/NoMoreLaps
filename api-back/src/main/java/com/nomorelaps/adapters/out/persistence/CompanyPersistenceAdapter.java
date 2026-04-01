@@ -12,6 +12,13 @@ import com.nomorelaps.adapters.out.persistence.jpa.CompanyJpaEntity;
 import com.nomorelaps.adapters.out.persistence.repository.CompanyJpaRepository;
 import com.nomorelaps.domain.models.Company;
 
+/**
+ * Persistence implementation for Company via Spring Data repositories.
+ * Uses the Mapper internally to isolate the JpaEntity.
+ *
+ * @author nexphernandez DiazLuisAlejandro
+ * @version 1.0.0
+ */
 @Component
 public class CompanyPersistenceAdapter 
         extends BasePersistenceAdapter<Company, CompanyJpaEntity, Long, CompanyJpaRepository> 
