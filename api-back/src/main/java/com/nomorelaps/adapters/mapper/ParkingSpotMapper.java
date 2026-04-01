@@ -6,6 +6,7 @@ import org.mapstruct.ReportingPolicy;
 import com.nomorelaps.adapters.in.api.ParkingSpotRequest;
 import com.nomorelaps.adapters.in.api.ParkingSpotResponse;
 import com.nomorelaps.adapters.out.persistence.jpa.ParkingSpotJpaEntity;
+import com.nomorelaps.domain.models.ParkingSpot;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 /**
@@ -16,6 +17,8 @@ import com.nomorelaps.adapters.out.persistence.jpa.ParkingSpotJpaEntity;
  * @version 1.0.0
  */
 public interface ParkingSpotMapper {
-    ParkingSpotJpaEntity toEntity(ParkingSpotRequest request);
-    ParkingSpotResponse toResponse(ParkingSpotJpaEntity entity);
+    ParkingSpot toDomainFromRequest(ParkingSpotRequest request);
+    ParkingSpotResponse toResponse(ParkingSpot domain);
+    ParkingSpotJpaEntity toJpaEntity(ParkingSpot domain);
+    ParkingSpot toDomain(ParkingSpotJpaEntity entity);
 }

@@ -5,34 +5,43 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.nomorelaps.adapters.mapper.CompanyMapper;
+import com.nomorelaps.adapters.out.persistence.abstracta.BasePersistenceAdapter;
 import com.nomorelaps.adapters.out.persistence.interfaces.ICompanyPersistenceAdapter;
 import com.nomorelaps.adapters.out.persistence.jpa.CompanyJpaEntity;
 import com.nomorelaps.adapters.out.persistence.repository.CompanyJpaRepository;
-import com.nomorelaps.adapters.out.persistence.repository.abstracta.BasePersistenceAdapter;
+import com.nomorelaps.domain.models.Company;
 
-/**
- * Persistence implementation for CompanyJpaEntity via Spring Data repositories.
- *
- * @author nexphernandez DiazLuisAlejandro
- * @version 1.0.0
- */
 @Component
-public class CompanyPersistenceAdapter extends BasePersistenceAdapter<CompanyJpaEntity, 
-        Long, CompanyJpaRepository> implements ICompanyPersistenceAdapter{
+public class CompanyPersistenceAdapter 
+        extends BasePersistenceAdapter<Company, CompanyJpaEntity, Long, CompanyJpaRepository> 
+        implements ICompanyPersistenceAdapter {
+
+    private final CompanyMapper mapper;
 
     @Autowired
-    public CompanyPersistenceAdapter(CompanyJpaRepository repository) {
+    public CompanyPersistenceAdapter(CompanyJpaRepository repository, CompanyMapper mapper) {
         super(repository);
+        this.mapper = mapper;
     }
 
     @Override
-    public Optional<CompanyJpaEntity> findByEmail(String email) {
-
-        return repository.findByEmail(email);
+    protected CompanyJpaEntity toEntity(Company domain) {
+        return mapper.toJpaEntity(domain);
     }
 
     @Override
-    public Optional<CompanyJpaEntity> findByApiKey(String password) {
-        return repository.findByApiKey(password);
+    protected Company toDomain(CompanyJpaEntity entity) {
+        return mapper.toDomain(entity);
+    }
+
+    @Override
+    public Optional<Company> findByEmail(String email) {
+        return repository.findByEmail(email).map(this::toDomain);
+    }
+
+    @Override
+    public Optional<Company> findByApiKey(String password) {
+        return repository.findByApiKey(password).map(this::toDomain);
     }
 }

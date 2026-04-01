@@ -6,6 +6,7 @@ import org.mapstruct.ReportingPolicy;
 import com.nomorelaps.adapters.in.api.UserRequest;
 import com.nomorelaps.adapters.in.api.UserResponse;
 import com.nomorelaps.adapters.out.persistence.jpa.UserJpaEntity;
+import com.nomorelaps.domain.models.User;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 /**
@@ -16,6 +17,8 @@ import com.nomorelaps.adapters.out.persistence.jpa.UserJpaEntity;
  * @version 1.0.0
  */
 public interface UserMapper {
-    UserJpaEntity toEntity(UserRequest userRequest);
-    UserResponse toResponse(UserJpaEntity userJpaEntity);
+    User toDomainFromRequest(UserRequest request);
+    UserResponse toResponse(User domain);
+    UserJpaEntity toJpaEntity(User domain);
+    User toDomain(UserJpaEntity entity);
 }

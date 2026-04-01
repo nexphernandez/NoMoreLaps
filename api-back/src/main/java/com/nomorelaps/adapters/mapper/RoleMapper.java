@@ -6,6 +6,7 @@ import org.mapstruct.ReportingPolicy;
 import com.nomorelaps.adapters.in.api.RoleRequest;
 import com.nomorelaps.adapters.in.api.RoleResponse;
 import com.nomorelaps.adapters.out.persistence.jpa.RoleJpaEntity;
+import com.nomorelaps.domain.models.Role;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 /**
@@ -16,6 +17,8 @@ import com.nomorelaps.adapters.out.persistence.jpa.RoleJpaEntity;
  * @version 1.0.0
  */
 public interface RoleMapper {
-    RoleJpaEntity toEntity(RoleRequest request);
-    RoleResponse toResponse(RoleJpaEntity entity);
+    Role toDomainFromRequest(RoleRequest request);
+    RoleResponse toResponse(Role domain);
+    RoleJpaEntity toJpaEntity(Role domain);
+    Role toDomain(RoleJpaEntity entity);
 }

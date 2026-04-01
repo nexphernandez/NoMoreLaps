@@ -6,6 +6,7 @@ import org.mapstruct.ReportingPolicy;
 import com.nomorelaps.adapters.in.api.SanctionRequest;
 import com.nomorelaps.adapters.in.api.SanctionResponse;
 import com.nomorelaps.adapters.out.persistence.jpa.SanctionJpaEntity;
+import com.nomorelaps.domain.models.Sanction;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 /**
@@ -16,6 +17,8 @@ import com.nomorelaps.adapters.out.persistence.jpa.SanctionJpaEntity;
  * @version 1.0.0
  */
 public interface SanctionMapper {
-    SanctionJpaEntity toEntity(SanctionRequest request);
-    SanctionResponse toResponse(SanctionJpaEntity entity);
+    Sanction toDomainFromRequest(SanctionRequest request);
+    SanctionResponse toResponse(Sanction domain);
+    SanctionJpaEntity toJpaEntity(Sanction domain);
+    Sanction toDomain(SanctionJpaEntity entity);
 }

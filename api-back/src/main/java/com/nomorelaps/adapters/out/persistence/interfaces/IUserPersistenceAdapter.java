@@ -2,23 +2,23 @@ package com.nomorelaps.adapters.out.persistence.interfaces;
 
 import java.util.Optional;
 
-import com.nomorelaps.adapters.out.persistence.jpa.UserJpaEntity;
+import com.nomorelaps.domain.models.User;
 
 /**
- * Persistence secondary port for {@link UserJpaEntity}.
+ * Persistence secondary port for {@link User}.
  *
  * @author nexphernandez DiazLuisAlejandro
  * @version 1.0.0
  */
-public interface IUserPersistenceAdapter extends IBasePersistenceAdapter<UserJpaEntity,Long> {
+public interface IUserPersistenceAdapter extends IBasePersistenceAdapter<User,Long> {
     /**
      * Finds a user on the platform using their email address.
      * Commonly used in "Login" or access processes.
      * 
      * @param email The email address linked to the user account.
-     * @return {@link Optional} containing the found {@link UserJpaEntity} entity, or empty if it does not exist.
+     * @return {@link Optional} containing the found {@link User} entity, or empty if it does not exist.
      */
-    Optional<UserJpaEntity> findByEmail(String email);
+    Optional<User> findByEmail(String email);
     
     /**
      * Quickly verifies if an email address is already registered in the system,

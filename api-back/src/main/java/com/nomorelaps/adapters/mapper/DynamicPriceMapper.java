@@ -6,6 +6,7 @@ import org.mapstruct.ReportingPolicy;
 import com.nomorelaps.adapters.in.api.DynamicPriceRequest;
 import com.nomorelaps.adapters.in.api.DynamicPriceResponse;
 import com.nomorelaps.adapters.out.persistence.jpa.DynamicPriceJpaEntity;
+import com.nomorelaps.domain.models.DynamicPrice;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 /**
@@ -16,6 +17,8 @@ import com.nomorelaps.adapters.out.persistence.jpa.DynamicPriceJpaEntity;
  * @version 1.0.0
  */
 public interface DynamicPriceMapper {
-    DynamicPriceJpaEntity toEntity(DynamicPriceRequest request);
-    DynamicPriceResponse toResponse(DynamicPriceJpaEntity entity);
+    DynamicPrice toDomainFromRequest(DynamicPriceRequest request);
+    DynamicPriceResponse toResponse(DynamicPrice domain);
+    DynamicPriceJpaEntity toJpaEntity(DynamicPrice domain);
+    DynamicPrice toDomain(DynamicPriceJpaEntity entity);
 }

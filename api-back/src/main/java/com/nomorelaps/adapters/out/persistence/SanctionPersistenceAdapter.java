@@ -5,33 +5,47 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.nomorelaps.adapters.mapper.SanctionMapper;
+import com.nomorelaps.adapters.out.persistence.abstracta.BasePersistenceAdapter;
 import com.nomorelaps.adapters.out.persistence.interfaces.ISanctionPersistenceAdapter;
 import com.nomorelaps.adapters.out.persistence.jpa.SanctionJpaEntity;
 import com.nomorelaps.adapters.out.persistence.repository.SanctionJpaRepository;
-import com.nomorelaps.adapters.out.persistence.repository.abstracta.BasePersistenceAdapter;
+import com.nomorelaps.domain.models.Sanction;
 
-/**
- * Persistence implementation for SanctionJpaEntity via Spring Data repositories.
- *
- * @author nexphernandez DiazLuisAlejandro
- * @version 1.0.0
- */
 @Component
-public class SanctionPersistenceAdapter extends BasePersistenceAdapter<SanctionJpaEntity, 
-        Long, SanctionJpaRepository> implements ISanctionPersistenceAdapter {
-    
+public class SanctionPersistenceAdapter 
+        extends BasePersistenceAdapter<Sanction, SanctionJpaEntity, Long, SanctionJpaRepository> 
+        implements ISanctionPersistenceAdapter {
+
+    private final SanctionMapper mapper;
+
     @Autowired
-    public SanctionPersistenceAdapter(SanctionJpaRepository repository) {
+    public SanctionPersistenceAdapter(SanctionJpaRepository repository, SanctionMapper mapper) {
         super(repository);
+        this.mapper = mapper;
     }
 
     @Override
-    public List<SanctionJpaEntity> findByUserId(Long userId) {
-        return repository.findByUserId(userId);
+    protected SanctionJpaEntity toEntity(Sanction domain) {
+        return mapper.toJpaEntity(domain);
     }
 
     @Override
-    public List<SanctionJpaEntity> findByReservationId(Long reservationId) {
-        return repository.findByReservationId(reservationId);
+    protected Sanction toDomain(SanctionJpaEntity entity) {
+        return mapper.toDomain(entity);
+    }
+
+    @Override
+    public List<Sanction> findByUserId(Long userId) {
+        return repository.findByUserId(userId).stream()
+                .map(this::toDomain)
+                .collect(java.util.stream.Collectors.toList());
+    }
+
+    @Override
+    public List<Sanction> findByReservationId(Long reservationId) {
+        return repository.findByReservationId(reservationId).stream()
+                .map(this::toDomain)
+                .collect(java.util.stream.Collectors.toList());
     }
 }

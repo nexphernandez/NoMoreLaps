@@ -6,6 +6,7 @@ import org.mapstruct.ReportingPolicy;
 import com.nomorelaps.adapters.in.api.CompanyRequest;
 import com.nomorelaps.adapters.in.api.CompanyResponse;
 import com.nomorelaps.adapters.out.persistence.jpa.CompanyJpaEntity;
+import com.nomorelaps.domain.models.Company;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 /**
@@ -16,6 +17,8 @@ import com.nomorelaps.adapters.out.persistence.jpa.CompanyJpaEntity;
  * @version 1.0.0
  */
 public interface CompanyMapper {
-    CompanyJpaEntity toEntity(CompanyRequest request);
-    CompanyResponse toResponse(CompanyJpaEntity entity);
+    Company toDomainFromRequest(CompanyRequest request);
+    CompanyResponse toResponse(Company domain);
+    CompanyJpaEntity toJpaEntity(Company domain);
+    Company toDomain(CompanyJpaEntity entity);
 }

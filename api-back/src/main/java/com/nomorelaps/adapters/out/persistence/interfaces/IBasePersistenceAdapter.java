@@ -1,43 +1,47 @@
 package com.nomorelaps.adapters.out.persistence.interfaces;
 
-import java.util.Optional;
 import java.util.List;
+import java.util.Optional;
 
 /**
- * General secondary database port that abstracts the application
- * from the underlying technology details and enforces basic CRUD methods.
+ * High-level generic interface acting as the base contract for all persistence output ports.
+ * Defines the essential CRUD operations ensuring uniform persistence behavior.
  *
+ * @param <Domain> The generic Domain model type corresponding to the concrete entity.
+ * @param <ID> The type of the unique identifier key for the entity.
  * @author nexphernandez DiazLuisAlejandro
  * @version 1.0.0
  */
-public interface IBasePersistenceAdapter<E,ID> {
+public interface IBasePersistenceAdapter<Domain, ID> {
+
     /**
      * Saves or updates an entity in the database.
      * 
-     * @param entity The generic entity to be persisted.
-     * @return The persisted entity (with its generated ID).
+     * @param domain The entity to correctly save.
+     * @return The correctly saved entity.
      */
-    E save(E entity);
-    
+    Domain save(Domain domain);
+
     /**
-     * Finds an element by its ID.
+     * Finds an entity based on its unique identifier.
      * 
-     * @param id Unique identifier of the entity.
-     * @return An Optional wrapping the found entity, or empty if it does not exist.
+     * @param id The ID to look for.
+     * @return An {@link Optional} containing the entity if it properly exists, or empty otherwise.
      */
-    Optional<E> findById(ID id);
-    
+    Optional<Domain> findById(ID id);
+
     /**
-     * Retrieves all occurrences stored in the database.
+     * Recovers absolutely all existing entities of this type.
      * 
-     * @return A constant list with all the entities.
+     * @return A proper list of all entities.
      */
-    List<E> findAll();
-    
+    List<Domain> findAll();
+
     /**
-     * Permanently deletes an element from the database using its ID.
+     * Physically or logically deletes an entity in the database.
      * 
-     * @param id The unique identifier of the entity to be deleted.
+     * @param id The identifier key corresponding to the database row to delete.
      */
     void deleteById(ID id);
+
 }
