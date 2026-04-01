@@ -4,7 +4,11 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
 /**
- * Petición de autenticación (Login) enviada desde el cliente.
+ * Data Transfer Object (DTO) for authenticating a User or Company.
+ * Encapsulates the credentials sent by the client.
+ *
+ * @author nexphernandez DiazLuisAlejandro
+ * @version 1.0.0
  */
 public class AuthRequest {
     

@@ -2,6 +2,13 @@ package com.nomorelaps.adapters.in.api;
 
 import jakarta.validation.constraints.Positive;
 
+/**
+ * Data Transfer Object (DTO) for creating or updating a Parking Spot.
+ * Encapsulates the necessary request data sent by the client.
+ *
+ * @author nexphernandez DiazLuisAlejandro
+ * @version 1.0.0
+ */
 public class ParkingSpotRequest {
     
     private boolean state;

@@ -1,7 +1,11 @@
 package com.nomorelaps.adapters.in.api;
 
 /**
- * Respuesta de autenticación (Login exitoso) para entregar al cliente.
+ * Data Transfer Object (DTO) representing an Authentication Response.
+ * Encapsulates the authorization token sent back to the client.
+ *
+ * @author nexphernandez DiazLuisAlejandro
+ * @version 1.0.0
  */
 public class AuthResponse {
     

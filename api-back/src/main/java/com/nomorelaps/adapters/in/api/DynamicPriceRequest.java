@@ -5,6 +5,13 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 
+/**
+ * Data Transfer Object (DTO) for creating or updating a Dynamic Price.
+ * Encapsulates the necessary request data sent by the client.
+ *
+ * @author nexphernandez DiazLuisAlejandro
+ * @version 1.0.0
+ */
 public class DynamicPriceRequest {
 
     @Min(value = 1, message = "El día debe ser mayor o igual a 1 (Lunes)")

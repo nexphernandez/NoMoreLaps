@@ -3,6 +3,13 @@ package com.nomorelaps.adapters.in.api;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
+/**
+ * Data Transfer Object (DTO) for creating or updating a User.
+ * Encapsulates the necessary request data sent by the client.
+ *
+ * @author nexphernandez DiazLuisAlejandro
+ * @version 1.0.0
+ */
 public class UserRequest {
     
     @NotBlank(message = "El nombre no puede estar vacío")

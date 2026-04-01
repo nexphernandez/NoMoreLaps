@@ -5,6 +5,13 @@ import java.time.LocalDateTime;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
+/**
+ * Data Transfer Object (DTO) for creating or updating a Parking.
+ * Encapsulates the necessary request data sent by the client.
+ *
+ * @author nexphernandez DiazLuisAlejandro
+ * @version 1.0.0
+ */
 public class ParkingRequest {
 
     @NotBlank(message = "La dirección no puede estar vacía")

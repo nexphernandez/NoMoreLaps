@@ -3,6 +3,13 @@ package com.nomorelaps.adapters.in.api;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
+/**
+ * Data Transfer Object (DTO) representing a Parking in API responses.
+ * Encapsulates the structured data sent back to the client.
+ *
+ * @author nexphernandez DiazLuisAlejandro
+ * @version 1.0.0
+ */
 public class ParkingResponse {
 
     private Long id;
