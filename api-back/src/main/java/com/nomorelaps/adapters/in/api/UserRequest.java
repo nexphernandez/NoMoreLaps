@@ -1,16 +1,18 @@
 package com.nomorelaps.adapters.in.api;
 
-import java.time.LocalDateTime;
-import java.util.Objects;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 
 public class UserRequest {
     
-    private Long id;
+    @NotBlank(message = "El nombre no puede estar vacío")
     private String name;
+    @NotBlank(message = "El email no puede estar vacío")
+    @Email(message = "Debe ser un formato de email correcto")
     private String email;
+    @NotBlank(message = "La contraseña no puede estar vacía")
     private String password;
     private boolean calendarEnable;
-    private LocalDateTime createAt;
 
 
     /**
@@ -20,37 +22,19 @@ public class UserRequest {
     }
 
     /**
-     * Constructor with the parking primary key
-     * @param id reservation id
-     */
-    public UserRequest(Long id){
-        this.id=id;
-    }
-    /**
      * Constructor with all the attributes
-     * @param id of the User
      * @param name of the User
      * @param email of the User
      * @param password of the User
-     * @param enable of the User
-     * @param createAt of the User
+     * @param enable status of the User calendar
      */
-    public UserRequest(Long id, String name, String email, String password, boolean enable, LocalDateTime createAt) {
-        this.id = id;
+    public UserRequest(String name, String email, String password, boolean enable) {
         this.name = name;
         this.email = email;
         this.password = password;
         this.calendarEnable = enable;
-        this.createAt = createAt;
     }
 
-    public Long getId() {
-        return this.id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public String getName() {
         return this.name;
@@ -86,30 +70,6 @@ public class UserRequest {
 
     public void setCalendarEnable(boolean enable) {
         this.calendarEnable = enable;
-    }
-
-    public LocalDateTime getCreateAt() {
-        return this.createAt;
-    }
-
-    public void setCreateAt(LocalDateTime createAt) {
-        this.createAt = createAt;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (o == this)
-            return true;
-        if (!(o instanceof UserRequest)) {
-            return false;
-        }
-        UserRequest userRequest = (UserRequest) o;
-        return Objects.equals(id, userRequest.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
     }
 
 }

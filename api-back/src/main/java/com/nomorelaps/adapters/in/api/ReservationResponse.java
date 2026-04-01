@@ -6,10 +6,10 @@ import java.util.Objects;
 public class ReservationResponse {
     
     private Long id;
-    private LocalDateTime starTime;
+    private LocalDateTime startTime;
     private LocalDateTime endTime;
     private double price;
-    private String State;
+    private String state;
     private LocalDateTime creationTime;
 
     /**
@@ -29,18 +29,18 @@ public class ReservationResponse {
     /**
      * Constructor with all the reservation attributes
      * @param id reservation 
-     * @param starTime of the reservation
+     * @param startTime of the reservation
      * @param departureTime of the reservation 
      * @param price of the reservation
-     * @param State of the reservation
+     * @param state of the reservation
      * @param creationTime of the reservation
      */
-    public ReservationResponse(Long id, LocalDateTime starTime, LocalDateTime endTime, double price, String State, LocalDateTime creationTime) {
+    public ReservationResponse(Long id, LocalDateTime startTime, LocalDateTime endTime, double price, String state, LocalDateTime creationTime) {
         this.id = id;
-        this.starTime = starTime;
+        this.startTime = startTime;
         this.endTime = endTime;
         this.price = price;
-        this.State = State;
+        this.state = state;
         this.creationTime = creationTime;
     }
 
@@ -52,12 +52,12 @@ public class ReservationResponse {
         this.id = id;
     }
 
-    public LocalDateTime getStarTime() {
-        return this.starTime;
+    public LocalDateTime getStartTime() {
+        return this.startTime;
     }
 
-    public void setStarTime(LocalDateTime arrivalTime) {
-        this.starTime = arrivalTime;
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
     }
 
     public LocalDateTime getEndTime() {
@@ -76,12 +76,12 @@ public class ReservationResponse {
         this.price = price;
     }
 
-    public String getState() {
-        return this.State;
+    public String getstate() {
+        return this.state;
     }
 
-    public void setState(String State) {
-        this.State = State;
+    public void setstate(String state) {
+        this.state = state;
     }
 
     public LocalDateTime getCreationTime() {

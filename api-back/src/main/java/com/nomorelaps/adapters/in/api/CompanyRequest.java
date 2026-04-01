@@ -1,72 +1,49 @@
 package com.nomorelaps.adapters.in.api;
 
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Objects;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 
 public class CompanyRequest {
-    
-    private Long id;
 
+    @NotBlank(message = "El nombre no puede estar vacío")
     private String name;
 
     private String apiKey;
 
+    @NotBlank(message = "La contraseña no puede estar vacía")
     private String password;
 
     private String phone;
 
+    @NotBlank(message = "El email no puede estar vacío")
+    @Email(message = "Formato de email incorrecto")
     private String email;
 
+    @NotBlank(message = "El CIF no puede estar vacío")
     private String cif;
-
-    private LocalDateTime registerDay;
 
     /**
      * Empty constructor
      */
     public CompanyRequest() {
     }
-
-    /**
-     * Constructor with the primary key of the Company
-     * @param id identifier of the company
-     */
-    public CompanyRequest(Long id){
-        this.id = id;
-    }
-
     /**
      * Constructor with all the attributes of the Company
-     * @param id identifier of the company
      * @param name name of the company
-     * @param apikey of the company
+     * @param apiKey api key of the company
      * @param password of the company
      * @param phone phone number of the company
      * @param email corporate email of the company
      * @param cif cif of the company
-     * @param registerDay date of the company registration
-     * @return
      */
-    public CompanyRequest(Long id, String name,String apiKey, String password, String phone,
-                          String email, String cif,LocalDateTime registerDay) {
-        this.id = id;
+    public CompanyRequest( String name,String apiKey, String password, String phone,
+                          String email, String cif) {
         this.name = name;
+        this.apiKey = apiKey;
         this.password = password;
         this.phone = phone;
         this.email = email;
         this.cif = cif;
-        this.registerDay = registerDay;
-    }
-
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getName() {
@@ -116,32 +93,5 @@ public class CompanyRequest {
     public void setCif(String cif) {
         this.cif = cif;
     }
-
-    public LocalDateTime getRegisterDay() {
-        return registerDay;
-    }
-
-    public void setRegisterDay(LocalDateTime registerDay) {
-        this.registerDay = registerDay;
-    }
-
-
-
-    @Override
-    public boolean equals(Object o) {
-        if (o == this)
-            return true;
-        if (!(o instanceof CompanyRequest)) {
-            return false;
-        }
-        CompanyRequest companyRequest = (CompanyRequest) o;
-        return Objects.equals(id, companyRequest.id) ;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
-    }
-    
 
 }

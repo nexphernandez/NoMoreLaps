@@ -1,24 +1,27 @@
 package com.nomorelaps.adapters.in.api;
 
-import java.time.LocalDateTime;
-import java.util.Objects;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
 
 public class DynamicPriceRequest {
 
-    private Long id;
-
+    @Min(value = 1, message = "El día debe ser mayor o igual a 1 (Lunes)")
+    @Max(value = 7, message = "El día debe ser menor o igual a 7 (Domingo)")
     private int dayOfWeek;
 
+    @NotBlank(message = "La hora de inicio es obligatoria")
     private String startHour;
 
+    @NotBlank(message = "La hora de fin es obligatoria")
     private String endHour;
 
+    @Positive(message = "El precio mínimo debe ser positivo")
     private double minPrice;
 
+    @Positive(message = "El precio máximo debe ser positivo")
     private double maxPrice;
-
-    private LocalDateTime createAt;
-
 
     /**
      * Empty constructor
@@ -27,39 +30,20 @@ public class DynamicPriceRequest {
     }
 
     /**
-     * Constructor with only the id
-     * @param id of Dynamic Price
-     */
-    public DynamicPriceRequest(Long id){
-        this.id=id;
-    }
-
-    /**
      * Constructor with all the parameters
-     * @param id of Dynamic Price
+     * 
      * @param dayOfWeek of Dynamic Price
      * @param startHour of Dynamic Price
-     * @param endHour of Dynamic Price
-     * @param minPrice of Dynamic Price
-     * @param maxPrice of Dynamic Price
-     * @param createAt of Dynamic Price
+     * @param endHour   of Dynamic Price
+     * @param minPrice  of Dynamic Price
+     * @param maxPrice  of Dynamic Price
      */
-    public DynamicPriceRequest(Long id, int dayOfWeek, String startHour, String endHour, double minPrice, double maxPrice, LocalDateTime createAt) {
-        this.id = id;
+    public DynamicPriceRequest(int dayOfWeek, String startHour, String endHour, double minPrice, double maxPrice) {
         this.dayOfWeek = dayOfWeek;
         this.startHour = startHour;
         this.endHour = endHour;
         this.minPrice = minPrice;
         this.maxPrice = maxPrice;
-        this.createAt = createAt;
-    }
-
-    public Long getId() {
-        return this.id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public int getDayOfWeek() {
@@ -102,28 +86,4 @@ public class DynamicPriceRequest {
         this.maxPrice = maxPrice;
     }
 
-    public LocalDateTime getCreateAt() {
-        return this.createAt;
-    }
-
-    public void setCreateAt(LocalDateTime createAt) {
-        this.createAt = createAt;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (o == this)
-            return true;
-        if (!(o instanceof DynamicPriceRequest)) {
-            return false;
-        }
-        DynamicPriceRequest dynamicPriceRequest = (DynamicPriceRequest) o;
-        return Objects.equals(id, dynamicPriceRequest.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
-    }
-    
 }

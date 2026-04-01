@@ -1,18 +1,22 @@
 package com.nomorelaps.adapters.in.api;
 
-
 import java.time.LocalDateTime;
-import java.util.Objects;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 public class ReservationRequest {
     
-    private Long id;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
+    @NotNull(message = "El precio es obligatorio")
     private double price;
-    private String State;
-    private LocalDateTime creationTime;
+    @NotBlank(message = "El estado no puede estar vacío")
+    private String state;
+    @NotNull(message = "El ID de usuario es obligatorio")
+    private Long userId;
+    @NotNull(message = "El ID de plaza es obligatorio")
+    private Long parkingSpotId;
 
     /**
      * Empty constructor 
@@ -21,37 +25,22 @@ public class ReservationRequest {
     }
 
     /**
-     * Constructor with the reservation primary key
-     * @param id reservation id
-     */
-    public ReservationRequest(Long id) {
-        this.id = id;
-    }
-
-    /**
      * Constructor with all the reservation attributes
-     * @param id reservation 
      * @param startTime of the reservation
      * @param endTime of the reservation 
      * @param price of the reservation
-     * @param State of the reservation
-     * @param creationTime of the reservation
+     * @param state of the reservation
+     * @param userId user id
+     * @param parkingSpotId parking spot id
      */
-    public ReservationRequest(Long id, LocalDateTime startTime, LocalDateTime endTime, double price, String State, LocalDateTime creationTime) {
-        this.id = id;
+    public ReservationRequest( LocalDateTime startTime, LocalDateTime endTime, 
+    double price, String state, Long userId, Long parkingSpotId) {
         this.startTime = startTime;
         this.endTime = endTime;
         this.price = price;
-        this.State = State;
-        this.creationTime = creationTime;
-    }
-
-    public Long getId() {
-        return this.id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
+        this.state = state;
+        this.userId = userId;
+        this.parkingSpotId = parkingSpotId;
     }
 
     public LocalDateTime getStartTime() {
@@ -79,35 +68,27 @@ public class ReservationRequest {
     }
 
     public String getState() {
-        return this.State;
+        return this.state;
     }
 
-    public void setState(String State) {
-        this.State = State;
+    public void setState(String state) {
+        this.state = state;
     }
 
-    public LocalDateTime getCreationTime() {
-        return this.creationTime;
+    public Long getUserId() {
+        return userId;
     }
 
-    public void setCreationTime(LocalDateTime creationTime) {
-        this.creationTime = creationTime;
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (o == this)
-            return true;
-        if (!(o instanceof ReservationRequest)) {
-            return false;
-        }
-        ReservationRequest reservationRequest = (ReservationRequest) o;
-        return Objects.equals(id, reservationRequest.id);
+    public Long getParkingSpotId() {
+        return parkingSpotId;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
+    public void setParkingSpotId(Long parkingSpotId) {
+        this.parkingSpotId = parkingSpotId;
     }
 
 }
