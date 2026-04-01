@@ -1,6 +1,7 @@
 package com.nomorelaps.adapters.mapper;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 
 import com.nomorelaps.adapters.in.api.DynamicPriceRequest;
@@ -19,6 +20,10 @@ import com.nomorelaps.domain.models.DynamicPrice;
 public interface DynamicPriceMapper {
     DynamicPrice toDomainFromRequest(DynamicPriceRequest request);
     DynamicPriceResponse toResponse(DynamicPrice domain);
+
+    @Mapping(target = "parking", ignore = true)
     DynamicPriceJpaEntity toJpaEntity(DynamicPrice domain);
+
+    @Mapping(target = "parking", ignore = true)
     DynamicPrice toDomain(DynamicPriceJpaEntity entity);
 }

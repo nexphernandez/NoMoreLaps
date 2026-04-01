@@ -1,6 +1,7 @@
 package com.nomorelaps.adapters.mapper;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 
 import com.nomorelaps.adapters.in.api.ParkingRequest;
@@ -19,6 +20,14 @@ import com.nomorelaps.domain.models.Parking;
 public interface ParkingMapper {
     Parking toDomainFromRequest(ParkingRequest request);
     ParkingResponse toResponse(Parking domain);
+
+    @Mapping(target = "parkingSpots", ignore = true)
+    @Mapping(target = "dynamicPrice", ignore = true)
+    @Mapping(target = "company", ignore = true)
     ParkingJpaEntity toJpaEntity(Parking domain);
+
+    @Mapping(target = "parkingSpots", ignore = true)
+    @Mapping(target = "dynamicPrice", ignore = true)
+    @Mapping(target = "company", ignore = true)
     Parking toDomain(ParkingJpaEntity entity);
 }

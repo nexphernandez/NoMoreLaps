@@ -22,7 +22,7 @@ import java.util.Set;
  * @version 1.0.0
  */
 @Entity
-@Table(name = "user")
+@Table(name = "app_user")
 public class UserJpaEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -56,7 +56,7 @@ public class UserJpaEntity {
     @OneToMany(mappedBy = "user")
     private Set<SanctionJpaEntity>sanctions;
 
-/**
+    /**
      * Empty constructor 
      */
     public UserJpaEntity() {

@@ -1,6 +1,7 @@
 package com.nomorelaps.adapters.mapper;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 
 import com.nomorelaps.adapters.in.api.RoleRequest;
@@ -17,8 +18,13 @@ import com.nomorelaps.domain.models.Role;
  * @version 1.0.0
  */
 public interface RoleMapper {
+
     Role toDomainFromRequest(RoleRequest request);
+
     RoleResponse toResponse(Role domain);
+
+    @Mapping(target = "users", ignore = true)
     RoleJpaEntity toJpaEntity(Role domain);
+    
     Role toDomain(RoleJpaEntity entity);
 }

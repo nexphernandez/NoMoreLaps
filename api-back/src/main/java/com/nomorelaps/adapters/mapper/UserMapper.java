@@ -1,6 +1,7 @@
 package com.nomorelaps.adapters.mapper;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 
 import com.nomorelaps.adapters.in.api.UserRequest;
@@ -19,6 +20,14 @@ import com.nomorelaps.domain.models.User;
 public interface UserMapper {
     User toDomainFromRequest(UserRequest request);
     UserResponse toResponse(User domain);
+
+    @Mapping(target = "companies", ignore = true)
+    @Mapping(target = "reservations", ignore = true)
+    @Mapping(target = "sanctions", ignore = true)
     UserJpaEntity toJpaEntity(User domain);
+
+    @Mapping(target = "companies", ignore = true)
+    @Mapping(target = "reservations", ignore = true)
+    @Mapping(target = "sanctions", ignore = true)
     User toDomain(UserJpaEntity entity);
 }

@@ -1,6 +1,7 @@
 package com.nomorelaps.adapters.mapper;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 
 import com.nomorelaps.adapters.in.api.CompanyRequest;
@@ -19,6 +20,12 @@ import com.nomorelaps.domain.models.Company;
 public interface CompanyMapper {
     Company toDomainFromRequest(CompanyRequest request);
     CompanyResponse toResponse(Company domain);
+
+    @Mapping(target = "parkings", ignore = true)
+    @Mapping(target = "user", ignore = true)
     CompanyJpaEntity toJpaEntity(Company domain);
+
+    @Mapping(target = "parkings", ignore = true)
+    @Mapping(target = "user", ignore = true)
     Company toDomain(CompanyJpaEntity entity);
 }
