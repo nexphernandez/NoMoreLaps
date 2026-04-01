@@ -13,6 +13,10 @@ import com.nomorelaps.adapters.in.api.ReservationResponse;
 import com.nomorelaps.adapters.mapper.ReservationMapper;
 import com.nomorelaps.business.interfaces.IReservationService;
 import com.nomorelaps.domain.models.Reservation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import jakarta.validation.Valid;
 
@@ -25,6 +29,7 @@ import jakarta.validation.Valid;
  */
 @RestController
 @RequestMapping("/api/reservations")
+@Tag(name = "Reservation", description = "Operations related to booking and reservation management")
 public class ReservationController {
 
     private final IReservationService reservationService;
@@ -43,6 +48,12 @@ public class ReservationController {
      * @return The created reservation as a response DTO.
      */
     @PostMapping
+    @Operation(summary = "Create a reservation", description = "Places a new booking for a parking spot.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Reservation created"),
+            @ApiResponse(responseCode = "400", description = "Invalid reservation data"),
+            @ApiResponse(responseCode = "409", description = "Spot already occupied for the requested time")
+    })
     public ResponseEntity<ReservationResponse> create(@Valid @RequestBody ReservationRequest request) {
         Reservation domain = reservationMapper.toDomainFromRequest(request);
         Reservation saved = reservationService.create(domain);
@@ -56,6 +67,11 @@ public class ReservationController {
      * @return The found reservation or 404 if not found.
      */
     @GetMapping("/{id}")
+    @Operation(summary = "Find reservation by ID", description = "Retrieves details of a specific booking.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Found"),
+            @ApiResponse(responseCode = "404", description = "Reservation not found")
+    })
     public ResponseEntity<ReservationResponse> findById(@PathVariable Long id) {
         return reservationService.findById(id)
                 .map(r -> ResponseEntity.ok(reservationMapper.toResponse(r)))
@@ -69,6 +85,8 @@ public class ReservationController {
      * @return A list of reservations for the user.
      */
     @GetMapping("/user/{userId}")
+    @Operation(summary = "Find reservations by User", description = "Lists all bookings made by a particular user.")
+    @ApiResponse(responseCode = "200", description = "List retrieved")
     public ResponseEntity<List<ReservationResponse>> findByUserId(@PathVariable Long userId) {
         List<ReservationResponse> responses = reservationService.findByUserId(userId).stream()
                 .map(reservationMapper::toResponse)
@@ -83,6 +101,8 @@ public class ReservationController {
      * @return A list of reservations for the spot.
      */
     @GetMapping("/spot/{spotId}")
+    @Operation(summary = "Find reservations by Spot", description = "Lists all bookings associated with a specific parking spot.")
+    @ApiResponse(responseCode = "200", description = "List retrieved")
     public ResponseEntity<List<ReservationResponse>> findByParkingSpotId(@PathVariable Long spotId) {
         List<ReservationResponse> responses = reservationService.findByParkingSpotId(spotId).stream()
                 .map(reservationMapper::toResponse)
@@ -97,6 +117,8 @@ public class ReservationController {
      * @return A list of reservations matching the state.
      */
     @GetMapping("/state/{state}")
+    @Operation(summary = "Filter reservations by state", description = "Retrieves bookings based on their status (ACTIVA, CANCELADA, etc.).")
+    @ApiResponse(responseCode = "200", description = "List retrieved")
     public ResponseEntity<List<ReservationResponse>> findByState(@PathVariable String state) {
         List<ReservationResponse> responses = reservationService.findByState(state).stream()
                 .map(reservationMapper::toResponse)
@@ -112,6 +134,11 @@ public class ReservationController {
      * @return The updated reservation.
      */
     @PutMapping("/{id}")
+    @Operation(summary = "Update a reservation", description = "Modifies times or status of an existing booking.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Updated successfully"),
+            @ApiResponse(responseCode = "404", description = "Reservation not found")
+    })
     public ResponseEntity<ReservationResponse> update(@PathVariable Long id, @Valid @RequestBody ReservationRequest request) {
         Reservation domain = reservationMapper.toDomainFromRequest(request);
         domain.setId(id);
@@ -126,6 +153,11 @@ public class ReservationController {
      * @return 204 No Content.
      */
     @DeleteMapping("/{id}")
+    @Operation(summary = "Delete a reservation", description = "Removes a booking entry from the system.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Deleted successfully"),
+            @ApiResponse(responseCode = "404", description = "Reservation not found")
+    })
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         reservationService.deleteById(id);
         return ResponseEntity.noContent().build();

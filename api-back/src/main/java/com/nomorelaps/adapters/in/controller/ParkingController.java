@@ -13,6 +13,10 @@ import com.nomorelaps.adapters.in.api.ParkingResponse;
 import com.nomorelaps.adapters.mapper.ParkingMapper;
 import com.nomorelaps.business.interfaces.IParkingService;
 import com.nomorelaps.domain.models.Parking;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import jakarta.validation.Valid;
 
@@ -25,6 +29,7 @@ import jakarta.validation.Valid;
  */
 @RestController
 @RequestMapping("/api/parkings")
+@Tag(name = "Parking", description = "Operations related to parking facility management")
 public class ParkingController {
 
     private final IParkingService parkingService;
@@ -43,6 +48,11 @@ public class ParkingController {
      * @return The created parking as a response DTO.
      */
     @PostMapping
+    @Operation(summary = "Create a new parking lot", description = "Adds a new physical parking location to a company's profile.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Parking created successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid input data")
+    })
     public ResponseEntity<ParkingResponse> create(@Valid @RequestBody ParkingRequest request) {
         Parking domain = parkingMapper.toDomainFromRequest(request);
         Parking saved = parkingService.create(domain);
@@ -56,6 +66,11 @@ public class ParkingController {
      * @return The found parking or 404 if not found.
      */
     @GetMapping("/{id}")
+    @Operation(summary = "Find parking by ID", description = "Retrieves information about a specific parking lot.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Parking found"),
+            @ApiResponse(responseCode = "404", description = "Parking not found")
+    })
     public ResponseEntity<ParkingResponse> findById(@PathVariable Long id) {
         return parkingService.findById(id)
                 .map(parking -> ResponseEntity.ok(parkingMapper.toResponse(parking)))
@@ -69,6 +84,8 @@ public class ParkingController {
      * @return A list of parkings for the company.
      */
     @GetMapping("/company/{companyId}")
+    @Operation(summary = "Find parkings by Company", description = "Retrieves all parking locations belonging to a single company.")
+    @ApiResponse(responseCode = "200", description = "List of company parkings retrieved")
     public ResponseEntity<List<ParkingResponse>> findByCompanyId(@PathVariable Long companyId) {
         List<ParkingResponse> responses = parkingService.findAllByCompanyId(companyId).stream()
                 .map(parkingMapper::toResponse)
@@ -84,6 +101,11 @@ public class ParkingController {
      * @return The updated parking.
      */
     @PutMapping("/{id}")
+    @Operation(summary = "Update a parking lot", description = "Updates coordinates, times, or name of an existing parking lot.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Parking updated successfully"),
+            @ApiResponse(responseCode = "404", description = "Parking not found")
+    })
     public ResponseEntity<ParkingResponse> update(@PathVariable Long id, @Valid @RequestBody ParkingRequest request) {
         Parking domain = parkingMapper.toDomainFromRequest(request);
         domain.setId(id);
@@ -98,6 +120,11 @@ public class ParkingController {
      * @return 204 No Content.
      */
     @DeleteMapping("/{id}")
+    @Operation(summary = "Delete a parking lot", description = "Removes a parking lot from the database.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Parking deleted"),
+            @ApiResponse(responseCode = "404", description = "Parking not found")
+    })
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         parkingService.deleteById(id);
         return ResponseEntity.noContent().build();

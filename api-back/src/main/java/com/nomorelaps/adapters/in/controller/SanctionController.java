@@ -13,6 +13,10 @@ import com.nomorelaps.adapters.in.api.SanctionResponse;
 import com.nomorelaps.adapters.mapper.SanctionMapper;
 import com.nomorelaps.business.interfaces.ISanctionService;
 import com.nomorelaps.domain.models.Sanction;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import jakarta.validation.Valid;
 
@@ -25,6 +29,7 @@ import jakarta.validation.Valid;
  */
 @RestController
 @RequestMapping("/api/sanctions")
+@Tag(name = "Sanction", description = "Operations related to penalty and sanction management")
 public class SanctionController {
 
     private final ISanctionService sanctionService;
@@ -43,6 +48,11 @@ public class SanctionController {
      * @return The created sanction as a response DTO.
      */
     @PostMapping
+    @Operation(summary = "Create a sanction", description = "Applies a new penalty or sanction to a user for a specific reservation.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Sanction created"),
+            @ApiResponse(responseCode = "400", description = "Invalid sanction data")
+    })
     public ResponseEntity<SanctionResponse> create(@Valid @RequestBody SanctionRequest request) {
         Sanction domain = sanctionMapper.toDomainFromRequest(request);
         Sanction saved = sanctionService.create(domain);
@@ -56,6 +66,11 @@ public class SanctionController {
      * @return The found sanction or 404 if not found.
      */
     @GetMapping("/{id}")
+    @Operation(summary = "Find sanction by ID", description = "Retrieves information about a specific sanction.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Found"),
+            @ApiResponse(responseCode = "404", description = "Sanction not found")
+    })
     public ResponseEntity<SanctionResponse> findById(@PathVariable Long id) {
         return sanctionService.findById(id)
                 .map(s -> ResponseEntity.ok(sanctionMapper.toResponse(s)))
@@ -69,6 +84,8 @@ public class SanctionController {
      * @return A list of sanctions for the user.
      */
     @GetMapping("/user/{userId}")
+    @Operation(summary = "Find sanctions by User", description = "Lists all sanctions applied to a specific user.")
+    @ApiResponse(responseCode = "200", description = "List retrieved successfully")
     public ResponseEntity<List<SanctionResponse>> findByUserId(@PathVariable Long userId) {
         List<SanctionResponse> responses = sanctionService.findByUserId(userId).stream()
                 .map(sanctionMapper::toResponse)
@@ -83,6 +100,8 @@ public class SanctionController {
      * @return A list of sanctions for the reservation.
      */
     @GetMapping("/reservation/{reservationId}")
+    @Operation(summary = "Find sanctions by Reservation", description = "Lists all sanctions associated with a specific booking.")
+    @ApiResponse(responseCode = "200", description = "List retrieved successfully")
     public ResponseEntity<List<SanctionResponse>> findByReservationId(@PathVariable Long reservationId) {
         List<SanctionResponse> responses = sanctionService.findByReservationId(reservationId).stream()
                 .map(sanctionMapper::toResponse)
@@ -98,6 +117,11 @@ public class SanctionController {
      * @return The updated sanction.
      */
     @PutMapping("/{id}")
+    @Operation(summary = "Update a sanction", description = "Updates details or status of an existing sanction.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Updated successfully"),
+            @ApiResponse(responseCode = "404", description = "Sanction not found")
+    })
     public ResponseEntity<SanctionResponse> update(@PathVariable Long id, @Valid @RequestBody SanctionRequest request) {
         Sanction domain = sanctionMapper.toDomainFromRequest(request);
         domain.setId(id);
@@ -112,6 +136,11 @@ public class SanctionController {
      * @return 204 No Content.
      */
     @DeleteMapping("/{id}")
+    @Operation(summary = "Delete a sanction", description = "Removes a sanction record from the system.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Deleted successfully"),
+            @ApiResponse(responseCode = "404", description = "Sanction not found")
+    })
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         sanctionService.deleteById(id);
         return ResponseEntity.noContent().build();
