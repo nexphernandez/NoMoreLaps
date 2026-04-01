@@ -166,4 +166,11 @@ public class DynamicPriceJpaEntity {
     public int hashCode() {
         return Objects.hash(id);
     }
+
+    @jakarta.persistence.PrePersist
+    protected void onCreate() {
+        if (this.createAt == null) {
+            this.createAt = java.time.LocalDateTime.now();
+        }
+    }
 }

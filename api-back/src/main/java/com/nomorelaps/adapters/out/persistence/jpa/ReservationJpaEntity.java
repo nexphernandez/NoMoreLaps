@@ -183,4 +183,11 @@ public class ReservationJpaEntity {
         return Objects.hash(id);
     }
 
+    @jakarta.persistence.PrePersist
+    protected void onCreate() {
+        if (this.creationTime == null) {
+            this.creationTime = java.time.LocalDateTime.now();
+        }
+    }
+
 }

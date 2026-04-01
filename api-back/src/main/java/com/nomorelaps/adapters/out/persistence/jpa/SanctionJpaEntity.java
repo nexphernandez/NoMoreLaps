@@ -160,4 +160,11 @@ public class SanctionJpaEntity {
         return Objects.hash(id);
     }
 
+    @jakarta.persistence.PrePersist
+    protected void onCreate() {
+        if (this.arrivalTime == null) {
+            this.arrivalTime = java.time.LocalDateTime.now();
+        }
+    }
+
 }

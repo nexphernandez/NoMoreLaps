@@ -195,4 +195,11 @@ public class CompanyJpaEntity {
         return Objects.hash(id);
     }
 
+    @jakarta.persistence.PrePersist
+    protected void onCreate() {
+        if (this.registerDay == null) {
+            this.registerDay = java.time.LocalDateTime.now();
+        }
+    }
+
 }

@@ -145,4 +145,11 @@ public class ParkingSpotJpaEntity {
         return Objects.hash(id);
     }
 
+    @jakarta.persistence.PrePersist
+    protected void onCreate() {
+        if (this.registerDate == null) {
+            this.registerDate = java.time.LocalDateTime.now();
+        }
+    }
+
 }

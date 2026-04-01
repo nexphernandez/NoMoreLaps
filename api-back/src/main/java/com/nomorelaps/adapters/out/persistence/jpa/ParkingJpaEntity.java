@@ -207,4 +207,11 @@ public class ParkingJpaEntity {
         return Objects.hash(id);
     }
 
+    @jakarta.persistence.PrePersist
+    protected void onCreate() {
+        if (this.createdAt == null) {
+            this.createdAt = java.time.LocalDateTime.now();
+        }
+    }
+
 }
