@@ -1,5 +1,102 @@
 package com.nomorelaps.adapters.in.api;
 
+import java.time.LocalDateTime;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
+/**
+ * Data Transfer Object (DTO) for creating or updating a Parking.
+ * Encapsulates the necessary request data sent by the client.
+ *
+ * @author nexphernandez DiazLuisAlejandro
+ * @version 1.0.0
+ */
 public class ParkingRequest {
+
+    @NotBlank(message = "La dirección no puede estar vacía")
+    private String address;
     
+    @NotBlank(message = "El nombre no puede estar vacío")
+    private String name;
+    @NotNull(message = "La latitud es obligatoria")
+    private Double latitude;
+    @NotNull(message = "La longitud es obligatoria")
+    private Double longitude;
+    private LocalDateTime openingTime;
+    private LocalDateTime closingTime;
+
+    /**
+     * Empty constructor
+     */
+    public ParkingRequest() {
+    }
+
+    /**
+     * Constructor with all parameters of the Parking
+     * @param address of the parking
+     * @param name of the parking
+     * @param latitude of the parking
+     * @param longitude of the parking
+     * @param openingTime of the parking that day
+     * @param closingTime of the parking that day
+     */
+    public ParkingRequest(String address, String name, Double latitude, Double longitude, 
+                          LocalDateTime openingTime, LocalDateTime closingTime) {
+        this.address = address;
+        this.name = name;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.openingTime = openingTime;
+        this.closingTime = closingTime;
+    }
+
+    public String getAddress() {
+        return this.address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Double getLatitude() {
+        return this.latitude;
+    }
+
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
+    }
+
+    public Double getLongitude() {
+        return this.longitude;
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
+    }
+
+    public LocalDateTime getOpeningTime() {
+        return this.openingTime;
+    }
+
+    public void setOpeningTime(LocalDateTime openingTime) {
+        this.openingTime = openingTime;
+    }
+
+    public LocalDateTime getClosingTime() {
+        return this.closingTime;
+    }
+
+    public void setClosingTime(LocalDateTime closingTime) {
+        this.closingTime = closingTime;
+    }
+
 }
