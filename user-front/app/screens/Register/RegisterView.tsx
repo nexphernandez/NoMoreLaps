@@ -13,21 +13,23 @@ import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { AuthStackParamList } from '../../navigation/AuthNavigator';
 
-interface LoginViewProps {
+interface RegisterViewProps {
+    name: string;
+    setName: (text: string) => void;
     email: string;
     setEmail: (text: string) => void;
     password: string;
     setPassword: (text: string) => void;
-    onLogin: () => void;
+    onRegister: () => void;
     loading: boolean;
 }
 
-const LoginView: React.FC<LoginViewProps> = ({
-    email, setEmail, password, setPassword, onLogin, loading
+const RegisterView: React.FC<RegisterViewProps> = ({
+    name, setName, email, setEmail, password, setPassword, onRegister, loading
 }) => {
 
     const navigation = useNavigation<StackNavigationProp<AuthStackParamList>>();
-    const goToRegister = () => navigation.navigate('Register');
+    const goToLogin = () => navigation.navigate('Login');
 
     return (
         <KeyboardAvoidingView
@@ -36,7 +38,15 @@ const LoginView: React.FC<LoginViewProps> = ({
         >
             <View style={styles.card}>
                 <Text style={styles.title}>NoMoreLaps</Text>
-                <Text style={styles.subtitle}>Welcome back</Text>
+                <Text style={styles.subtitle}>Create your account</Text>
+
+                <TextInput
+                    style={styles.input}
+                    placeholder="Full Name"
+                    placeholderTextColor="#94a3b8"
+                    value={name}
+                    onChangeText={setName}
+                />
 
                 <TextInput
                     style={styles.input}
@@ -59,22 +69,22 @@ const LoginView: React.FC<LoginViewProps> = ({
 
                 <TouchableOpacity
                     style={styles.button}
-                    onPress={onLogin}
+                    onPress={onRegister}
                     disabled={loading}
                 >
                     {loading ? (
                         <ActivityIndicator color="#fff" />
                     ) : (
-                        <Text style={styles.buttonText}>Sign In</Text>
+                        <Text style={styles.buttonText}>Register</Text>
                     )}
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.footerLink} onPress={goToRegister}>
-                    <Text style={styles.footerText}>Don't have an account? Sign Up</Text>
+                <TouchableOpacity style={styles.footerLink} onPress={goToLogin}>
+                    <Text style={styles.footerText}>Already have an account? Sign In</Text>
                 </TouchableOpacity>
             </View>
         </KeyboardAvoidingView>
     );
 };
 
-export default LoginView;
+export default RegisterView;

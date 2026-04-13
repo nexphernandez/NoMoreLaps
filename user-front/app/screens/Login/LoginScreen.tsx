@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { Alert } from 'react-native';
 import { useAuth } from '../../context/AuthContext';
-import LoginView from './LoginView'; 
+import LoginView from './LoginView';
+
 
 const LoginScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  
+
   const { login } = useAuth();
 
   const handleLogin = async () => {
@@ -28,7 +29,7 @@ const LoginScreen = () => {
   };
 
   return (
-    <LoginView 
+    <LoginView
       email={email}
       setEmail={setEmail}
       password={password}

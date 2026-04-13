@@ -1,22 +1,14 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, View } from 'react-native';
+import 'react-native-gesture-handler'; 
+import { NavigationContainer } from '@react-navigation/native';
 import { AuthProvider } from './app/context/AuthContext';
-import LoginScreen from './app/screens/Login/LoginScreen';
+import AuthNavigator from './app/navigation/AuthNavigator';
 
 export default function App() {
   return (
     <AuthProvider>
-      <View style={styles.container}>
-        <LoginScreen />
-        <StatusBar style="auto" />
-      </View>
+      <NavigationContainer>
+        <AuthNavigator />
+      </NavigationContainer>
     </AuthProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#0f172a',
-  },
-});
