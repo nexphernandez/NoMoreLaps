@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.nomorelaps.adapters.out.persistence.interfaces.IUserPersistenceAdapter;
@@ -21,10 +22,12 @@ import com.nomorelaps.domain.models.User;
 public class UserService implements IUserService {
 
     private final IUserPersistenceAdapter persistencePort;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserService(IUserPersistenceAdapter persistencePort) {
+    public UserService(IUserPersistenceAdapter persistencePort, PasswordEncoder passwordEncoder) {
         this.persistencePort = persistencePort;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -32,6 +35,7 @@ public class UserService implements IUserService {
         if (persistencePort.findByEmail(user.getEmail()).isPresent()) {
             throw new IllegalArgumentException("BusinessRuleException: El email del usuario ya está registrado en el sistema.");
         }
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         return persistencePort.save(user);
     }
 
@@ -52,6 +56,9 @@ public class UserService implements IUserService {
 
     @Override
     public User update(User user) {
+        if (user.getPassword() != null && !user.getPassword().isEmpty()) {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+        }
         return persistencePort.save(user);
     }
 
