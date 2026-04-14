@@ -11,7 +11,8 @@ import {
 import { styles } from '../../styles/AuthStyles';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { AuthStackParamList } from '../../navigation/AuthNavigator';
+import { RootStackParamList } from '../../navigation/RootNavigator';
+import { Colors } from '../../constants/Colors';
 
 interface RegisterViewProps {
     name: string;
@@ -28,9 +29,9 @@ const RegisterView: React.FC<RegisterViewProps> = ({
     name, setName, email, setEmail, password, setPassword, onRegister, loading
 }) => {
 
-    const navigation = useNavigation<StackNavigationProp<AuthStackParamList>>();
+    const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
     const goToLogin = () => navigation.navigate('Login');
-
+    const goToHome = () => navigation.navigate('Home');
     return (
         <KeyboardAvoidingView
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -78,6 +79,13 @@ const RegisterView: React.FC<RegisterViewProps> = ({
                         <Text style={styles.buttonText}>Register</Text>
                     )}
                 </TouchableOpacity>
+
+                <TouchableOpacity style={styles.footerLink} onPress={goToHome}>
+                    <Text style={[styles.footerText, { color: Colors.textSecondary }]}>
+                        Continue as guest
+                    </Text>
+                </TouchableOpacity>
+
 
                 <TouchableOpacity style={styles.footerLink} onPress={goToLogin}>
                     <Text style={styles.footerText}>Already have an account? Sign In</Text>

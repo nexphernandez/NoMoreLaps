@@ -11,7 +11,8 @@ import {
 import { styles } from '../../styles/AuthStyles';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { AuthStackParamList } from '../../navigation/AuthNavigator';
+import { RootStackParamList } from '../../navigation/RootNavigator';
+import { Colors } from '../../constants/Colors';
 
 interface LoginViewProps {
     email: string;
@@ -26,8 +27,9 @@ const LoginView: React.FC<LoginViewProps> = ({
     email, setEmail, password, setPassword, onLogin, loading
 }) => {
 
-    const navigation = useNavigation<StackNavigationProp<AuthStackParamList>>();
+    const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
     const goToRegister = () => navigation.navigate('Register');
+    const goToHome = () => navigation.navigate('Home');
 
     return (
         <KeyboardAvoidingView
@@ -67,6 +69,11 @@ const LoginView: React.FC<LoginViewProps> = ({
                     ) : (
                         <Text style={styles.buttonText}>Sign In</Text>
                     )}
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.footerLink} onPress={goToHome}>
+                    <Text style={styles.footerTextSecondary}>
+                        Continue as guest
+                    </Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity style={styles.footerLink} onPress={goToRegister}>
