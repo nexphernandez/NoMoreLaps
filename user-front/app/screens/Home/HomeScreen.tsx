@@ -10,13 +10,7 @@ const HomeScreen = () => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
 
   const handleSelectParking = (id: string) => {
-    if (!userToken) {
-      // El invitado no está logueado, le mandamos al Login
-      navigation.navigate('Login');
-    } else {
-      // El usuario está dentro, le llevamos a reservar
-      console.log('Navigate to Reservation for ID:', id);
-    }
+    navigation.navigate('ParkingDetail', { parkingId: id });
   };
 
   return <HomeView onSelectParking={handleSelectParking} onGoToProfile={() => navigation.navigate('Login')} />;
