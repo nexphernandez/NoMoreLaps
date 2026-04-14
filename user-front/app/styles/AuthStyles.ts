@@ -1,55 +1,69 @@
 import { StyleSheet } from 'react-native';
+import { Colors } from '../constants/Colors';
 
+/**
+ * Shared styles for Authentication screens (Login and Register).
+ * Inspired by the clean and clear aesthetic of Google Maps.
+ *
+ * @author nexphernandez DiazLuisAlejandro
+ */
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 24,
     justifyContent: 'center',
-    backgroundColor: '#0f172a',
+    backgroundColor: Colors.lightBackground,
   },
   card: {
-    backgroundColor: '#1e293b',
-    borderRadius: 24,
+    backgroundColor: Colors.background,
+    borderRadius: 16,
     padding: 32,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.3,
-    shadowRadius: 20,
-    elevation: 10,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
+    borderWidth: 1,
+    borderColor: Colors.border,
   },
   title: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: '#fff',
+    fontSize: 28,
+    fontWeight: '700',
+    color: Colors.text,
     textAlign: 'center',
     marginBottom: 8,
   },
   subtitle: {
     fontSize: 16,
-    color: '#94a3b8',
+    color: Colors.textSecondary,
     textAlign: 'center',
     marginBottom: 40,
   },
   input: {
-    backgroundColor: '#0f172a',
-    borderRadius: 12,
+    backgroundColor: Colors.background,
+    borderRadius: 8,
     padding: 16,
-    color: '#fff',
+    color: Colors.text,
     marginBottom: 16,
     fontSize: 16,
     borderWidth: 1,
-    borderColor: '#334155',
+    borderColor: Colors.border,
   },
   button: {
-    backgroundColor: '#3b82f6',
-    borderRadius: 12,
+    backgroundColor: Colors.primary,
+    borderRadius: 8,
     padding: 18,
     alignItems: 'center',
     marginTop: 8,
+    elevation: 2,
+    shadowColor: Colors.primary,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
   },
   buttonText: {
     color: '#fff',
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '600',
   },
   footerLink: {
@@ -57,7 +71,8 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
   },
   footerText: {
-    color: '#94a3b8',
+    color: Colors.primary,
     fontSize: 14,
+    fontWeight: '500',
   },
 });

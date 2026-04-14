@@ -1,4 +1,5 @@
-import 'react-native-gesture-handler'; 
+import 'react-native-gesture-handler';
+import { StatusBar } from 'expo-status-bar';
 import { NavigationContainer } from '@react-navigation/native';
 import { AuthProvider } from './app/context/AuthContext';
 import AuthNavigator from './app/navigation/AuthNavigator';
@@ -8,6 +9,7 @@ export default function App() {
     <AuthProvider>
       <NavigationContainer>
         <AuthNavigator />
+        <StatusBar style="dark" />
       </NavigationContainer>
     </AuthProvider>
   );
