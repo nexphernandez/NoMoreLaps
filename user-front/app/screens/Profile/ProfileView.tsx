@@ -8,10 +8,11 @@ interface ProfileViewProps {
   userEmail: string;
   activeReservation: { parkingName: string; spot: string; timeRemaining: string } | null;
   onLogout: () => void;
+  onViewHistory: () => void;
 }
 
 const ProfileView: React.FC<ProfileViewProps> = ({ 
-  userName, userEmail, activeReservation, onLogout 
+  userName, userEmail, activeReservation, onLogout,onViewHistory
 }) => {
   return (
     <SafeAreaView style={styles.container} edges={['bottom']}>
@@ -45,6 +46,19 @@ const ProfileView: React.FC<ProfileViewProps> = ({
               <Text style={styles.emptyText}>No active reservations found.</Text>
             </View>
           )}
+        </View>
+
+          <View style={styles.section}>
+          <TouchableOpacity style={styles.menuItem} onPress={onViewHistory}>
+            <View style={styles.menuIcon}>
+              <Text style={{fontSize: 20}}>🕒</Text>
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.menuTitle}>Reservation History</Text>
+              <Text style={styles.menuSubtitle}>Check your past activity and receipts</Text>
+            </View>
+            <Text style={styles.arrow}>❯</Text>
+          </TouchableOpacity>
         </View>
 
         {/* BOTÓN DE LOGOUT */}
@@ -130,6 +144,27 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   logoutText: { color: Colors.danger, fontWeight: 'bold', fontSize: 16 },
+  menuItem: {
+    backgroundColor: Colors.background,
+    borderRadius: 16,
+    padding: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: Colors.border,
+  },
+  menuIcon: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    backgroundColor: Colors.lightBackground,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 16,
+  },
+  menuTitle: { fontSize: 16, fontWeight: 'bold', color: Colors.text },
+  menuSubtitle: { fontSize: 12, color: Colors.textSecondary, marginTop: 2 },
+  arrow: { color: Colors.border, fontSize: 18, fontWeight: 'bold' },
 });
 
 export default ProfileView;

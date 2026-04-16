@@ -6,30 +6,32 @@ import { RootStackParamList } from '../../navigation/RootNavigator';
 import ProfileView from './ProfileView';
 
 const ProfileScreen = () => {
-  const { logout } = useAuth(); // Función de logout de nuestro contexto
+  const { logout } = useAuth();
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
 
   const handleLogout = async () => {
     await logout();
-    // Al cerrar sesión, lo enviamos de vuelta a la Home
     navigation.reset({
       index: 0,
       routes: [{ name: 'Home' }],
     });
   };
+  const handleViewHistory = () => {
+    navigation.navigate('ReservationHistory');
+  }
+    return (
+      <ProfileView
+        userName="John Doe" 
+        userEmail="john.doe@example.com"
+        activeReservation={{
+          parkingName: 'Plaza Mayor Parking',
+          spot: 'A-12',
+          timeRemaining: '01:45:00'
+        }}
+        onLogout={handleLogout}
+        onViewHistory={handleViewHistory}
+      />
+    );
+  };
 
-  return (
-    <ProfileView 
-      userName="John Doe" // Aquí usaremos datos del contexto luego
-      userEmail="john.doe@example.com"
-      activeReservation={{
-        parkingName: 'Plaza Mayor Parking',
-        spot: 'A-12',
-        timeRemaining: '01:45:00'
-      }}
-      onLogout={handleLogout}
-    />
-  );
-};
-
-export default ProfileScreen;
+  export default ProfileScreen;
