@@ -1,9 +1,9 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
+import { useTheme } from '../context/ThemeContext';
 import HomeScreen from '../screens/Home/HomeScreen';
 import LoginScreen from '../screens/Login/LoginScreen';
 import RegisterScreen from '../screens/Register/RegisterScreen';
-import { Colors } from '../constants/Colors';
 import ParkingDetailScreen from '../screens/ParkingDetail/ParkingDetailScreen';
 import ProfileScreen from '../screens/Profile/ProfileScreen';
 import ReservationHistoryScreen from '../screens/ReservationHistory/ReservationHistoryScreen';
@@ -24,12 +24,14 @@ export type RootStackParamList = {
 const Stack = createStackNavigator<RootStackParamList>();
 
 const RootNavigator = () => {
+  const { theme } = useTheme();
+
   return (
     <Stack.Navigator
       initialRouteName="Home"
       screenOptions={{
-        headerStyle: { backgroundColor: Colors.background },
-        headerTintColor: Colors.primary, // Color de la flecha y título
+        headerStyle: { backgroundColor: theme.background },
+        headerTintColor: theme.primary,
         headerTitleStyle: { fontWeight: 'bold' },
       }}
     >
@@ -76,6 +78,5 @@ const RootNavigator = () => {
     </Stack.Navigator>
   );
 };
-
 
 export default RootNavigator;

@@ -2,17 +2,18 @@ import React from 'react';
 import {
     Text,
     View,
-    TextInput,
     TouchableOpacity,
-    ActivityIndicator,
     KeyboardAvoidingView,
-    Platform
+    Platform,
+    ScrollView
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { styles } from '../../styles/AuthStyles';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../../navigation/RootNavigator';
+import CustomButton from '../../components/CustomButton';
+import InputField from '../../components/InputField';
 
 interface RegisterViewProps {
     name: string;
@@ -21,17 +22,19 @@ interface RegisterViewProps {
     setEmail: (text: string) => void;
     password: string;
     setPassword: (text: string) => void;
+    confirmPassword: string;
+    setConfirmPassword: (text: string) => void;
     onRegister: () => void;
-    loading: boolean;
+    isLoading: boolean;
 }
 
 const RegisterView: React.FC<RegisterViewProps> = ({
-    name, setName, email, setEmail, password, setPassword, onRegister, loading
+    name, setName, email, setEmail, password, setPassword, 
+    confirmPassword, setConfirmPassword, onRegister, isLoading
 }) => {
 
     const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
     const goToLogin = () => navigation.navigate('Login');
-    const goToHome = () => navigation.navigate('Home');
 
     return (
         <SafeAreaView style={{ flex: 1 }} edges={['bottom']}>
@@ -39,60 +42,56 @@ const RegisterView: React.FC<RegisterViewProps> = ({
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                 style={styles.container}
             >
-                <View style={styles.card}>
-                    <Text style={styles.title}>NoMoreLaps</Text>
-                    <Text style={styles.subtitle}>Create your account</Text>
+                <ScrollView contentContainerStyle={{flexGrow: 1, justifyContent: 'center'}}>
+                    <View style={styles.card}>
+                        <Text style={styles.title}>NoMoreLaps</Text>
+                        <Text style={styles.subtitle}>Create your account</Text>
 
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Full Name"
-                        placeholderTextColor="#94a3b8"
-                        value={name}
-                        onChangeText={setName}
-                    />
+                        <View style={styles.form}>
+                            <InputField
+                                label="Full Name"
+                                placeholder="John Doe"
+                                value={name}
+                                onChangeText={setName}
+                            />
 
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Email address"
-                        placeholderTextColor="#94a3b8"
-                        value={email}
-                        onChangeText={setEmail}
-                        autoCapitalize="none"
-                        keyboardType="email-address"
-                    />
+                            <InputField
+                                label="Email Address"
+                                placeholder="example@test.com"
+                                value={email}
+                                onChangeText={setEmail}
+                                keyboardType="email-address"
+                                autoCapitalize="none"
+                            />
 
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Password"
-                        placeholderTextColor="#94a3b8"
-                        secureTextEntry
-                        value={password}
-                        onChangeText={setPassword}
-                    />
+                            <InputField
+                                label="Password"
+                                placeholder="••••••••"
+                                value={password}
+                                onChangeText={setPassword}
+                                secureTextEntry
+                            />
 
-                    <TouchableOpacity
-                        style={styles.button}
-                        onPress={onRegister}
-                        disabled={loading}
-                    >
-                        {loading ? (
-                            <ActivityIndicator color="#fff" />
-                        ) : (
-                            <Text style={styles.buttonText}>Register</Text>
-                        )}
-                    </TouchableOpacity>
+                            <InputField
+                                label="Confirm Password"
+                                placeholder="••••••••"
+                                value={confirmPassword}
+                                onChangeText={setConfirmPassword}
+                                secureTextEntry
+                            />
 
-                    <TouchableOpacity style={styles.footerLink} onPress={goToHome}>
-                        <Text style={styles.footerTextSecondary}>
-                            Continue as guest
-                        </Text>
-                    </TouchableOpacity>
+                            <CustomButton
+                                title="Create Account"
+                                onPress={onRegister}
+                                loading={isLoading}
+                            />
 
-
-                    <TouchableOpacity style={styles.footerLink} onPress={goToLogin}>
-                        <Text style={styles.footerText}>Already have an account? Sign In</Text>
-                    </TouchableOpacity>
-                </View>
+                            <TouchableOpacity style={styles.footerLink} onPress={goToLogin}>
+                                <Text style={styles.footerText}>Already have an account? Sign In</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </ScrollView>
             </KeyboardAvoidingView>
         </SafeAreaView>
     );

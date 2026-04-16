@@ -10,14 +10,20 @@ const RegisterScreen = () => {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
     const [loading, setLoading] = useState(false);
     
     const { login } = useAuth();
     const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
 
     const handleRegister = async () => {
-        if (!name || !email || !password) {
+        if (!name || !email || !password || !confirmPassword) {
             Alert.alert('Error', 'Please fill all fields');
+            return;
+        }
+
+        if (password !== confirmPassword) {
+            Alert.alert('Error', 'Passwords do not match');
             return;
         }
 
@@ -40,8 +46,10 @@ const RegisterScreen = () => {
             setEmail={setEmail}
             password={password}
             setPassword={setPassword}
+            confirmPassword={confirmPassword}
+            setConfirmPassword={setConfirmPassword}
             onRegister={handleRegister}
-            loading={loading}
+            isLoading={loading}
         />
     );
 };

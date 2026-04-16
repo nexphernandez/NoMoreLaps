@@ -1,7 +1,10 @@
 import React from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Colors } from '../../constants/Colors'; 
+import { View, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
+import Badge from '../../components/Badge';
+import Card from '../../components/Card';
+import Typography from '../../components/Typography';
+import ScreenContainer from '../../components/ScreenContainer';
+import { useTheme } from '../../context/ThemeContext';
 
 export interface HistoryItem {
   id: string;
@@ -18,94 +21,64 @@ interface ReservationHistoryViewProps {
 }
 
 const ReservationHistoryView: React.FC<ReservationHistoryViewProps> = ({ history, onViewReceipt }) => {
+  const { theme } = useTheme();
+
   return (
-    <SafeAreaView style={styles.container} edges={['bottom']}>
+    <ScreenContainer withScroll={false}>
       <FlatList
         data={history}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.listContent}
         ListHeaderComponent={() => (
           <View style={styles.header}>
-            <Text style={styles.title}>Your Activity</Text>
-            <Text style={styles.subtitle}>Below you can find your past parking history.</Text>
+            <Typography variant="h2">Your Activity</Typography>
+            <Typography variant="caption">Below you can find your past parking history.</Typography>
           </View>
         )}
         renderItem={({ item }) => (
-          <View style={styles.card}>
+          <Card>
             <View style={styles.cardHeader}>
-              <Text style={styles.parkingName}>{item.parkingName}</Text>
-              <View style={[
-                styles.statusBadge, 
-                { backgroundColor: item.status === 'Completed' ? '#DCFCE7' : '#FEE2E2' }
-              ]}>
-                <Text style={[
-                  styles.statusText, 
-                  { color: item.status === 'Completed' ? '#166534' : '#991B1B' }
-                ]}>{item.status}</Text>
-              </View>
+              <Typography variant="h3">{item.parkingName}</Typography>
+              <Badge 
+                label={item.status} 
+                type={item.status === 'Completed' ? 'success' : 'danger'} 
+              />
             </View>
 
             <View style={styles.cardBody}>
               <View style={styles.detailItem}>
-                <Text style={styles.detailLabel}>Date</Text>
-                <Text style={styles.detailValue}>{item.date}</Text>
+                <Typography variant="label">Date</Typography>
+                <Typography variant="body" style={{fontWeight: '600'}}>{item.date}</Typography>
               </View>
               <View style={styles.detailItem}>
-                <Text style={styles.detailLabel}>Duration</Text>
-                <Text style={styles.detailValue}>{item.duration}</Text>
+                <Typography variant="label">Duration</Typography>
+                <Typography variant="body" style={{fontWeight: '600'}}>{item.duration}</Typography>
               </View>
               <View style={styles.detailItem}>
-                <Text style={styles.detailLabel}>Cost</Text>
-                <Text style={styles.detailValue}>{item.price}</Text>
+                <Typography variant="label">Cost</Typography>
+                <Typography variant="body" style={{fontWeight: '600'}}>{item.price}</Typography>
               </View>
             </View>
             
-            <TouchableOpacity style={styles.receiptBtn} onPress={() => onViewReceipt(item.id)}>
-              <Text style={styles.receiptBtnText}>View Receipt</Text>
+            <TouchableOpacity style={[styles.receiptBtn, { borderTopColor: theme.border }]} onPress={() => onViewReceipt(item.id)}>
+              <Typography variant="label" color={theme.primary} style={{textAlign: 'center', paddingTop: 16}}>View Receipt</Typography>
             </TouchableOpacity>
-          </View>
+          </Card>
         )}
       />
-    </SafeAreaView>
+    </ScreenContainer>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: Colors.lightBackground },
-  listContent: { padding: 20 },
+  listContent: { paddingBottom: 20 },
   header: { marginBottom: 24, marginTop: 10 },
-  title: { fontSize: 28, fontWeight: 'bold', color: Colors.text },
-  subtitle: { fontSize: 14, color: Colors.textSecondary, marginTop: 4 },
-  
-  card: {
-    backgroundColor: Colors.background,
-    borderRadius: 16,
-    padding: 20,
-    marginBottom: 16,
-    borderWidth: 1,
-    borderColor: Colors.border,
-    elevation: 3,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-  },
   cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 },
-  parkingName: { fontSize: 18, fontWeight: 'bold', color: Colors.text },
-  statusBadge: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12 },
-  statusText: { fontSize: 11, fontWeight: 'bold', textTransform: 'uppercase' },
-  
   cardBody: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 20 },
   detailItem: { flex: 1 },
-  detailLabel: { fontSize: 11, color: Colors.textSecondary, textTransform: 'uppercase', marginBottom: 4 },
-  detailValue: { fontSize: 14, fontWeight: '600', color: Colors.text },
-  
   receiptBtn: {
     borderTopWidth: 1,
-    borderTopColor: Colors.border,
-    paddingTop: 16,
-    alignItems: 'center',
   },
-  receiptBtnText: { color: Colors.primary, fontWeight: 'bold', fontSize: 14 },
 });
 
 export default ReservationHistoryView;

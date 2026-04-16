@@ -1,8 +1,11 @@
 import React from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, ScrollView } from 'react-native';
-import { Colors } from '../../constants/Colors';
+import { View, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
+import CustomButton from '../../components/CustomButton';
+import Badge from '../../components/Badge';
+import ScreenContainer from '../../components/ScreenContainer';
+import Typography from '../../components/Typography';
+import { useTheme } from '../../context/ThemeContext';
 
-// Datos de prueba para las plazas (Parking Spots)
 const MOCK_SPOTS = [
   { id: '1', number: 'A-01', isOccupied: false },
   { id: '2', number: 'A-02', isOccupied: true },
@@ -22,82 +25,68 @@ interface ParkingDetailViewProps {
 const ParkingDetailView: React.FC<ParkingDetailViewProps> = ({ 
   parkingName, selectedSpotId, onSelectSpot, onReserve 
 }) => {
+  const { theme } = useTheme();
+
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>{parkingName}</Text>
-        <Text style={styles.subtitle}>Select a spot to reserve</Text>
+    <ScreenContainer withScroll={false} style={{padding: 0}}>
+      <View style={[styles.header, { backgroundColor: theme.background, borderBottomColor: theme.border }]}>
+        <Typography variant="h2">{parkingName}</Typography>
+        <Typography variant="caption">Select a spot to reserve</Typography>
       </View>
 
       <FlatList
         data={MOCK_SPOTS}
-        numColumns={3} // Diseño en cuadrícula de 3 columnas
+        numColumns={3}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.list}
         renderItem={({ item }) => (
           <TouchableOpacity 
             style={[
               styles.spotCard, 
-              item.isOccupied && styles.occupiedSpot,
-              selectedSpotId === item.id && styles.selectedSpot
+              { backgroundColor: theme.background, borderColor: theme.border },
+              item.isOccupied && { backgroundColor: '#FEE2E2', borderColor: theme.danger },
+              selectedSpotId === item.id && { backgroundColor: theme.primary, borderColor: theme.primary }
             ]}
             onPress={() => !item.isOccupied && onSelectSpot(item.id)}
             disabled={item.isOccupied}
           >
-            <Text style={[
-              styles.spotNumber,
-              item.isOccupied && styles.occupiedText,
-              selectedSpotId === item.id && styles.selectedText
-            ]}>
+            <Typography variant="h3" color={item.isOccupied ? theme.danger : selectedSpotId === item.id ? '#FFF' : theme.text}>
               {item.number}
-            </Text>
-            <Text style={styles.statusText}>
-              {item.isOccupied ? 'Full' : 'Free'}
-            </Text>
+            </Typography>
+            <View style={{ marginTop: 4 }}>
+              <Badge 
+                label={item.isOccupied ? 'Full' : 'Free'} 
+                type={item.isOccupied ? 'danger' : 'success'} 
+              />
+            </View>
           </TouchableOpacity>
         )}
       />
 
-      <View style={styles.footer}>
-        <TouchableOpacity 
-          style={[styles.reserveButton, !selectedSpotId && styles.disabledButton]} 
+      <View style={[styles.footer, { backgroundColor: theme.background, borderTopColor: theme.border }]}>
+        <CustomButton
+          title="Reserve Spot"
           onPress={onReserve}
           disabled={!selectedSpotId}
-        >
-          <Text style={styles.reserveButtonText}>Reserve Spot</Text>
-        </TouchableOpacity>
+        />
       </View>
-    </View>
+    </ScreenContainer>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: Colors.lightBackground },
-  header: { padding: 24, backgroundColor: Colors.background, borderBottomWidth: 1, borderBottomColor: Colors.border },
-  title: { fontSize: 24, fontWeight: 'bold', color: Colors.text },
-  subtitle: { fontSize: 16, color: Colors.textSecondary, marginTop: 4 },
+  header: { padding: 24, borderBottomWidth: 1 },
   list: { padding: 16 },
   spotCard: {
     flex: 1,
     margin: 8,
     height: 80,
-    backgroundColor: Colors.background,
     borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 2,
-    borderColor: Colors.border,
   },
-  occupiedSpot: { backgroundColor: '#FEE2E2', borderColor: Colors.danger },
-  selectedSpot: { backgroundColor: Colors.primary, borderColor: Colors.primary },
-  spotNumber: { fontSize: 18, fontWeight: 'bold', color: Colors.text },
-  occupiedText: { color: Colors.danger },
-  selectedText: { color: '#fff' },
-  statusText: { fontSize: 10, color: Colors.textSecondary, marginTop: 4 },
-  footer: { padding: 24, backgroundColor: Colors.background, borderTopWidth: 1, borderTopColor: Colors.border },
-  reserveButton: { backgroundColor: Colors.primary, padding: 18, borderRadius: 12, alignItems: 'center' },
-  disabledButton: { backgroundColor: Colors.border },
-  reserveButtonText: { color: '#fff', fontSize: 16, fontWeight: 'bold' },
+  footer: { padding: 24, borderTopWidth: 1 },
 });
 
 export default ParkingDetailView;

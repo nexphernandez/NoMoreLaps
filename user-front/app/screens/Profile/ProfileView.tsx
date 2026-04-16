@@ -1,7 +1,11 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Colors } from '../../constants/Colors';
+import { View, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import Typography from '../../components/Typography';
+import CustomButton from '../../components/CustomButton';
+import Card from '../../components/Card';
+import ScreenContainer from '../../components/ScreenContainer';
+import Divider from '../../components/Divider';
+import { useTheme } from '../../context/ThemeContext';
 
 interface ProfileViewProps {
   userName: string;
@@ -15,194 +19,153 @@ interface ProfileViewProps {
 }
 
 const ProfileView: React.FC<ProfileViewProps> = ({
-  userName, userEmail,userAvatar, activeReservation, onLogout, onViewHistory, onGoToSanctions, onEditProfile
+  userName, userEmail, userAvatar, activeReservation, onLogout, onViewHistory, onGoToSanctions, onEditProfile
 }) => {
+  const { theme } = useTheme();
+
   return (
-    <SafeAreaView style={styles.container} edges={['bottom']}>
-      <ScrollView contentContainerStyle={styles.scrollWrapper}>
-
-        {/* CABECERA DE USUARIO */}
-        <View style={styles.header}>
-          <View style={styles.avatar}>
-            {userAvatar ? (
-              <Image source={{ uri: userAvatar }} style={styles.avatarImg} />
-            ) : (
-              <Text style={styles.avatarText}>{userName.charAt(0).toUpperCase()}</Text>
-            )}
-          </View>
-          <Text style={styles.name}>{userName}</Text>
-          <Text style={styles.email}>{userEmail}</Text>
-
-          <TouchableOpacity style={styles.editMainBtn} onPress={onEditProfile}>
-            <Text style={{ color: Colors.primary, fontWeight: 'bold' }}>Edit</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* SECCIÓN DE RESERVA ACTIVA */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Current Reservation</Text>
-          {activeReservation ? (
-            <View style={styles.resCard}>
-              <View style={styles.resInfo}>
-                <Text style={styles.resParking}>{activeReservation.parkingName}</Text>
-                <Text style={styles.resSpot}>Spot: {activeReservation.spot}</Text>
-              </View>
-              <View style={styles.resTimer}>
-                <Text style={styles.resTimerText}>{activeReservation.timeRemaining}</Text>
-                <Text style={styles.resTimerLabel}>remaining</Text>
-              </View>
-            </View>
+    <ScreenContainer>
+      {/* CABECERA DE USUARIO */}
+      <View style={styles.header}>
+        <View style={[
+          styles.avatar, 
+          { 
+            backgroundColor: theme.lightBackground,
+            borderWidth: 1,
+            borderColor: theme.border 
+          }
+        ]}>
+          {userAvatar ? (
+            <Image source={{ uri: userAvatar }} style={styles.avatarImg} />
           ) : (
-            <View style={styles.emptyCard}>
-              <Text style={styles.emptyText}>No active reservations found.</Text>
-            </View>
+            <Typography variant="h1" color={theme.primary}>
+              {userName.charAt(0).toUpperCase()}
+            </Typography>
           )}
         </View>
+        <Typography variant="h2" style={{marginTop: 12}}>{userName}</Typography>
+        <Typography variant="caption">{userEmail}</Typography>
 
-        <View style={styles.section}>
-          <TouchableOpacity style={styles.menuItem} onPress={onViewHistory}>
-            <View style={styles.menuIcon}>
-              <Text style={{ fontSize: 20 }}>🕒</Text>
-            </View>
-            <View style={{ flex: 1 }}>
-              <Text style={styles.menuTitle}>Reservation History</Text>
-              <Text style={styles.menuSubtitle}>Check your past activity and receipts</Text>
-            </View>
-            <Text style={styles.arrow}>❯</Text>
-          </TouchableOpacity>
+        <TouchableOpacity style={styles.editMainBtn} onPress={onEditProfile}>
+          <Typography variant="label" color={theme.primary}>Edit Profile</Typography>
+        </TouchableOpacity>
+      </View>
 
-          <TouchableOpacity style={[styles.menuItem, { marginTop: 12 }]} onPress={onGoToSanctions}>
-            <View style={[styles.menuIcon, { backgroundColor: '#FFF1F2' }]}>
-              <Text style={{ fontSize: 20 }}>🚔</Text>
-            </View>
-            <View style={{ flex: 1 }}>
-              <Text style={[styles.menuTitle, { color: Colors.danger }]}>My Sanctions</Text>
-              <Text style={styles.menuSubtitle}>View pending fines and violations</Text>
-            </View>
-            <Text style={styles.arrow}>❯</Text>
-          </TouchableOpacity>
-        </View>
+      <Divider marginVertical={24} />
 
-        {/* BOTÓN DE LOGOUT */}
-        <View style={styles.footer}>
-          <TouchableOpacity style={styles.logoutBtn} onPress={onLogout}>
-            <Text style={styles.logoutText}>Log Out</Text>
-          </TouchableOpacity>
-        </View>
+      {/* SECCIÓN DE RESERVA ACTIVA */}
+      <View style={styles.section}>
+        <Typography variant="label" style={{marginBottom: 12}}>Current Reservation</Typography>
+        {activeReservation ? (
+          <Card style={styles.resCard}>
+            <View style={styles.resInfo}>
+              <Typography variant="h3">{activeReservation.parkingName}</Typography>
+              <Typography variant="caption">Spot: {activeReservation.spot}</Typography>
+            </View>
+            <View style={[styles.resTimer, { backgroundColor: theme.lightBackground, borderColor: theme.border }]}>
+              <Typography variant="h2" color={theme.primary}>{activeReservation.timeRemaining}</Typography>
+              <Typography variant="label">remaining</Typography>
+            </View>
+          </Card>
+        ) : (
+          <Card style={styles.emptyCard}>
+            <Typography variant="caption" style={{textAlign: 'center'}}>No active reservations found.</Typography>
+          </Card>
+        )}
+      </View>
 
-      </ScrollView >
-    </SafeAreaView >
+      <View style={styles.section}>
+        <TouchableOpacity style={[styles.menuItem, { backgroundColor: theme.background, borderColor: theme.border }]} onPress={onViewHistory}>
+          <View style={[styles.menuIcon, { backgroundColor: theme.lightBackground }]}>
+            <Typography style={{ fontSize: 20 }}>🕒</Typography>
+          </View>
+          <View style={{ flex: 1 }}>
+            <Typography variant="h3">Reservation History</Typography>
+            <Typography variant="caption">Check your past activity and receipts</Typography>
+          </View>
+          <Typography variant="h3" color={theme.border}>❯</Typography>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={[styles.menuItem, { marginTop: 12, backgroundColor: theme.background, borderColor: theme.border }]} onPress={onGoToSanctions}>
+          <View style={[styles.menuIcon, { backgroundColor: '#FFF1F2' }]}>
+            <Typography style={{ fontSize: 20 }}>🚔</Typography>
+          </View>
+          <View style={{ flex: 1 }}>
+            <Typography variant="h3" color={theme.danger}>My Sanctions</Typography>
+            <Typography variant="caption">View pending fines and violations</Typography>
+          </View>
+          <Typography variant="h3" color={theme.border}>❯</Typography>
+        </TouchableOpacity>
+      </View>
+
+      {/* BOTÓN DE LOGOUT */}
+      <View style={styles.footer}>
+        <CustomButton
+           title="Log Out"
+           onPress={onLogout}
+           variant="danger"
+        />
+      </View>
+    </ScreenContainer>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: Colors.lightBackground },
-  scrollWrapper: { padding: 24 },
-
-  header: { alignItems: 'center', marginBottom: 40 },
+  header: { alignItems: 'center', marginBottom: 20, position: 'relative' },
   avatar: {
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: Colors.primary,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 16,
-    elevation: 4,
-    shadowColor: Colors.primary,
-    shadowOpacity: 0.3,
-    shadowRadius: 5,
-  },
-  avatarText: { fontSize: 32, fontWeight: 'bold', color: '#fff' },
-  name: { fontSize: 22, fontWeight: 'bold', color: Colors.text },
-  email: { fontSize: 14, color: Colors.textSecondary, marginTop: 4 },
-
-  section: { marginBottom: 32 },
-  sectionTitle: { fontSize: 16, fontWeight: 'bold', color: Colors.text, marginBottom: 16, marginLeft: 4 },
-
-  resCard: {
-    backgroundColor: Colors.background,
-    borderRadius: 16,
-    padding: 20,
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: Colors.border,
     elevation: 2,
+    shadowColor: '#000',
+    shadowOpacity: 0.05,
+    shadowRadius: 5,
+    shadowOffset: { width: 0, height: 2 },
   },
-  resInfo: { flex: 1 },
-  resParking: { fontSize: 18, fontWeight: 'bold', color: Colors.text },
-  resSpot: { fontSize: 14, color: Colors.primary, marginTop: 4, fontWeight: '600' },
-
-  resTimer: {
-    backgroundColor: Colors.lightBackground,
-    padding: 12,
-    borderRadius: 12,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: Colors.border,
-  },
-  resTimerText: { fontSize: 18, fontWeight: 'bold', color: Colors.danger },
-  resTimerLabel: { fontSize: 10, color: Colors.textSecondary, textTransform: 'uppercase' },
-
-  emptyCard: {
-    backgroundColor: Colors.background,
-    borderRadius: 16,
-    padding: 30,
-    alignItems: 'center',
-    borderStyle: 'dashed',
-    borderWidth: 2,
-    borderColor: Colors.border,
-  },
-  emptyText: { color: Colors.textSecondary, fontSize: 14 },
-
-  footer: { marginTop: 20 },
-  logoutBtn: {
-    padding: 18,
-    borderRadius: 12,
-    backgroundColor: '#FFF1F2', // Fondo rojizo suave
-    borderWidth: 1,
-    borderColor: '#FECDD3',
-    alignItems: 'center',
-  },
-  logoutText: { color: Colors.danger, fontWeight: 'bold', fontSize: 16 },
-  menuItem: {
-    backgroundColor: Colors.background,
-    borderRadius: 16,
-    padding: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: Colors.border,
-  },
-  menuIcon: {
-    width: 44,
-    height: 44,
-    borderRadius: 12,
-    backgroundColor: Colors.lightBackground,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 16,
-  },
-  menuTitle: { fontSize: 16, fontWeight: 'bold', color: Colors.text },
-  menuSubtitle: { fontSize: 12, color: Colors.textSecondary, marginTop: 2 },
-  arrow: { color: Colors.border, fontSize: 18, fontWeight: 'bold' },
+  avatarImg: { width: 80, height: 80, borderRadius: 40 },
   editMainBtn: {
     position: 'absolute',
     top: 0,
     right: 0,
     paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 20,
-    backgroundColor: Colors.lightBackground,
+  },
+  section: { marginBottom: 32 },
+  resCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+  },
+  resInfo: { flex: 1 },
+  resTimer: {
+    padding: 10,
+    borderRadius: 12,
+    alignItems: 'center',
     borderWidth: 1,
-    borderColor: Colors.border,
   },
-  avatarImg: {
-    width: 80,
-    height: 80,
-    borderRadius: 40, // Para que sea circular
+  emptyCard: {
+    padding: 30,
+    alignItems: 'center',
+    borderStyle: 'dashed',
+    borderWidth: 1.5,
   },
+  menuItem: {
+    borderRadius: 16,
+    padding: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+  },
+  menuIcon: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 16,
+  },
+  footer: { marginTop: 20 },
 });
 
 export default ProfileView;

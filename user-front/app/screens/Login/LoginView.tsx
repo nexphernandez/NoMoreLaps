@@ -2,9 +2,7 @@ import React from 'react';
 import {
     Text,
     View,
-    TextInput,
     TouchableOpacity,
-    ActivityIndicator,
     KeyboardAvoidingView,
     Platform
 } from 'react-native';
@@ -14,6 +12,8 @@ import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../../navigation/RootNavigator';
 import { Colors } from '../../constants/Colors';
+import CustomButton from '../../components/CustomButton';
+import InputField from '../../components/InputField';
 
 interface LoginViewProps {
     email: string;
@@ -42,10 +42,9 @@ const LoginView: React.FC<LoginViewProps> = ({
                     <Text style={styles.title}>NoMoreLaps</Text>
                     <Text style={styles.subtitle}>Welcome back</Text>
 
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Email address"
-                        placeholderTextColor="#94a3b8"
+                    <InputField
+                        label="Email Address"
+                        placeholder="example@test.com"
                         autoCapitalize="none"
                         autoCorrect={false}
                         value={email}
@@ -53,26 +52,19 @@ const LoginView: React.FC<LoginViewProps> = ({
                         keyboardType="email-address"
                     />
 
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Password"
-                        placeholderTextColor="#94a3b8"
+                    <InputField
+                        label="Password"
+                        placeholder="••••••••"
                         secureTextEntry
                         value={password}
                         onChangeText={setPassword}
                     />
 
-                    <TouchableOpacity
-                        style={styles.button}
+                    <CustomButton
+                        title="Sign In"
                         onPress={onLogin}
-                        disabled={loading}
-                    >
-                        {loading ? (
-                            <ActivityIndicator color="#fff" />
-                        ) : (
-                            <Text style={styles.buttonText}>Sign In</Text>
-                        )}
-                    </TouchableOpacity>
+                        loading={loading}
+                    />
                     <TouchableOpacity style={styles.footerLink} onPress={goToHome}>
                         <Text style={styles.footerTextSecondary}>
                             Continue as guest
