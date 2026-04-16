@@ -1,31 +1,41 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors } from '../../constants/Colors';
 
 interface ProfileViewProps {
   userName: string;
   userEmail: string;
+  userAvatar: string | null;
   activeReservation: { parkingName: string; spot: string; timeRemaining: string } | null;
   onLogout: () => void;
   onViewHistory: () => void;
   onGoToSanctions: () => void;
+  onEditProfile: () => void;
 }
 
-const ProfileView: React.FC<ProfileViewProps> = ({ 
-  userName, userEmail, activeReservation, onLogout, onViewHistory, onGoToSanctions 
+const ProfileView: React.FC<ProfileViewProps> = ({
+  userName, userEmail,userAvatar, activeReservation, onLogout, onViewHistory, onGoToSanctions, onEditProfile
 }) => {
   return (
     <SafeAreaView style={styles.container} edges={['bottom']}>
       <ScrollView contentContainerStyle={styles.scrollWrapper}>
-        
+
         {/* CABECERA DE USUARIO */}
         <View style={styles.header}>
           <View style={styles.avatar}>
-            <Text style={styles.avatarText}>{userName.charAt(0).toUpperCase()}</Text>
+            {userAvatar ? (
+              <Image source={{ uri: userAvatar }} style={styles.avatarImg} />
+            ) : (
+              <Text style={styles.avatarText}>{userName.charAt(0).toUpperCase()}</Text>
+            )}
           </View>
           <Text style={styles.name}>{userName}</Text>
           <Text style={styles.email}>{userEmail}</Text>
+
+          <TouchableOpacity style={styles.editMainBtn} onPress={onEditProfile}>
+            <Text style={{ color: Colors.primary, fontWeight: 'bold' }}>Edit</Text>
+          </TouchableOpacity>
         </View>
 
         {/* SECCIÓN DE RESERVA ACTIVA */}
@@ -49,10 +59,10 @@ const ProfileView: React.FC<ProfileViewProps> = ({
           )}
         </View>
 
-          <View style={styles.section}>
+        <View style={styles.section}>
           <TouchableOpacity style={styles.menuItem} onPress={onViewHistory}>
             <View style={styles.menuIcon}>
-              <Text style={{fontSize: 20}}>🕒</Text>
+              <Text style={{ fontSize: 20 }}>🕒</Text>
             </View>
             <View style={{ flex: 1 }}>
               <Text style={styles.menuTitle}>Reservation History</Text>
@@ -63,7 +73,7 @@ const ProfileView: React.FC<ProfileViewProps> = ({
 
           <TouchableOpacity style={[styles.menuItem, { marginTop: 12 }]} onPress={onGoToSanctions}>
             <View style={[styles.menuIcon, { backgroundColor: '#FFF1F2' }]}>
-              <Text style={{fontSize: 20}}>🚔</Text>
+              <Text style={{ fontSize: 20 }}>🚔</Text>
             </View>
             <View style={{ flex: 1 }}>
               <Text style={[styles.menuTitle, { color: Colors.danger }]}>My Sanctions</Text>
@@ -80,22 +90,22 @@ const ProfileView: React.FC<ProfileViewProps> = ({
           </TouchableOpacity>
         </View>
 
-      </ScrollView>
-    </SafeAreaView>
+      </ScrollView >
+    </SafeAreaView >
   );
 };
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.lightBackground },
   scrollWrapper: { padding: 24 },
-  
+
   header: { alignItems: 'center', marginBottom: 40 },
-  avatar: { 
-    width: 80, 
-    height: 80, 
-    borderRadius: 40, 
-    backgroundColor: Colors.primary, 
-    justifyContent: 'center', 
+  avatar: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: Colors.primary,
+    justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 16,
     elevation: 4,
@@ -109,7 +119,7 @@ const styles = StyleSheet.create({
 
   section: { marginBottom: 32 },
   sectionTitle: { fontSize: 16, fontWeight: 'bold', color: Colors.text, marginBottom: 16, marginLeft: 4 },
-  
+
   resCard: {
     backgroundColor: Colors.background,
     borderRadius: 16,
@@ -123,11 +133,11 @@ const styles = StyleSheet.create({
   resInfo: { flex: 1 },
   resParking: { fontSize: 18, fontWeight: 'bold', color: Colors.text },
   resSpot: { fontSize: 14, color: Colors.primary, marginTop: 4, fontWeight: '600' },
-  
-  resTimer: { 
-    backgroundColor: Colors.lightBackground, 
-    padding: 12, 
-    borderRadius: 12, 
+
+  resTimer: {
+    backgroundColor: Colors.lightBackground,
+    padding: 12,
+    borderRadius: 12,
     alignItems: 'center',
     borderWidth: 1,
     borderColor: Colors.border,
@@ -177,6 +187,22 @@ const styles = StyleSheet.create({
   menuTitle: { fontSize: 16, fontWeight: 'bold', color: Colors.text },
   menuSubtitle: { fontSize: 12, color: Colors.textSecondary, marginTop: 2 },
   arrow: { color: Colors.border, fontSize: 18, fontWeight: 'bold' },
+  editMainBtn: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 20,
+    backgroundColor: Colors.lightBackground,
+    borderWidth: 1,
+    borderColor: Colors.border,
+  },
+  avatarImg: {
+    width: 80,
+    height: 80,
+    borderRadius: 40, // Para que sea circular
+  },
 });
 
 export default ProfileView;

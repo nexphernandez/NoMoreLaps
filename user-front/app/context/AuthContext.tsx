@@ -2,14 +2,24 @@ import React, { createContext, useState, useContext, useEffect } from 'react';
 import * as SecureStore from 'expo-secure-store';
 import authService, { LoginData } from '../services/authService';
 
+
+export interface UserData {
+  name: string;
+  email: string;
+  phone: string;
+  avatar?: string;
+}
+
 /**
  * Interface to describe the 'cloud' of data we are sharing.
  */
 interface AuthContextType {
   userToken: string | null;
+  user: UserData | null;
   isLoading: boolean;
   login: (token: string) => Promise<void>;
   logout: () => Promise<void>;
+  updateUser: (data: Partial<UserData>) => void;
 }
 
 // 1. Create the Context (the container for the cloud)
@@ -19,7 +29,14 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [userToken, setUserToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-
+  const [user, setUser] = useState<UserData | null>({
+    name: 'John Doe',
+    email: 'user@test.com',
+    phone: '+34 600 000 000'
+  });
+  const updateUser = (newData: Partial<UserData>) => {
+    setUser(prev => prev ? { ...prev, ...newData } : null);
+  };
   useEffect(() => {
     /**
      * When the app starts, check if we already have a token
@@ -57,7 +74,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <AuthContext.Provider value={{ userToken, isLoading, login, logout }}>
+    <AuthContext.Provider value={{ userToken,user, isLoading, login, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
   );

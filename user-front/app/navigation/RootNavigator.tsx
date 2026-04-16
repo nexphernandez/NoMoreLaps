@@ -8,6 +8,7 @@ import ParkingDetailScreen from '../screens/ParkingDetail/ParkingDetailScreen';
 import ProfileScreen from '../screens/Profile/ProfileScreen';
 import ReservationHistoryScreen from '../screens/ReservationHistory/ReservationHistoryScreen';
 import SanctionsScreen from '../screens/Sanctions/SanctionsScreen';
+import EditProfileScreen from '../screens/EditProfile/EditProfileScreen';
 
 export type RootStackParamList = {
   Home: undefined;
@@ -17,6 +18,7 @@ export type RootStackParamList = {
   Profile: undefined;
   ReservationHistory: undefined;
   Sanctions: undefined;
+  EditProfile: undefined;
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -65,6 +67,11 @@ const RootNavigator = () => {
         name="Sanctions"
         component={SanctionsScreen}
         options={{ title: 'My Sanctions' }}
+      />
+      <Stack.Screen
+        name="EditProfile"
+        component={EditProfileScreen}
+        options={{ title: 'Edit Profile' }}
       />
     </Stack.Navigator>
   );

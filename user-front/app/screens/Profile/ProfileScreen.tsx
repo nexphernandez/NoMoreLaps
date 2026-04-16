@@ -6,7 +6,7 @@ import { RootStackParamList } from '../../navigation/RootNavigator';
 import ProfileView from './ProfileView';
 
 const ProfileScreen = () => {
-  const { logout } = useAuth();
+  const {user, logout } = useAuth();
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
 
   const handleLogout = async () => {
@@ -24,10 +24,15 @@ const ProfileScreen = () => {
     navigation.navigate('Sanctions');
   }
 
+  const handleEditProfile = () => {
+    navigation.navigate('EditProfile');
+  };
+
   return (
     <ProfileView
-      userName="John Doe" 
-      userEmail="john.doe@example.com"
+      userName={user?.name || ''}
+      userEmail={user?.email || ''}
+      userAvatar={user?.avatar || null}
       activeReservation={{
         parkingName: 'Plaza Mayor Parking',
         spot: 'A-12',
@@ -36,6 +41,7 @@ const ProfileScreen = () => {
       onLogout={handleLogout}
       onViewHistory={handleViewHistory}
       onGoToSanctions={handleGoToSanctions}
+      onEditProfile={handleEditProfile}
     />
   );
 };
