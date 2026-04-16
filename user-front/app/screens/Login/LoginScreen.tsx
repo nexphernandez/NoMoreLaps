@@ -4,28 +4,39 @@ import { useAuth } from '../../context/AuthContext';
 import LoginView from './LoginView';
 
 
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { RootStackParamList } from '../../navigation/RootNavigator';
+
 const LoginScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-
   const { login } = useAuth();
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
 
   const handleLogin = async () => {
-    if (!email || !password) {
+    const cleanEmail = email.trim().toLowerCase();
+    const cleanPassword = password.trim();
+
+    if (!cleanEmail || !cleanPassword) {
       Alert.alert('Error', 'Please fill all fields');
       return;
     }
 
     setLoading(true);
-    try {
-      await login({ email, password });
-      Alert.alert('Success', 'You are logged in!');
-    } catch (error: any) {
-      Alert.alert('Login Failed', error.message);
-    } finally {
+    setTimeout(async () => {
+      if (cleanEmail === 'user@test.com' && cleanPassword === '123456') {
+        await login('mock-token-123');
+        navigation.replace('Home');
+      } else {
+        Alert.alert(
+          'Login Failed', 
+          'Invalid credentials.\n\nHint: user@test.com / 123456'
+        );
+      }
       setLoading(false);
-    }
+    }, 800);
   };
 
   return (

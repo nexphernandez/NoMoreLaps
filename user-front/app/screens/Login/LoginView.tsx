@@ -46,9 +46,10 @@ const LoginView: React.FC<LoginViewProps> = ({
                         style={styles.input}
                         placeholder="Email address"
                         placeholderTextColor="#94a3b8"
+                        autoCapitalize="none"
+                        autoCorrect={false}
                         value={email}
                         onChangeText={setEmail}
-                        autoCapitalize="none"
                         keyboardType="email-address"
                     />
 

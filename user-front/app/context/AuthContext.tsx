@@ -8,7 +8,7 @@ import authService, { LoginData } from '../services/authService';
 interface AuthContextType {
   userToken: string | null;
   isLoading: boolean;
-  login: (data: LoginData) => Promise<void>;
+  login: (token: string) => Promise<void>;
   logout: () => Promise<void>;
 }
 
@@ -38,15 +38,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     loadToken();
   }, []);
 
-  const login = async (data: LoginData) => {
+  const login = async (token: string) => {
     try {
-      const response = await authService.login(data);
-      // Save the token locally on the phone (persistence)
-      await SecureStore.setItemAsync('userToken', response.token);
-      // Update our state so the whole app knows we are logged in
-      setUserToken(response.token);
+      await SecureStore.setItemAsync('userToken', token);
+      setUserToken(token);
     } catch (e) {
-      throw e;
+      console.error('Error al iniciar sesión:', e);
     }
   };
 

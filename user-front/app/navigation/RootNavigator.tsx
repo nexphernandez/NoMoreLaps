@@ -5,12 +5,13 @@ import LoginScreen from '../screens/Login/LoginScreen';
 import RegisterScreen from '../screens/Register/RegisterScreen';
 import { Colors } from '../constants/Colors';
 import ParkingDetailScreen from '../screens/ParkingDetail/ParkingDetailScreen';
-
+import ProfileScreen from '../screens/Profile/ProfileScreen';
 export type RootStackParamList = {
   Home: undefined;
   Login: undefined;
   Register: undefined;
   ParkingDetail: { parkingId: string };
+  Profile: undefined;
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -44,6 +45,11 @@ const RootNavigator = () => {
         name="ParkingDetail"
         component={ParkingDetailScreen}
         options={{ title: 'Parking Details' }}
+      />
+      <Stack.Screen
+        name="Profile"
+        component={ProfileScreen}
+        options={{ title: 'My Profile' }}
       />
     </Stack.Navigator>
   );

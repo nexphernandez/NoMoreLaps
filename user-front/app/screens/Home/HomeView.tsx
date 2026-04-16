@@ -13,9 +13,10 @@ const MOCK_PARKINGS = [
 interface HomeViewProps {
   onSelectParking: (id: string) => void;
   onGoToProfile: () => void;
+  isLogged: boolean;
 }
 
-const HomeView: React.FC<HomeViewProps> = ({ onSelectParking, onGoToProfile }) => {
+const HomeView: React.FC<HomeViewProps> = ({ onSelectParking, onGoToProfile, isLogged }) => {
   const [viewMode, setViewMode] = useState<'list' | 'map'>('map');
   const [selectedParking, setSelectedParking] = useState<any>(null); // Estado para la ficha inferior
 
@@ -33,7 +34,7 @@ const HomeView: React.FC<HomeViewProps> = ({ onSelectParking, onGoToProfile }) =
       <View style={styles.header}>
         <Text style={styles.logo}>NoMoreLaps</Text>
         <TouchableOpacity onPress={onGoToProfile} style={styles.profileIcon}>
-           <Text style={styles.profileText}>Sign in</Text>
+           <Text style={styles.profileText}>{isLogged ? 'Profile' : 'Sign in'}</Text>
         </TouchableOpacity>
       </View>
 

@@ -13,7 +13,21 @@ const HomeScreen = () => {
     navigation.navigate('ParkingDetail', { parkingId: id });
   };
 
-  return <HomeView onSelectParking={handleSelectParking} onGoToProfile={() => navigation.navigate('Login')} />;
+  const handleGoToProfile = () => {
+    if (userToken) {
+      navigation.navigate('Profile');
+    } else {
+      navigation.navigate('Login');
+    }
+  };
+
+  return (
+    <HomeView 
+      onSelectParking={handleSelectParking} 
+      onGoToProfile={handleGoToProfile} 
+      isLogged={!!userToken}
+    />
+  );
 };
 
 export default HomeScreen;
