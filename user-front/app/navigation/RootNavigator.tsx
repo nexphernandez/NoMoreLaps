@@ -7,6 +7,8 @@ import { Colors } from '../constants/Colors';
 import ParkingDetailScreen from '../screens/ParkingDetail/ParkingDetailScreen';
 import ProfileScreen from '../screens/Profile/ProfileScreen';
 import ReservationHistoryScreen from '../screens/ReservationHistory/ReservationHistoryScreen';
+import SanctionsScreen from '../screens/Sanctions/SanctionsScreen';
+
 export type RootStackParamList = {
   Home: undefined;
   Login: undefined;
@@ -14,6 +16,7 @@ export type RootStackParamList = {
   ParkingDetail: { parkingId: string };
   Profile: undefined;
   ReservationHistory: undefined;
+  Sanctions: undefined;
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -57,6 +60,11 @@ const RootNavigator = () => {
         name="ReservationHistory"
         component={ReservationHistoryScreen}
         options={{ title: 'Activity History' }}
+      />
+      <Stack.Screen
+        name="Sanctions"
+        component={SanctionsScreen}
+        options={{ title: 'My Sanctions' }}
       />
     </Stack.Navigator>
   );

@@ -19,19 +19,25 @@ const ProfileScreen = () => {
   const handleViewHistory = () => {
     navigation.navigate('ReservationHistory');
   }
-    return (
-      <ProfileView
-        userName="John Doe" 
-        userEmail="john.doe@example.com"
-        activeReservation={{
-          parkingName: 'Plaza Mayor Parking',
-          spot: 'A-12',
-          timeRemaining: '01:45:00'
-        }}
-        onLogout={handleLogout}
-        onViewHistory={handleViewHistory}
-      />
-    );
-  };
+
+  const handleGoToSanctions = () => {
+    navigation.navigate('Sanctions');
+  }
+
+  return (
+    <ProfileView
+      userName="John Doe" 
+      userEmail="john.doe@example.com"
+      activeReservation={{
+        parkingName: 'Plaza Mayor Parking',
+        spot: 'A-12',
+        timeRemaining: '01:45:00'
+      }}
+      onLogout={handleLogout}
+      onViewHistory={handleViewHistory}
+      onGoToSanctions={handleGoToSanctions}
+    />
+  );
+};
 
   export default ProfileScreen;

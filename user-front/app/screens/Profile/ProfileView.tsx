@@ -9,10 +9,11 @@ interface ProfileViewProps {
   activeReservation: { parkingName: string; spot: string; timeRemaining: string } | null;
   onLogout: () => void;
   onViewHistory: () => void;
+  onGoToSanctions: () => void;
 }
 
 const ProfileView: React.FC<ProfileViewProps> = ({ 
-  userName, userEmail, activeReservation, onLogout,onViewHistory
+  userName, userEmail, activeReservation, onLogout, onViewHistory, onGoToSanctions 
 }) => {
   return (
     <SafeAreaView style={styles.container} edges={['bottom']}>
@@ -56,6 +57,17 @@ const ProfileView: React.FC<ProfileViewProps> = ({
             <View style={{ flex: 1 }}>
               <Text style={styles.menuTitle}>Reservation History</Text>
               <Text style={styles.menuSubtitle}>Check your past activity and receipts</Text>
+            </View>
+            <Text style={styles.arrow}>❯</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={[styles.menuItem, { marginTop: 12 }]} onPress={onGoToSanctions}>
+            <View style={[styles.menuIcon, { backgroundColor: '#FFF1F2' }]}>
+              <Text style={{fontSize: 20}}>🚔</Text>
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={[styles.menuTitle, { color: Colors.danger }]}>My Sanctions</Text>
+              <Text style={styles.menuSubtitle}>View pending fines and violations</Text>
             </View>
             <Text style={styles.arrow}>❯</Text>
           </TouchableOpacity>
