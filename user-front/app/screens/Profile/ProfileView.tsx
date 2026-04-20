@@ -12,15 +12,18 @@ interface ProfileViewProps {
   userEmail: string;
   userAvatar: string | null;
   activeReservation: { parkingName: string; spot: string; timeRemaining: string } | null;
+  themeMode: 'auto' | 'light' | 'dark';
+  onThemeChange: (mode: 'auto' | 'light' | 'dark') => void;
   onLogout: () => void;
   onViewHistory: () => void;
   onGoToSanctions: () => void;
   onEditProfile: () => void;
   onCalendarSync: () => void;
+  onPaymentMethods: () => void;
 }
 
 const ProfileView: React.FC<ProfileViewProps> = ({
-  userName, userEmail, userAvatar, activeReservation, onLogout, onViewHistory, onGoToSanctions, onEditProfile,onCalendarSync
+  userName, userEmail, userAvatar, activeReservation, themeMode, onThemeChange, onLogout, onViewHistory, onGoToSanctions, onEditProfile, onCalendarSync, onPaymentMethods
 }) => {
   const { theme } = useTheme();
 
@@ -50,6 +53,32 @@ const ProfileView: React.FC<ProfileViewProps> = ({
         <TouchableOpacity style={styles.editMainBtn} onPress={onEditProfile}>
           <Typography variant="label" color={theme.primary}>Edit Profile</Typography>
         </TouchableOpacity>
+      </View>
+
+      <View style={styles.section}>
+        <Typography variant="label" style={{marginBottom: 12}}>Appearance</Typography>
+        <View style={styles.themeToggleContainer}>
+          {(['auto', 'light', 'dark'] as const).map((mode) => (
+            <TouchableOpacity
+              key={mode}
+              style={[
+                styles.themeBtn,
+                { 
+                  backgroundColor: themeMode === mode ? theme.primary : theme.lightBackground,
+                  borderColor: theme.border 
+                }
+              ]}
+              onPress={() => onThemeChange(mode)}
+            >
+              <Typography 
+                variant="label" 
+                color={themeMode === mode ? '#FFF' : theme.text}
+              >
+                {mode.toUpperCase()}
+              </Typography>
+            </TouchableOpacity>
+          ))}
+        </View>
       </View>
 
       <Divider marginVertical={24} />
@@ -105,6 +134,17 @@ const ProfileView: React.FC<ProfileViewProps> = ({
           <View style={{ flex: 1 }}>
             <Typography variant="h3" color={theme.primary}>Calendar Sync</Typography>
             <Typography variant="caption">Link your calendar for smart suggestions</Typography>
+          </View>
+          <Typography variant="h3" color={theme.border}>❯</Typography>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={[styles.menuItem, { marginTop: 12, backgroundColor: theme.background, borderColor: theme.border }]} onPress={onPaymentMethods}>
+          <View style={[styles.menuIcon, { backgroundColor: '#F0FDF4' }]}>
+            <Typography style={{ fontSize: 20 }}>💳</Typography>
+          </View>
+          <View style={{ flex: 1 }}>
+            <Typography variant="h3" color={theme.primary}>Payment Methods</Typography>
+            <Typography variant="caption">Manage your cards and fine payments</Typography>
           </View>
           <Typography variant="h3" color={theme.border}>❯</Typography>
         </TouchableOpacity>
@@ -178,6 +218,17 @@ const styles = StyleSheet.create({
     marginRight: 16,
   },
   footer: { marginTop: 20 },
+  themeToggleContainer: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  themeBtn: {
+    flex: 1,
+    paddingVertical: 10,
+    borderRadius: 12,
+    alignItems: 'center',
+    borderWidth: 1,
+  },
 });
 
 export default ProfileView;

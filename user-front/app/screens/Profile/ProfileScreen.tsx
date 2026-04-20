@@ -1,12 +1,14 @@
 import React from 'react';
 import { useAuth } from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../../navigation/RootNavigator';
 import ProfileView from './ProfileView';
 
 const ProfileScreen = () => {
-  const {user, logout } = useAuth();
+  const { user, logout } = useAuth();
+  const { themeMode, setThemeMode } = useTheme();
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
 
   const handleLogout = async () => {
@@ -16,28 +18,34 @@ const ProfileScreen = () => {
       routes: [{ name: 'Home' }],
     });
   };
+
   const handleViewHistory = () => {
     navigation.navigate('ReservationHistory');
-  }
+  };
 
   const handleGoToSanctions = () => {
     navigation.navigate('Sanctions');
-  }
+  };
 
   const handleEditProfile = () => {
     navigation.navigate('EditProfile');
   };
 
   const handleCalendarSync = () => {
-    // @ts-ignore - We will add this to the navigator next
     navigation.navigate('CalendarSync');
+  };
+
+  const handlePaymentMethods = () => {
+    navigation.navigate('PaymentMethods');
   };
 
   return (
     <ProfileView
-      userName={user?.name || ''}
-      userEmail={user?.email || ''}
+      userName={user?.name || 'Guest User'}
+      userEmail={user?.email || 'guest@nomorelaps.com'}
       userAvatar={user?.avatar || null}
+      themeMode={themeMode}
+      onThemeChange={setThemeMode}
       activeReservation={{
         parkingName: 'Plaza Mayor Parking',
         spot: 'A-12',
@@ -47,9 +55,10 @@ const ProfileScreen = () => {
       onViewHistory={handleViewHistory}
       onGoToSanctions={handleGoToSanctions}
       onCalendarSync={handleCalendarSync}
+      onPaymentMethods={handlePaymentMethods}
       onEditProfile={handleEditProfile}
     />
   );
 };
 
-  export default ProfileScreen;
+export default ProfileScreen;

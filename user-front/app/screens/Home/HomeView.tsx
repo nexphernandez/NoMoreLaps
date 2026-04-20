@@ -23,6 +23,7 @@ const HomeView: React.FC<HomeViewProps> = ({ onSelectParking, onGoToProfile, isL
   const { theme } = useTheme();
   const [viewMode, setViewMode] = useState<'list' | 'map'>('map');
   const [selectedParking, setSelectedParking] = useState<any>(null);
+  const [showAdAlert, setShowAdAlert] = useState(true);
 
   const openInGoogleMaps = (lat: number, lng: number) => {
     const url = Platform.select({
@@ -34,6 +35,19 @@ const HomeView: React.FC<HomeViewProps> = ({ onSelectParking, onGoToProfile, isL
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.lightBackground }]} edges={['top', 'bottom']}>
+      {/* AD ALERT MODAL - Contextual Ad */}
+      {showAdAlert && viewMode === 'map' && (
+        <View style={[styles.adAlert, { backgroundColor: theme.primary }]}>
+          <View style={{ flex: 1 }}>
+            <Typography variant="label" color="#FFF" style={{ fontWeight: 'bold' }}>🎁 NEARBY OFFER</Typography>
+            <Typography variant="body" color="#FFF">20% discount at 'Star Coffee' next to Sol Parking!</Typography>
+          </View>
+          <TouchableOpacity onPress={() => setShowAdAlert(false)} style={styles.adClose}>
+            <Typography variant="h3" color="#FFF">✕</Typography>
+          </TouchableOpacity>
+        </View>
+      )}
+
       {/* HEADER */}
       <View style={[styles.header, { backgroundColor: theme.background, borderBottomColor: theme.border }]}>
         <Typography variant="h2" color={theme.primary}>NoMoreLaps</Typography>
@@ -50,6 +64,15 @@ const HomeView: React.FC<HomeViewProps> = ({ onSelectParking, onGoToProfile, isL
             data={MOCK_PARKINGS}
             keyExtractor={(item) => item.id}
             contentContainerStyle={styles.list}
+            ListHeaderComponent={() => (
+              <TouchableOpacity style={[styles.sponsoredBanner, { backgroundColor: theme.background, borderColor: theme.primary }]}>
+                <View style={styles.sponsoredBadge}>
+                  <Typography variant="label" color="#FFF">SPONSORED</Typography>
+                </View>
+                <Typography variant="h3">Charge & Park</Typography>
+                <Typography variant="caption">Free electric charging with your reservation today at selected spots.</Typography>
+              </TouchableOpacity>
+            )}
             renderItem={({ item }) => (
               <ParkingCard
                 name={item.name}
@@ -172,6 +195,41 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     elevation: 5,
     zIndex: 50,
+  },
+  adAlert: {
+    padding: 16,
+    margin: 16,
+    borderRadius: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    position: 'absolute',
+    top: 70,
+    left: 0,
+    right: 0,
+    zIndex: 1000,
+    elevation: 10,
+  },
+  adClose: {
+    padding: 8,
+    marginLeft: 8,
+  },
+  sponsoredBanner: {
+    padding: 24,
+    borderRadius: 20,
+    borderWidth: 2,
+    borderStyle: 'dashed',
+    marginBottom: 24,
+    position: 'relative',
+    overflow: 'hidden',
+  },
+  sponsoredBadge: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    backgroundColor: '#3B82F6',
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderBottomLeftRadius: 12,
   },
 });
 
