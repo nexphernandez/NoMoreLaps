@@ -16,10 +16,11 @@ interface ProfileViewProps {
   onViewHistory: () => void;
   onGoToSanctions: () => void;
   onEditProfile: () => void;
+  onCalendarSync: () => void;
 }
 
 const ProfileView: React.FC<ProfileViewProps> = ({
-  userName, userEmail, userAvatar, activeReservation, onLogout, onViewHistory, onGoToSanctions, onEditProfile
+  userName, userEmail, userAvatar, activeReservation, onLogout, onViewHistory, onGoToSanctions, onEditProfile,onCalendarSync
 }) => {
   const { theme } = useTheme();
 
@@ -93,6 +94,17 @@ const ProfileView: React.FC<ProfileViewProps> = ({
           <View style={{ flex: 1 }}>
             <Typography variant="h3" color={theme.danger}>My Sanctions</Typography>
             <Typography variant="caption">View pending fines and violations</Typography>
+          </View>
+          <Typography variant="h3" color={theme.border}>❯</Typography>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={[styles.menuItem, { marginTop: 12, backgroundColor: theme.background, borderColor: theme.border }]} onPress={onCalendarSync}>
+          <View style={[styles.menuIcon, { backgroundColor: '#E0F2FE' }]}>
+            <Typography style={{ fontSize: 20 }}>📅</Typography>
+          </View>
+          <View style={{ flex: 1 }}>
+            <Typography variant="h3" color={theme.primary}>Calendar Sync</Typography>
+            <Typography variant="caption">Link your calendar for smart suggestions</Typography>
           </View>
           <Typography variant="h3" color={theme.border}>❯</Typography>
         </TouchableOpacity>

@@ -28,6 +28,11 @@ const ProfileScreen = () => {
     navigation.navigate('EditProfile');
   };
 
+  const handleCalendarSync = () => {
+    // @ts-ignore - We will add this to the navigator next
+    navigation.navigate('CalendarSync');
+  };
+
   return (
     <ProfileView
       userName={user?.name || ''}
@@ -41,6 +46,7 @@ const ProfileScreen = () => {
       onLogout={handleLogout}
       onViewHistory={handleViewHistory}
       onGoToSanctions={handleGoToSanctions}
+      onCalendarSync={handleCalendarSync}
       onEditProfile={handleEditProfile}
     />
   );

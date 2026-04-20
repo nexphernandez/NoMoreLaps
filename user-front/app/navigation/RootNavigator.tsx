@@ -9,6 +9,7 @@ import ProfileScreen from '../screens/Profile/ProfileScreen';
 import ReservationHistoryScreen from '../screens/ReservationHistory/ReservationHistoryScreen';
 import SanctionsScreen from '../screens/Sanctions/SanctionsScreen';
 import EditProfileScreen from '../screens/EditProfile/EditProfileScreen';
+import CalendarSyncScreen from '../screens/CalendarSync/CalendarSyncScreen';
 
 export type RootStackParamList = {
   Home: undefined;
@@ -19,6 +20,7 @@ export type RootStackParamList = {
   ReservationHistory: undefined;
   Sanctions: undefined;
   EditProfile: undefined;
+  CalendarSync: undefined;
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -74,6 +76,11 @@ const RootNavigator = () => {
         name="EditProfile"
         component={EditProfileScreen}
         options={{ title: 'Edit Profile' }}
+      />
+      <Stack.Screen
+        name="CalendarSync"
+        component={CalendarSyncScreen}
+        options={{ title: 'Smart Calendar' }}
       />
     </Stack.Navigator>
   );
