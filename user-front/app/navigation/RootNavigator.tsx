@@ -12,6 +12,7 @@ import SanctionsScreen from '../screens/Sanctions/SanctionsScreen';
 import EditProfileScreen from '../screens/EditProfile/EditProfileScreen';
 import CalendarSyncScreen from '../screens/CalendarSync/CalendarSyncScreen';
 import PaymentMethodsScreen from '../screens/PaymentMethods/PaymentMethodsScreen';
+import ReservationConfirmScreen from '../screens/ReservationConfirm/ReservationConfirmScreen';
 
 export type RootStackParamList = {
   Home: undefined;
@@ -24,6 +25,7 @@ export type RootStackParamList = {
   EditProfile: undefined;
   CalendarSync: undefined;
   PaymentMethods: undefined;
+  ReservationConfirm: undefined;
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -92,6 +94,11 @@ const RootNavigator = () => {
             name="PaymentMethods"
             component={PaymentMethodsScreen}
             options={{ title: 'Payment Methods' }}
+          />
+          <Stack.Screen
+            name="ReservationConfirm"
+            component={ReservationConfirmScreen}
+            options={{ title: 'Confirmation' }}
           />
         </>
       )}

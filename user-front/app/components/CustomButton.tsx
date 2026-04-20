@@ -1,5 +1,5 @@
 import React from 'react';
-import { TouchableOpacity, Text, StyleSheet, ActivityIndicator } from 'react-native';
+import { TouchableOpacity, Text, StyleSheet, ActivityIndicator, ViewStyle, StyleProp } from 'react-native';
 import { useTheme } from '../context/ThemeContext';
 
 interface ButtonProps {
@@ -8,9 +8,10 @@ interface ButtonProps {
   loading?: boolean;
   disabled?: boolean;
   variant?: 'primary' | 'danger' | 'outline' | 'success';
+  style?: StyleProp<ViewStyle>;
 }
 
-const CustomButton: React.FC<ButtonProps> = ({ title, onPress, loading, disabled, variant = 'primary' }) => {
+const CustomButton: React.FC<ButtonProps> = ({ title, onPress, loading, disabled, variant = 'primary', style }) => {
   const { theme } = useTheme();
 
   const getVariantStyle = () => {
@@ -33,7 +34,8 @@ const CustomButton: React.FC<ButtonProps> = ({ title, onPress, loading, disabled
       style={[
         styles.btn, 
         { backgroundColor: currentVariant.bg, borderColor: currentVariant.border }, 
-        disabled && { opacity: 0.5 }
+        disabled && { opacity: 0.5 },
+        style
       ]} 
       onPress={onPress}
       disabled={disabled || loading}

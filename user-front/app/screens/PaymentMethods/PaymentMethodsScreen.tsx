@@ -1,36 +1,30 @@
-import React, { useState } from 'react';
-import PaymentMethodsView, { PaymentMethod } from './PaymentMethodsView';
+import React from 'react';
+import PaymentMethodsView from './PaymentMethodsView';
+import { usePayment, PaymentMethod } from '../../context/PaymentContext';
 import { Alert } from 'react-native';
 
-const MOCK_METHODS: PaymentMethod[] = [
-  { id: '1', brand: 'Visa', last4: '4242', expiry: '12/26', isDefault: true },
-  { id: '2', brand: 'Mastercard', last4: '8888', expiry: '05/25', isDefault: false },
-];
-
 const PaymentMethodsScreen = () => {
-  const [methods, setMethods] = useState<PaymentMethod[]>(MOCK_METHODS);
+  const { methods, addMethod, deleteMethod, setDefaultMethod } = usePayment();
 
   const handleAddMethod = () => {
-    Alert.alert('Coming Soon', 'This feature will allow you to scan your card.');
-  };
-
-  const handleDeleteMethod = (id: string) => {
-    setMethods(prev => prev.filter(m => m.id !== id));
-  };
-
-  const handleSetDefault = (id: string) => {
-    setMethods(prev => prev.map(m => ({
-      ...m,
-      isDefault: m.id === id
-    })));
+    // Simulamos añadir una tarjeta nueva para la demo
+    const newCard: PaymentMethod = {
+      id: Math.random().toString(),
+      brand: 'Mastercard',
+      last4: '1234',
+      expiry: '08/27',
+      isDefault: methods.length === 0
+    };
+    addMethod(newCard);
+    Alert.alert('Card Added', 'A new test card has been added to your wallet.');
   };
 
   return (
     <PaymentMethodsView
       methods={methods}
       onAddMethod={handleAddMethod}
-      onDeleteMethod={handleDeleteMethod}
-      onSetDefault={handleSetDefault}
+      onDeleteMethod={deleteMethod}
+      onSetDefault={setDefaultMethod}
     />
   );
 };

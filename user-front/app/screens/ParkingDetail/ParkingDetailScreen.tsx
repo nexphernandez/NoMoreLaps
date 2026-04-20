@@ -29,10 +29,8 @@ const ParkingDetailScreen = () => {
         ]
       );
     } else {
-      Alert.alert(
-        'Success!',
-        `Spot ${selectedSpotId} in Parking Area ${parkingId} has been successfully reserved.`
-      );
+      // @ts-ignore
+      navigation.navigate('ReservationConfirm');
     }
   };
 
