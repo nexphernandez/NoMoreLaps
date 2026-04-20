@@ -8,7 +8,7 @@ import * as SecureStore from 'expo-secure-store';
  * - For Android Emulator: use http://10.0.2.2:8080/api
  * - For Physical Device: use your machine's local IP (e.g. http://192.168.1.XX:8080/api)
  */
-const API_URL = 'http://10.0.2.2:8080/api'; 
+const API_URL = 'http://192.168.1.17:8080/api'; 
 
 const api = axios.create({
   baseURL: API_URL,
