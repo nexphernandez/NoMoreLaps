@@ -1,4 +1,4 @@
-package com.nomorelaps.adapters.in.controller;
+package com.nomorelaps.adapters.in.rest;
 
 import java.util.List;
 import java.util.stream.Collectors;

@@ -78,7 +78,7 @@ public class UserJpaEntity {
      * @param password user password
      * @param calendarEnable user calendar enable
      * @param createAt user creation date
-     * @param roles user roles
+     * @param role user role
      * @param companies companies list
      * @param reservations reservations list
      * @param sanctions sanctions list
@@ -194,6 +194,10 @@ public class UserJpaEntity {
         return Objects.hash(id);
     }
 
+    /**
+     * Life-cycle callback method called before the entity is persisted.
+     * Automatically sets the creation timestamp if it hasn't been set yet.
+     */
     @jakarta.persistence.PrePersist
     protected void onCreate() {
         if (this.createAt == null) {

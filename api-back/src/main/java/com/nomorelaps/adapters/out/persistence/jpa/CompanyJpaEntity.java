@@ -71,9 +71,9 @@ public class CompanyJpaEntity {
     }
 
     /**
-     * Constructor with the atributes of the company
+     * Constructor with the attributes of the company.
+     * 
      * @param id company id
-     * @param user ompany user
      * @param name company name
      * @param password company password
      * @param apiKey company apiKey
@@ -82,7 +82,7 @@ public class CompanyJpaEntity {
      * @param cif company cif
      * @param registerDay company register day
      * @param user company user
-     * @param parkings company parkins
+     * @param parkings company parkings
      */
     public CompanyJpaEntity(Long id, String name, String password,String apiKey, String phone, 
             String email, String cif, LocalDateTime registerDay, 
@@ -195,11 +195,16 @@ public class CompanyJpaEntity {
         return Objects.hash(id);
     }
 
+    /**
+     * Life-cycle callback method called before the entity is persisted.
+     * Automatically sets the registration date if it hasn't been set yet.
+     */
     @jakarta.persistence.PrePersist
     protected void onCreate() {
         if (this.registerDay == null) {
             this.registerDay = java.time.LocalDateTime.now();
         }
     }
-
 }
+
+

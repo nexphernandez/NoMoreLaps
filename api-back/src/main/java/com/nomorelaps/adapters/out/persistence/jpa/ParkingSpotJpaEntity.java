@@ -145,6 +145,10 @@ public class ParkingSpotJpaEntity {
         return Objects.hash(id);
     }
 
+    /**
+     * Life-cycle callback method called before the entity is persisted.
+     * Automatically sets the registration date if it hasn't been set yet.
+     */
     @jakarta.persistence.PrePersist
     protected void onCreate() {
         if (this.registerDate == null) {

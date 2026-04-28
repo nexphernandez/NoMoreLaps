@@ -20,8 +20,8 @@ import com.nomorelaps.domain.models.Parking;
  * @version 1.0.0
  */
 @Component
-public class ParkingPersistenceAdapter 
-        extends BasePersistenceAdapter<Parking, ParkingJpaEntity, Long, ParkingJpaRepository> 
+public class ParkingPersistenceAdapter
+        extends BasePersistenceAdapter<Parking, ParkingJpaEntity, Long, ParkingJpaRepository>
         implements IParkingPersistenceAdapter {
 
     private final ParkingMapper mapper;
@@ -45,6 +45,27 @@ public class ParkingPersistenceAdapter
     @Override
     public List<Parking> findByCompanyId(Long companyId) {
         return repository.findByCompanyId(companyId).stream()
+                .map(this::toDomain)
+                .collect(java.util.stream.Collectors.toList());
+    }
+
+    @Override
+    public List<Parking> searchByNameOrAddress(String query) {
+        return repository.findByNameContainingIgnoreCaseOrAddressContainingIgnoreCase(query, query).stream()
+                .map(this::toDomain)
+                .collect(java.util.stream.Collectors.toList());
+    }
+
+    @Override
+    public List<Parking> findNearby(double lat, double lng, double radiusInKm) {
+        double margin = radiusInKm / 111.0;
+        
+        double minLat = lat - margin;
+        double maxLat = lat + margin;
+        double minLng = lng - margin;
+        double maxLng = lng + margin;
+
+        return repository.findByLatitudeBetweenAndLongitudeBetween(minLat, maxLat, minLng, maxLng).stream()
                 .map(this::toDomain)
                 .collect(java.util.stream.Collectors.toList());
     }

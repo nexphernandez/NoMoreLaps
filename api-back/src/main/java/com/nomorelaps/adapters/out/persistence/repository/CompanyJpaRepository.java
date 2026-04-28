@@ -13,7 +13,19 @@ import com.nomorelaps.adapters.out.persistence.jpa.CompanyJpaEntity;
  * @version 1.0.0
  */
 public interface CompanyJpaRepository extends JpaRepository<CompanyJpaEntity,Long> {
+    /**
+     * Finds a company by its corporate email address.
+     * 
+     * @param email The email to search for.
+     * @return An Optional containing the company.
+     */
     Optional<CompanyJpaEntity> findByEmail(String email);
 
-    Optional<CompanyJpaEntity> findByApiKey(String password);
+    /**
+     * Finds a company using its unique API key.
+     * 
+     * @param apiKey The API key to search for.
+     * @return An Optional containing the company.
+     */
+    Optional<CompanyJpaEntity> findByApiKey(String apiKey);
 }

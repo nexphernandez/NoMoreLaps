@@ -18,13 +18,38 @@ import com.nomorelaps.domain.models.Company;
  * @version 1.0.0
  */
 public interface CompanyMapper {
+    /**
+     * Converts an API request into a domain model.
+     * 
+     * @param request The incoming request DTO.
+     * @return The domain model representation.
+     */
     Company toDomainFromRequest(CompanyRequest request);
+
+    /**
+     * Converts a domain model into an API response.
+     * 
+     * @param domain The business domain object.
+     * @return The response DTO for the API.
+     */
     CompanyResponse toResponse(Company domain);
 
+    /**
+     * Converts a domain model into a JPA persistence entity.
+     * 
+     * @param domain The business domain object.
+     * @return The JPA entity for database storage.
+     */
     @Mapping(target = "parkings", ignore = true)
     @Mapping(target = "user", ignore = true)
     CompanyJpaEntity toJpaEntity(Company domain);
 
+    /**
+     * Converts a JPA entity into a domain model.
+     * 
+     * @param entity The JPA entity from the database.
+     * @return The business domain object.
+     */
     @Mapping(target = "parkings", ignore = true)
     @Mapping(target = "user", ignore = true)
     Company toDomain(CompanyJpaEntity entity);

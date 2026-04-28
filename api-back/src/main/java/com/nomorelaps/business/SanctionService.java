@@ -56,4 +56,12 @@ public class SanctionService implements ISanctionService {
     public void deleteById(Long id) {
         persistencePort.deleteById(id);
     }
+
+    @Override
+    public Sanction paySanction(Long id) {
+        return persistencePort.findById(id).map(sanction -> {
+            sanction.setPaid(true);
+            return persistencePort.save(sanction);
+        }).orElseThrow(() -> new RuntimeException("Sanction not found with id: " + id));
+    }
 }

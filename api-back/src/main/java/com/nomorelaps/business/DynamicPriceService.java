@@ -41,6 +41,11 @@ public class DynamicPriceService implements IDynamicPriceService {
     }
 
     @Override
+    public List<DynamicPrice> findAll() {
+        return persistencePort.findAll();
+    }
+
+    @Override
     public List<DynamicPrice> findByParkingId(Long parkingId) {
         return persistencePort.findByParkingId(parkingId);
     }

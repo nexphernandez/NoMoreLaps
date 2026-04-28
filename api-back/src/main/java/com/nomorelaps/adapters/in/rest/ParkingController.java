@@ -1,4 +1,4 @@
-package com.nomorelaps.adapters.in.controller;
+package com.nomorelaps.adapters.in.rest;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -78,6 +78,21 @@ public class ParkingController {
     }
 
     /**
+     * Retrieves all parking lots in the system.
+     *
+     * @return A list of all parkings.
+     */
+    @GetMapping
+    @Operation(summary = "Retrieve all parking lots", description = "Returns a complete list of all parking locations registered in the system.")
+    @ApiResponse(responseCode = "200", description = "List of all parkings retrieved")
+    public ResponseEntity<List<ParkingResponse>> findAll() {
+        List<ParkingResponse> responses = parkingService.findAll().stream()
+                .map(parkingMapper::toResponse)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(responses);
+    }
+
+    /**
      * Retrieves all parking lots belonging to a specific company.
      *
      * @param companyId The company ID.
@@ -128,5 +143,42 @@ public class ParkingController {
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         parkingService.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * Searches for parking lots by name or address.
+     *
+     * @param query The search text.
+     * @return A list of matching parkings.
+     */
+    @GetMapping("/search")
+    @Operation(summary = "Search parkings", description = "Finds parkings by name or address containing the query string.")
+    @ApiResponse(responseCode = "200", description = "Search results retrieved")
+    public ResponseEntity<List<ParkingResponse>> search(@RequestParam String query) {
+        List<ParkingResponse> responses = parkingService.searchByNameOrAddress(query).stream()
+                .map(parkingMapper::toResponse)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(responses);
+    }
+
+    /**
+     * Finds parkings near a specific coordinate.
+     *
+     * @param lat    Latitude of the center point.
+     * @param lng    Longitude of the center point.
+     * @param radius Maximum distance in kilometers.
+     * @return A list of nearby parkings.
+     */
+    @GetMapping("/nearby")
+    @Operation(summary = "Find nearby parkings", description = "Retrieves parkings within a certain distance from a location.")
+    @ApiResponse(responseCode = "200", description = "Nearby parkings retrieved")
+    public ResponseEntity<List<ParkingResponse>> findNearby(
+            @RequestParam double lat, 
+            @RequestParam double lng, 
+            @RequestParam(defaultValue = "10.0") double radius) {
+        List<ParkingResponse> responses = parkingService.findNearby(lat, lng, radius).stream()
+                .map(parkingMapper::toResponse)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(responses);
     }
 }

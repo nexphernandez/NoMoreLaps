@@ -74,12 +74,12 @@ public class ParkingJpaEntity {
     }
 
     /**
-     * Constructor with the parking atributes
+     * Constructor with the parking attributes
      * @param id parking id
-     * @param address parking addres
+     * @param address parking address
      * @param name parking name
-     * @param latitude latitude in grade of the parking
-     * @param longitude longitude in grade of the parhing
+     * @param latitude latitude in degrees of the parking
+     * @param longitude longitude in degrees of the parking
      * @param openingTime parking opening time
      * @param closingTime parking closing time
      * @param createdAt creation date of parking
@@ -207,6 +207,10 @@ public class ParkingJpaEntity {
         return Objects.hash(id);
     }
 
+    /**
+     * Life-cycle callback method called before the entity is persisted.
+     * Automatically sets the creation date if it hasn't been set yet.
+     */
     @jakarta.persistence.PrePersist
     protected void onCreate() {
         if (this.createdAt == null) {

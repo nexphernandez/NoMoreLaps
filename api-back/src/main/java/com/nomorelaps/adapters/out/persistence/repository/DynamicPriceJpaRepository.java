@@ -12,6 +12,12 @@ import com.nomorelaps.adapters.out.persistence.jpa.DynamicPriceJpaEntity;
  * @author nexphernandez DiazLuisAlejandro
  * @version 1.0.0
  */
-public interface DynamicPriceJpaRepository extends JpaRepository<DynamicPriceJpaEntity,Long> {
+public interface DynamicPriceJpaRepository extends JpaRepository<DynamicPriceJpaEntity, Long> {
+    /**
+     * Retrieves all dynamic price rules associated with a specific parking facility.
+     * 
+     * @param parkingId The ID of the parking facility.
+     * @return A list of dynamic price rules.
+     */
     List<DynamicPriceJpaEntity> findByParkingId(Long parkingId);
 }

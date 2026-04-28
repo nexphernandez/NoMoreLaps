@@ -1,4 +1,4 @@
-package com.nomorelaps.adapters.in.controller;
+package com.nomorelaps.adapters.in.rest;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -144,5 +144,22 @@ public class SanctionController {
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         sanctionService.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * Marks a sanction as paid.
+     *
+     * @param id The ID of the sanction to pay.
+     * @return The updated sanction.
+     */
+    @PatchMapping("/{id}/pay")
+    @Operation(summary = "Pay a sanction", description = "Marks a specific penalty as paid by the user.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Paid successfully"),
+            @ApiResponse(responseCode = "404", description = "Sanction not found")
+    })
+    public ResponseEntity<SanctionResponse> pay(@PathVariable Long id) {
+        Sanction updated = sanctionService.paySanction(id);
+        return ResponseEntity.ok(sanctionMapper.toResponse(updated));
     }
 }

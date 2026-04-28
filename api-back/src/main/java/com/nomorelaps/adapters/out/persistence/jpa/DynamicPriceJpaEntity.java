@@ -167,6 +167,10 @@ public class DynamicPriceJpaEntity {
         return Objects.hash(id);
     }
 
+    /**
+     * Life-cycle callback method called before the entity is persisted.
+     * Automatically sets the creation date if it hasn't been set yet.
+     */
     @jakarta.persistence.PrePersist
     protected void onCreate() {
         if (this.createAt == null) {
