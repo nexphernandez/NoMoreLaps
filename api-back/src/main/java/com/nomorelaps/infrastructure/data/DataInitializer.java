@@ -33,7 +33,20 @@ public class DataInitializer implements CommandLineRunner {
         Role userRole = createRoleIfNotFound("USER");
         Role companyRole = createRoleIfNotFound("COMPANY");
 
-        // 2. Create a Test Company User
+        // 2. Create a Test User (Will get ID 1)
+        if (userService.findByEmail("test@test.com").isEmpty()) {
+            User user = new User();
+            user.setName("Test User");
+            user.setEmail("test@test.com");
+            user.setPassword("123456"); 
+            user.setRole(userRole);
+            user.setCalendarEnable(true);
+            user.setCreateAt(LocalDateTime.now());
+            userService.create(user);
+            System.out.println("DataInitializer: Test user created with ID 1 (test@test.com / 123456)");
+        }
+
+        // 3. Create a Test Company User (Will get ID 2)
         if (userService.findByEmail("company@test.com").isEmpty()) {
             User companyUser = new User();
             companyUser.setName("Company Manager");
@@ -42,20 +55,7 @@ public class DataInitializer implements CommandLineRunner {
             companyUser.setRole(companyRole);
             companyUser.setCreateAt(LocalDateTime.now());
             userService.create(companyUser);
-            System.out.println("DataInitializer: Company user created (company@test.com / 123456)");
-        }
-
-        // 3. Create a Test User
-        if (userService.findByEmail("test@test.com").isEmpty()) {
-            User user = new User();
-            user.setName("Test User");
-            user.setEmail("test@test.com");
-            user.setPassword("123456"); // UserService will encode it
-            user.setRole(userRole);
-            user.setCalendarEnable(true);
-            user.setCreateAt(LocalDateTime.now());
-            userService.create(user);
-            System.out.println("DataInitializer: Test user created (test@test.com / 123456)");
+            System.out.println("DataInitializer: Company user created with ID 2 (company@test.com / 123456)");
         }
 
         // 3. Create a Company (needed for parkings)
