@@ -32,11 +32,17 @@ public class SanctionPersistenceAdapter
         this.mapper = mapper;
     }
 
+    /**
+     * Converts a Sanction domain object to its JPA Entity equivalent.
+     */
     @Override
     protected SanctionJpaEntity toEntity(Sanction domain) {
         return mapper.toJpaEntity(domain);
     }
 
+    /**
+     * Converts a Sanction JPA Entity to its domain model equivalent.
+     */
     @Override
     protected Sanction toDomain(SanctionJpaEntity entity) {
         return mapper.toDomain(entity);

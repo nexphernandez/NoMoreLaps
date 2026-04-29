@@ -1,5 +1,7 @@
 package com.nomorelaps.adapters.out.persistence.repository;
 
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.nomorelaps.adapters.out.persistence.jpa.RoleJpaEntity;
@@ -17,5 +19,5 @@ public interface RoleJpaRepository extends JpaRepository<RoleJpaEntity, Long> {
      * @param name The name of the role.
      * @return An Optional containing the role.
      */
-    java.util.Optional<RoleJpaEntity> findByName(String name);
+    Optional<RoleJpaEntity> findByName(String name);
 }

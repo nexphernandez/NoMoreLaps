@@ -59,6 +59,12 @@ public class ParkingJpaEntity {
     @OneToMany(mappedBy = "parking")
     private Set<DynamicPriceJpaEntity> dynamicPrice;
 
+    @Column(name = "sanction_amount")
+    private Double sanctionAmount = 0.0;
+
+    @Column(name = "sanction_interval_in_minutes")
+    private Integer sanctionIntervalInMinutes = 15;
+
     /**
      * Empty constructor 
      */
@@ -189,6 +195,22 @@ public class ParkingJpaEntity {
 
     public void setDynamicPrice(Set<DynamicPriceJpaEntity> dynamicPrice) {
         this.dynamicPrice = dynamicPrice;
+    }
+
+    public Double getSanctionAmount() {
+        return sanctionAmount;
+    }
+
+    public void setSanctionAmount(Double sanctionAmount) {
+        this.sanctionAmount = sanctionAmount;
+    }
+
+    public Integer getSanctionIntervalInMinutes() {
+        return sanctionIntervalInMinutes;
+    }
+
+    public void setSanctionIntervalInMinutes(Integer sanctionIntervalInMinutes) {
+        this.sanctionIntervalInMinutes = sanctionIntervalInMinutes;
     }
 
     @Override

@@ -32,11 +32,17 @@ public class UserPersistenceAdapter
         this.userMapper = userMapper;
     }
 
+    /**
+     * Converts a User domain object to its JPA Entity equivalent.
+     */
     @Override
     protected UserJpaEntity toEntity(User domain) {
         return userMapper.toJpaEntity(domain);
     }
 
+    /**
+     * Converts a User JPA Entity to its domain model equivalent.
+     */
     @Override
     protected User toDomain(UserJpaEntity entity) {
         return userMapper.toDomain(entity);

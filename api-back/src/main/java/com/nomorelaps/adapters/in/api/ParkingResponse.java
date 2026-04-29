@@ -20,6 +20,8 @@ public class ParkingResponse {
     private LocalDateTime openingTime;
     private LocalDateTime closingTime;
     private LocalDateTime createdAt;
+    private Double sanctionAmount;
+    private Integer sanctionIntervalInMinutes;
     
     /**
      * Empty constructor
@@ -120,6 +122,22 @@ public class ParkingResponse {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public Double getSanctionAmount() {
+        return sanctionAmount;
+    }
+
+    public void setSanctionAmount(Double sanctionAmount) {
+        this.sanctionAmount = sanctionAmount;
+    }
+
+    public Integer getSanctionIntervalInMinutes() {
+        return sanctionIntervalInMinutes;
+    }
+
+    public void setSanctionIntervalInMinutes(Integer sanctionIntervalInMinutes) {
+        this.sanctionIntervalInMinutes = sanctionIntervalInMinutes;
     }
 
     @Override

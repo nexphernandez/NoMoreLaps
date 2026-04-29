@@ -11,6 +11,8 @@ export interface Parking {
   longitude: number;
   openingTime: string;
   closingTime: string;
+  sanctionAmount?: number;
+  sanctionIntervalInMinutes?: number;
 }
 
 /**
@@ -29,7 +31,7 @@ const parkingService = {
    */
   getAll: async (): Promise<Parking[]> => {
     try {
-      const response = await api.get<Parking[]>('/parkings');
+      const response = await api.get<Parking[]>('parkings');
       return response.data;
     } catch (error: any) {
       throw new Error(error.response?.data?.message || 'Failed to fetch parkings');
@@ -41,7 +43,7 @@ const parkingService = {
    */
   getById: async (id: number): Promise<Parking> => {
     try {
-      const response = await api.get<Parking>(`/parkings/${id}`);
+      const response = await api.get<Parking>(`parkings/${id}`);
       return response.data;
     } catch (error: any) {
       throw new Error(error.response?.data?.message || 'Parking not found');
@@ -56,7 +58,7 @@ const parkingService = {
    */
   getNearby: async (lat: number, lng: number, radius: number = 5): Promise<Parking[]> => {
     try {
-      const response = await api.get<Parking[]>(`/parkings/nearby`, {
+      const response = await api.get<Parking[]>(`parkings/nearby`, {
         params: { lat, lng, radius }
       });
       return response.data;
@@ -70,7 +72,7 @@ const parkingService = {
    */
   search: async (query: string): Promise<Parking[]> => {
     try {
-      const response = await api.get<Parking[]>(`/parkings/search`, {
+      const response = await api.get<Parking[]>(`parkings/search`, {
         params: { query }
       });
       return response.data;
@@ -84,10 +86,22 @@ const parkingService = {
    */
   getAvailableSpots: async (parkingId: number): Promise<ParkingSpot[]> => {
     try {
-      const response = await api.get<ParkingSpot[]>(`/parking-spots/parking/${parkingId}/available`);
+      const response = await api.get<ParkingSpot[]>(`parking-spots/parking/${parkingId}/available`);
       return response.data;
     } catch (error: any) {
       throw new Error(error.response?.data?.message || 'Failed to fetch available spots');
+    }
+  },
+
+  /**
+   * Fetches all parking spots for a specific parking facility (including occupied).
+   */
+  getAllSpots: async (parkingId: number): Promise<ParkingSpot[]> => {
+    try {
+      const response = await api.get<ParkingSpot[]>(`parking-spots/parking/${parkingId}`);
+      return response.data;
+    } catch (error: any) {
+      throw new Error(error.response?.data?.message || 'Failed to fetch all spots');
     }
   }
 };

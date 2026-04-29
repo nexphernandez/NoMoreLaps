@@ -17,7 +17,7 @@ const userService = {
    */
   getProfile: async (id: number): Promise<User> => {
     try {
-      const response = await api.get<User>(`/users/${id}`);
+      const response = await api.get<User>(`users/${id}`);
       return response.data;
     } catch (error: any) {
       throw new Error(error.response?.data?.message || 'Failed to fetch profile');
@@ -29,7 +29,7 @@ const userService = {
    */
   getUserByEmail: async (email: string): Promise<User> => {
     try {
-      const response = await api.get<User>(`/users/email/${email}`);
+      const response = await api.get<User>(`users/email/${email}`);
       return response.data;
     } catch (error: any) {
       throw new Error(error.response?.data?.message || 'User not found');
@@ -41,7 +41,7 @@ const userService = {
    */
   updateProfile: async (user: User): Promise<User> => {
     try {
-      const response = await api.put<User>(`/users/${user.id}`, user);
+      const response = await api.put<User>(`users/${user.id}`, user);
       return response.data;
     } catch (error: any) {
       throw new Error(error.response?.data?.message || 'Failed to update profile');
@@ -53,7 +53,7 @@ const userService = {
    */
   deleteAccount: async (id: number): Promise<void> => {
     try {
-      await api.delete(`/users/${id}`);
+      await api.delete(`users/${id}`);
     } catch (error: any) {
       throw new Error(error.response?.data?.message || 'Failed to delete account');
     }

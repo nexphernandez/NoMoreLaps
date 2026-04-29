@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.nomorelaps.adapters.out.persistence.interfaces.IReservationPersistenceAdapter;
 import com.nomorelaps.business.interfaces.IReservationService;
@@ -21,17 +22,35 @@ import com.nomorelaps.domain.models.Reservation;
 public class ReservationService implements IReservationService {
 
     private final IReservationPersistenceAdapter persistencePort;
+    private final com.nomorelaps.business.interfaces.IParkingSpotService spotService;
 
     @Autowired
-    public ReservationService(IReservationPersistenceAdapter persistencePort) {
+    public ReservationService(IReservationPersistenceAdapter persistencePort, 
+                             com.nomorelaps.business.interfaces.IParkingSpotService spotService) {
         this.persistencePort = persistencePort;
+        this.spotService = spotService;
     }
 
     @Override
+    @Transactional
     public Reservation create(Reservation reservation) {
         if (reservation.getEndTime().isBefore(reservation.getStartTime())) {
             throw new IllegalArgumentException("BusinessRuleException: La hora de finalización no puede ser previa a la de inicio.");
         }
+
+        if (reservation.getParkingSpot() != null && reservation.getParkingSpot().getId() != null) {
+            boolean isOccupied = persistencePort.hasOverlappingReservations(
+                reservation.getParkingSpot().getId(), 
+                reservation.getStartTime(), 
+                reservation.getEndTime()
+            );
+
+            if (isOccupied) {
+                throw new IllegalStateException("Conflict: La plaza ya está reservada en el horario seleccionado.");
+            }
+            
+        }
+
         reservation.setState("ACTIVA");
         return persistencePort.save(reservation);
     }
@@ -49,6 +68,11 @@ public class ReservationService implements IReservationService {
     @Override
     public List<Reservation> findByParkingSpotId(Long spotId) {
         return persistencePort.findByParkingSpotId(spotId);
+    }
+
+    @Override
+    public List<Reservation> findByParkingId(Long parkingId) {
+        return persistencePort.findByParkingId(parkingId);
     }
 
     @Override

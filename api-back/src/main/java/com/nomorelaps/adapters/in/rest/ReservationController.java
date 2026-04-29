@@ -100,11 +100,27 @@ public class ReservationController {
      * @param spotId The parking spot ID.
      * @return A list of reservations for the spot.
      */
-    @GetMapping("/spot/{spotId}")
-    @Operation(summary = "Find reservations by Spot", description = "Lists all bookings associated with a specific parking spot.")
-    @ApiResponse(responseCode = "200", description = "List retrieved")
-    public ResponseEntity<List<ReservationResponse>> findByParkingSpotId(@PathVariable Long spotId) {
+    @GetMapping("/spot/{spotId}/occupied")
+    @Operation(summary = "Get occupied slots for a spot", description = "Retrieves all active reservations for a spot to determine availability.")
+    public ResponseEntity<List<ReservationResponse>> getOccupiedHours(@PathVariable Long spotId) {
         List<ReservationResponse> responses = reservationService.findByParkingSpotId(spotId).stream()
+                .filter(r -> "ACTIVA".equals(r.getState()))
+                .map(reservationMapper::toResponse)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(responses);
+    }
+
+    /**
+     * Retrieves all active reservations for all spots in a parking.
+     *
+     * @param parkingId The parking ID.
+     * @return A list of active reservations for that parking.
+     */
+    @GetMapping("/parking/{parkingId}/occupied")
+    @Operation(summary = "Get all active reservations for a parking", description = "Retrieves all active bookings for any spot in the facility.")
+    public ResponseEntity<List<ReservationResponse>> getOccupiedByParking(@PathVariable Long parkingId) {
+        List<ReservationResponse> responses = reservationService.findByParkingId(parkingId).stream()
+                .filter(r -> "ACTIVA".equals(r.getState()))
                 .map(reservationMapper::toResponse)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(responses);

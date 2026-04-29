@@ -11,7 +11,6 @@ import ReservationHistoryScreen from '../screens/ReservationHistory/ReservationH
 import SanctionsScreen from '../screens/Sanctions/SanctionsScreen';
 import EditProfileScreen from '../screens/EditProfile/EditProfileScreen';
 import CalendarSyncScreen from '../screens/CalendarSync/CalendarSyncScreen';
-import PaymentMethodsScreen from '../screens/PaymentMethods/PaymentMethodsScreen';
 import ReservationConfirmScreen from '../screens/ReservationConfirm/ReservationConfirmScreen';
 
 export type RootStackParamList = {
@@ -24,8 +23,14 @@ export type RootStackParamList = {
   Sanctions: undefined;
   EditProfile: undefined;
   CalendarSync: undefined;
-  PaymentMethods: undefined;
-  ReservationConfirm: { spotId: string; parkingId: string; spotNumber: number };
+  ReservationConfirm: { 
+    spotId: string; 
+    parkingId: string; 
+    spotNumber: number;
+    initialDate?: string;
+    initialStartHour?: number;
+    initialEndHour?: number;
+  };
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -89,11 +94,6 @@ const RootNavigator = () => {
             name="CalendarSync"
             component={CalendarSyncScreen}
             options={{ title: 'Smart Calendar' }}
-          />
-          <Stack.Screen
-            name="PaymentMethods"
-            component={PaymentMethodsScreen}
-            options={{ title: 'Payment Methods' }}
           />
           <Stack.Screen
             name="ReservationConfirm"

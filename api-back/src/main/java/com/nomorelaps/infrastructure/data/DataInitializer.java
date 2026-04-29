@@ -100,7 +100,7 @@ public class DataInitializer implements CommandLineRunner {
         p.setOpeningTime(LocalDateTime.now().withHour(7).withMinute(0));
         p.setClosingTime(LocalDateTime.now().withHour(23).withMinute(30));
         p.setCreatedAt(LocalDateTime.now());
-        p = parkingService.create(p);
+        final Parking savedParking = parkingService.create(p);
 
         // Create 5 spots for each parking
         for (int i = 1; i <= 5; i++) {
@@ -108,8 +108,9 @@ public class DataInitializer implements CommandLineRunner {
             spot.setNumber(i);
             spot.setState(true); 
             spot.setRegisterDate(LocalDateTime.now());
-            spot.setParking(p);
+            spot.setParking(savedParking);
             parkingSpotService.create(spot);
         }
+        System.out.println("DataInitializer: 5 spots created for parking: " + name);
     }
 }

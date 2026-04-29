@@ -18,6 +18,9 @@ public class ReservationResponse {
     private double price;
     private String state;
     private LocalDateTime creationTime;
+    private Long parkingSpotId;
+    private Long userId;
+    private String parkingName;
 
     /**
      * Empty constructor
@@ -35,20 +38,17 @@ public class ReservationResponse {
 
     /**
      * Constructor with all the reservation attributes
-     * @param id reservation 
-     * @param startTime of the reservation
-     * @param departureTime of the reservation 
-     * @param price of the reservation
-     * @param state of the reservation
-     * @param creationTime of the reservation
      */
-    public ReservationResponse(Long id, LocalDateTime startTime, LocalDateTime endTime, double price, String state, LocalDateTime creationTime) {
+    public ReservationResponse(Long id, LocalDateTime startTime, LocalDateTime endTime, double price, String state, LocalDateTime creationTime, Long parkingSpotId, Long userId, String parkingName) {
         this.id = id;
         this.startTime = startTime;
         this.endTime = endTime;
         this.price = price;
         this.state = state;
         this.creationTime = creationTime;
+        this.parkingSpotId = parkingSpotId;
+        this.userId = userId;
+        this.parkingName = parkingName;
     }
 
     public Long getId() {
@@ -83,12 +83,36 @@ public class ReservationResponse {
         this.price = price;
     }
 
-    public String getstate() {
+    public String getState() {
         return this.state;
     }
 
-    public void setstate(String state) {
+    public void setState(String state) {
         this.state = state;
+    }
+
+    public Long getParkingSpotId() {
+        return parkingSpotId;
+    }
+
+    public void setParkingSpotId(Long parkingSpotId) {
+        this.parkingSpotId = parkingSpotId;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public String getParkingName() {
+        return parkingName;
+    }
+
+    public void setParkingName(String parkingName) {
+        this.parkingName = parkingName;
     }
 
     public LocalDateTime getCreationTime() {

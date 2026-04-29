@@ -1,4 +1,5 @@
-import React, { createContext, useState, useContext, useMemo } from 'react';
+import React, { createContext, useState, useContext, useMemo, useEffect } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export interface PaymentMethod {
   id: string;
@@ -15,21 +16,65 @@ interface PaymentContextType {
   setDefaultMethod: (id: string) => void;
   defaultMethod: PaymentMethod | undefined;
   hasPaymentMethod: boolean;
+  isLoading: boolean;
 }
 
 const PaymentContext = createContext<PaymentContextType | undefined>(undefined);
+const STORAGE_KEY = '@nomorelaps_payment_methods';
 
 export const PaymentProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [methods, setMethods] = useState<PaymentMethod[]>([
-    { id: '1', brand: 'Visa', last4: '4242', expiry: '12/26', isDefault: true },
-  ]);
+  const [methods, setMethods] = useState<PaymentMethod[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Load methods on startup
+  useEffect(() => {
+    const loadMethods = async () => {
+      try {
+        const savedMethods = await AsyncStorage.getItem(STORAGE_KEY);
+        if (savedMethods) {
+          setMethods(JSON.parse(savedMethods));
+        }
+      } catch (error) {
+        console.error('Error loading payment methods:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    loadMethods();
+  }, []);
+
+  // Save methods whenever they change
+  useEffect(() => {
+    const saveMethods = async () => {
+      if (!isLoading) {
+        try {
+          await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(methods));
+        } catch (error) {
+          console.error('Error saving payment methods:', error);
+        }
+      }
+    };
+    saveMethods();
+  }, [methods, isLoading]);
 
   const addMethod = (method: PaymentMethod) => {
-    setMethods(prev => [...prev, method]);
+    setMethods(prev => {
+      const updated = [...prev, method];
+      // If it's the first method, make it default
+      if (updated.length === 1) updated[0].isDefault = true;
+      return updated;
+    });
   };
 
   const deleteMethod = (id: string) => {
-    setMethods(prev => prev.filter(m => m.id !== id));
+    setMethods(prev => {
+      const filtered = prev.filter(m => m.id !== id);
+      // If we deleted the default, set another one as default
+      if (filtered.length > 0 && !filtered.some(m => m.isDefault)) {
+        filtered[0].isDefault = true;
+      }
+      return filtered;
+    });
   };
 
   const setDefaultMethod = (id: string) => {
@@ -49,7 +94,8 @@ export const PaymentProvider: React.FC<{ children: React.ReactNode }> = ({ child
       deleteMethod, 
       setDefaultMethod, 
       defaultMethod,
-      hasPaymentMethod 
+      hasPaymentMethod,
+      isLoading
     }}>
       {children}
     </PaymentContext.Provider>

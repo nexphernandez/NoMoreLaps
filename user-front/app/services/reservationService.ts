@@ -8,11 +8,11 @@ export interface Reservation {
   startTime: string;
   endTime: string;
   price: number;
-  state: string; // 'ACTIVA', 'FINALIZADA', 'CANCELADA'
+  state: string; 
   creationTime?: string;
-  // Request-only fields (not returned by the API)
   parkingSpotId?: number;
   userId?: number;
+  parkingName?: string;
 }
 
 const reservationService = {
@@ -21,7 +21,7 @@ const reservationService = {
    */
   create: async (reservation: Reservation): Promise<Reservation> => {
     try {
-      const response = await api.post<Reservation>('/reservations', reservation);
+      const response = await api.post<Reservation>('reservations', reservation);
       return response.data;
     } catch (error: any) {
       throw new Error(error.response?.data?.message || 'Failed to create reservation');
@@ -33,7 +33,7 @@ const reservationService = {
    */
   getByUserId: async (userId: number): Promise<Reservation[]> => {
     try {
-      const response = await api.get<Reservation[]>(`/reservations/user/${userId}`);
+      const response = await api.get<Reservation[]>(`reservations/user/${userId}`);
       return response.data;
     } catch (error: any) {
       throw new Error(error.response?.data?.message || 'Failed to fetch user reservations');
@@ -45,7 +45,7 @@ const reservationService = {
    */
   getById: async (id: number): Promise<Reservation> => {
     try {
-      const response = await api.get<Reservation>(`/reservations/${id}`);
+      const response = await api.get<Reservation>(`reservations/${id}`);
       return response.data;
     } catch (error: any) {
       throw new Error(error.response?.data?.message || 'Reservation not found');
@@ -57,9 +57,21 @@ const reservationService = {
    */
   cancel: async (id: number): Promise<void> => {
     try {
-      await api.delete(`/reservations/${id}`);
+      await api.delete(`reservations/${id}`);
     } catch (error: any) {
       throw new Error(error.response?.data?.message || 'Failed to cancel reservation');
+    }
+  },
+
+  /**
+   * Fetches all active reservations for all spots in a parking.
+   */
+  getOccupiedByParking: async (parkingId: number): Promise<Reservation[]> => {
+    try {
+      const response = await api.get<Reservation[]>(`reservations/parking/${parkingId}/occupied`);
+      return response.data;
+    } catch (error: any) {
+      throw new Error(error.response?.data?.message || 'Failed to fetch parking reservations');
     }
   }
 };

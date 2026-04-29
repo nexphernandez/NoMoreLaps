@@ -24,6 +24,8 @@ public interface ReservationMapper {
      * @param request The incoming request DTO.
      * @return The domain model representation.
      */
+    @Mapping(target = "user.id", source = "userId")
+    @Mapping(target = "parkingSpot.id", source = "parkingSpotId")
     Reservation toDomainFromRequest(ReservationRequest request);
 
     /**
@@ -32,6 +34,9 @@ public interface ReservationMapper {
      * @param domain The business domain object.
      * @return The response DTO for the API.
      */
+    @Mapping(target = "userId", source = "user.id")
+    @Mapping(target = "parkingSpotId", source = "parkingSpot.id")
+    @Mapping(target = "parkingName", source = "parkingSpot.parking.name")
     ReservationResponse toResponse(Reservation domain);
 
     /**

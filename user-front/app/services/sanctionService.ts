@@ -17,7 +17,7 @@ const sanctionService = {
    */
   getByUserId: async (userId: number): Promise<Sanction[]> => {
     try {
-      const response = await api.get<Sanction[]>(`/sanctions/user/${userId}`);
+      const response = await api.get<Sanction[]>(`sanctions/user/${userId}`);
       return response.data;
     } catch (error: any) {
       throw new Error(error.response?.data?.message || 'Failed to fetch sanctions');
@@ -29,7 +29,7 @@ const sanctionService = {
    */
   pay: async (id: number): Promise<Sanction> => {
     try {
-      const response = await api.patch<Sanction>(`/sanctions/${id}/pay`);
+      const response = await api.patch<Sanction>(`sanctions/${id}/pay`);
       return response.data;
     } catch (error: any) {
       throw new Error(error.response?.data?.message || 'Payment failed');

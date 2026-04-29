@@ -19,11 +19,10 @@ interface ProfileViewProps {
   onGoToSanctions: () => void;
   onEditProfile: () => void;
   onCalendarSync: () => void;
-  onPaymentMethods: () => void;
 }
 
 const ProfileView: React.FC<ProfileViewProps> = ({
-  userName, userEmail, userAvatar, activeReservation, themeMode, onThemeChange, onLogout, onViewHistory, onGoToSanctions, onEditProfile, onCalendarSync, onPaymentMethods
+  userName, userEmail, userAvatar, activeReservation, themeMode, onThemeChange, onLogout, onViewHistory, onGoToSanctions, onEditProfile, onCalendarSync
 }) => {
   const { theme } = useTheme();
 
@@ -134,17 +133,6 @@ const ProfileView: React.FC<ProfileViewProps> = ({
           <View style={{ flex: 1 }}>
             <Typography variant="h3" color={theme.primary}>Calendar Sync</Typography>
             <Typography variant="caption">Link your calendar for smart suggestions</Typography>
-          </View>
-          <Typography variant="h3" color={theme.border}>❯</Typography>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={[styles.menuItem, { marginTop: 12, backgroundColor: theme.background, borderColor: theme.border }]} onPress={onPaymentMethods}>
-          <View style={[styles.menuIcon, { backgroundColor: '#F0FDF4' }]}>
-            <Typography style={{ fontSize: 20 }}>💳</Typography>
-          </View>
-          <View style={{ flex: 1 }}>
-            <Typography variant="h3" color={theme.primary}>Payment Methods</Typography>
-            <Typography variant="caption">Manage your cards and fine payments</Typography>
           </View>
           <Typography variant="h3" color={theme.border}>❯</Typography>
         </TouchableOpacity>

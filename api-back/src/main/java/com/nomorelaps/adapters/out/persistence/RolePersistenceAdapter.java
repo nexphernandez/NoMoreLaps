@@ -30,11 +30,17 @@ public class RolePersistenceAdapter
         this.mapper = mapper;
     }
 
+    /**
+     * Converts a Role domain object to its JPA Entity equivalent.
+     */
     @Override
     protected RoleJpaEntity toEntity(Role domain) {
         return mapper.toJpaEntity(domain);
     }
 
+    /**
+     * Converts a Role JPA Entity to its domain model equivalent.
+     */
     @Override
     protected Role toDomain(RoleJpaEntity entity) {
         return mapper.toDomain(entity);

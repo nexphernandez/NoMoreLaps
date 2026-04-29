@@ -46,6 +46,14 @@ public interface IReservationService {
     List<Reservation> findByParkingSpotId(Long spotId);
 
     /**
+     * Lists all reservations for a specific parking.
+     * 
+     * @param parkingId The parking ID.
+     * @return List of reservations.
+     */
+    List<Reservation> findByParkingId(Long parkingId);
+
+    /**
      * Lists reservations by their current state (e.g., ACTIVA).
      * 
      * @param state The state string.
