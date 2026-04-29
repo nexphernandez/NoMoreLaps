@@ -6,6 +6,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -19,13 +20,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
-/**
- * Main security configuration for the application.
- * Defines the security filter chain, encryption, and authentication providers.
- *
- * @author nexphernandez DiazLuisAlejandro
- * @version 1.0.0
- */
+@EnableMethodSecurity
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthFilter;
@@ -41,15 +36,29 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        // Public endpoints
+                        // 1. PUBLIC ZONE: Anyone can access
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/services/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
-                        // Public read-only parking data (visible on map without login)
+                        
+                        // Public read-only parking data (visible on map for everyone)
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/parkings", "/api/parkings/**").permitAll()
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/parking-spots", "/api/parking-spots/**").permitAll()
-                        // Protected endpoints
+                        
+                        // SOAP Services (Public for now, usually managed via interceptors or internal keys)
+                        .requestMatchers("/services/**").permitAll()
+
+                        // 2. COMPANY ZONE: Only parking owners
+                        .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/parkings/**").hasRole("COMPANY")
+                        .requestMatchers(org.springframework.http.HttpMethod.PUT, "/api/parkings/**").hasRole("COMPANY")
+                        .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/api/parkings/**").hasRole("COMPANY")
+
+                        // 3. AUTHENTICATED ZONE: Any logged-in user (USER or COMPANY)
+                        .requestMatchers("/api/smart-calendar/**").authenticated()
+                        .requestMatchers("/api/reservations/**").authenticated()
+                        .requestMatchers("/api/users/me/**").authenticated()
+                        
+                        // Everything else requires at least a valid login
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))

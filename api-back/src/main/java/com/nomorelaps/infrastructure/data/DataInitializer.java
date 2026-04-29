@@ -31,8 +31,21 @@ public class DataInitializer implements CommandLineRunner {
     public void run(String... args) throws Exception {
         // 1. Create Roles
         Role userRole = createRoleIfNotFound("USER");
+        Role companyRole = createRoleIfNotFound("COMPANY");
 
-        // 2. Create a Test User
+        // 2. Create a Test Company User
+        if (userService.findByEmail("company@test.com").isEmpty()) {
+            User companyUser = new User();
+            companyUser.setName("Company Manager");
+            companyUser.setEmail("company@test.com");
+            companyUser.setPassword("123456"); 
+            companyUser.setRole(companyRole);
+            companyUser.setCreateAt(LocalDateTime.now());
+            userService.create(companyUser);
+            System.out.println("DataInitializer: Company user created (company@test.com / 123456)");
+        }
+
+        // 3. Create a Test User
         if (userService.findByEmail("test@test.com").isEmpty()) {
             User user = new User();
             user.setName("Test User");
