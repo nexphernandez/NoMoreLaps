@@ -6,18 +6,11 @@ import Typography from '../../components/Typography';
 import ScreenContainer from '../../components/ScreenContainer';
 import { useTheme } from '../../context/ThemeContext';
 
-export interface HistoryItem {
-  id: string;
-  parkingName: string;
-  date: string;
-  duration: string;
-  price: string;
-  status: 'Completed' | 'Cancelled';
-}
+import { Reservation } from '../../services/reservationService';
 
 interface ReservationHistoryViewProps {
-  history: HistoryItem[];
-  onViewReceipt: (id: string) => void;
+  history: Reservation[];
+  onViewReceipt: (id: number) => void;
 }
 
 const ReservationHistoryView: React.FC<ReservationHistoryViewProps> = ({ history, onViewReceipt }) => {
@@ -27,7 +20,7 @@ const ReservationHistoryView: React.FC<ReservationHistoryViewProps> = ({ history
     <ScreenContainer withScroll={false}>
       <FlatList
         data={history}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.id?.toString() || Math.random().toString()}
         contentContainerStyle={styles.listContent}
         ListHeaderComponent={() => (
           <View style={styles.header}>
@@ -38,30 +31,30 @@ const ReservationHistoryView: React.FC<ReservationHistoryViewProps> = ({ history
         renderItem={({ item }) => (
           <Card>
             <View style={styles.cardHeader}>
-              <Typography variant="h3">{item.parkingName}</Typography>
+              <Typography variant="h3">Reservation #{item.id}</Typography>
               <Badge 
-                label={item.status} 
-                type={item.status === 'Completed' ? 'success' : 'danger'} 
+                label={item.state} 
+                type={item.state === 'ACTIVA' ? 'success' : item.state === 'FINALIZADA' ? 'success' : 'danger'} 
               />
             </View>
 
             <View style={styles.cardBody}>
               <View style={styles.detailItem}>
-                <Typography variant="label">Date</Typography>
-                <Typography variant="body" style={{fontWeight: '600'}}>{item.date}</Typography>
+                <Typography variant="label">Start</Typography>
+                <Typography variant="body" style={{fontWeight: '600'}}>{new Date(item.startTime).toLocaleDateString()}</Typography>
               </View>
               <View style={styles.detailItem}>
-                <Typography variant="label">Duration</Typography>
-                <Typography variant="body" style={{fontWeight: '600'}}>{item.duration}</Typography>
+                <Typography variant="label">Status</Typography>
+                <Typography variant="body" style={{fontWeight: '600'}}>{item.state}</Typography>
               </View>
               <View style={styles.detailItem}>
                 <Typography variant="label">Cost</Typography>
-                <Typography variant="body" style={{fontWeight: '600'}}>{item.price}</Typography>
+                <Typography variant="body" style={{fontWeight: '600'}}>{item.price}€</Typography>
               </View>
             </View>
             
-            <TouchableOpacity style={[styles.receiptBtn, { borderTopColor: theme.border }]} onPress={() => onViewReceipt(item.id)}>
-              <Typography variant="label" color={theme.primary} style={{textAlign: 'center', paddingTop: 16}}>View Receipt</Typography>
+            <TouchableOpacity style={[styles.receiptBtn, { borderTopColor: theme.border }]} onPress={() => item.id && onViewReceipt(item.id)}>
+              <Typography variant="label" color={theme.primary} style={{textAlign: 'center', paddingTop: 16}}>View Details</Typography>
             </TouchableOpacity>
           </Card>
         )}

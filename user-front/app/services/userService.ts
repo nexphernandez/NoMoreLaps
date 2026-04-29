@@ -1,32 +1,61 @@
 import api from './api';
-import { UserData } from '../context/AuthContext';
 
-export interface UserResponse {
+/**
+ * Interface representing a User.
+ */
+export interface User {
   id: number;
   name: string;
   email: string;
   calendarEnable: boolean;
+  createAt?: string;
 }
 
 const userService = {
   /**
-   * Fetches user details by email.
-   * This is used after login to populate the AuthContext.
+   * Fetches the profile of a user by ID.
    */
-  getUserByEmail: async (email: string): Promise<UserData> => {
+  getProfile: async (id: number): Promise<User> => {
     try {
-      const response = await api.get<UserResponse>(`/users/email/${email}`);
-      const data = response.data;
-      
-      // Map backend response to our AuthContext UserData interface
-      return {
-        name: data.name,
-        email: data.email,
-        phone: '+34 600 000 000', // Backend doesn't seem to have phone yet, using placeholder
-      };
+      const response = await api.get<User>(`/users/${id}`);
+      return response.data;
     } catch (error: any) {
-      const errorMsg = error.response?.data?.message || 'Error fetching user profile';
-      throw new Error(errorMsg);
+      throw new Error(error.response?.data?.message || 'Failed to fetch profile');
+    }
+  },
+
+  /**
+   * Fetches the profile of a user by Email.
+   */
+  getUserByEmail: async (email: string): Promise<User> => {
+    try {
+      const response = await api.get<User>(`/users/email/${email}`);
+      return response.data;
+    } catch (error: any) {
+      throw new Error(error.response?.data?.message || 'User not found');
+    }
+  },
+
+  /**
+   * Updates user profile information.
+   */
+  updateProfile: async (user: User): Promise<User> => {
+    try {
+      const response = await api.put<User>(`/users/${user.id}`, user);
+      return response.data;
+    } catch (error: any) {
+      throw new Error(error.response?.data?.message || 'Failed to update profile');
+    }
+  },
+
+  /**
+   * Deletes the user account.
+   */
+  deleteAccount: async (id: number): Promise<void> => {
+    try {
+      await api.delete(`/users/${id}`);
+    } catch (error: any) {
+      throw new Error(error.response?.data?.message || 'Failed to delete account');
     }
   }
 };

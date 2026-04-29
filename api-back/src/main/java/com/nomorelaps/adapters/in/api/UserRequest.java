@@ -17,7 +17,6 @@ public class UserRequest {
     @NotBlank(message = "El email no puede estar vacío")
     @Email(message = "Debe ser un formato de email correcto")
     private String email;
-    @NotBlank(message = "La contraseña no puede estar vacía")
     private String password;
     private boolean calendarEnable;
 

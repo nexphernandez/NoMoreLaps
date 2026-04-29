@@ -25,7 +25,7 @@ export type RootStackParamList = {
   EditProfile: undefined;
   CalendarSync: undefined;
   PaymentMethods: undefined;
-  ReservationConfirm: undefined;
+  ReservationConfirm: { spotId: string; parkingId: string; spotNumber: number };
 };
 
 const Stack = createStackNavigator<RootStackParamList>();

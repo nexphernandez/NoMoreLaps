@@ -1,22 +1,44 @@
-import React from 'react';
-import ReservationHistoryView, { HistoryItem } from './ReservationHistoryView';
-
-const MOCK_HISTORY: HistoryItem[] = [
-  { id: '1', parkingName: 'Plaza Mayor Parking', date: '12 Apr 2024', duration: '2h 15m', price: '5.20€', status: 'Completed' },
-  { id: '2', parkingName: 'Parking Sol', date: '10 Apr 2024', duration: '0h 45m', price: '2.10€', status: 'Completed' },
-  { id: '3', parkingName: 'Zaragoza Central', date: '05 Apr 2024', duration: '5h 00m', price: '12.00€', status: 'Cancelled' },
-];
+import React, { useEffect, useState } from 'react';
+import ReservationHistoryView from './ReservationHistoryView';
+import { useAuth } from '../../context/AuthContext';
+import reservationService, { Reservation } from '../../services/reservationService';
+import { ActivityIndicator, View } from 'react-native';
 
 const ReservationHistoryScreen = () => {
-  const handleViewReceipt = (id: string) => {
-    console.log('Viewing receipt for:', id);
-    // Lógica futura para mostrar PDF o modal de recibo
+  const { user } = useAuth();
+  const [reservations, setReservations] = useState<Reservation[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (user) {
+      loadReservations();
+    }
+  }, [user]);
+
+  const loadReservations = async () => {
+    try {
+      setLoading(true);
+      const data = await reservationService.getByUserId(user!.id);
+      setReservations(data);
+    } catch (error) {
+      console.error('Error loading history:', error);
+    } finally {
+      setLoading(false);
+    }
   };
+
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color="#3B82F6" />
+      </View>
+    );
+  }
 
   return (
     <ReservationHistoryView 
-      history={MOCK_HISTORY} 
-      onViewReceipt={handleViewReceipt}
+      history={reservations} 
+      onViewReceipt={(id) => console.log('View receipt', id)}
     />
   );
 };

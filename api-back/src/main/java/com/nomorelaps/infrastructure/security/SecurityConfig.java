@@ -46,17 +46,17 @@ public class SecurityConfig {
                         .requestMatchers("/services/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
+                        // Public read-only parking data (visible on map without login)
+                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/parkings", "/api/parkings/**").permitAll()
+                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/parking-spots", "/api/parking-spots/**").permitAll()
                         // Protected endpoints
-                        .anyRequest().authenticated()
-                )
+                        .anyRequest().authenticated())
                 .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                )
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .headers(headers -> headers
-                        .frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin)
-                );
+                        .frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin));
 
         return http.build();
     }

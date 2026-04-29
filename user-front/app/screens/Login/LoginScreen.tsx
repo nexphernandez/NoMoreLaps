@@ -40,7 +40,13 @@ const LoginScreen = () => {
         const userDetails = await userService.getUserByEmail(cleanEmail);
         
         // 3. LOGUEAR EN EL CONTEXTO (Garantiza persistencia)
-        await login(authResponse.token, userDetails);
+        await login(authResponse.token, {
+          id: userDetails.id,
+          name: userDetails.name,
+          email: userDetails.email,
+          phone: '',
+          avatar: undefined
+        });
         
         navigation.replace('Home');
       }

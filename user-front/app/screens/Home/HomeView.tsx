@@ -7,22 +7,20 @@ import CustomButton from '../../components/CustomButton';
 import ParkingCard from '../../components/ParkingCard';
 import { useTheme } from '../../context/ThemeContext';
 
-const MOCK_PARKINGS = [
-  { id: '1', name: 'Plaza Mayor Parking', address: 'Calle Mayor, 1', spots: 15, price: '2.50€/h', latitude: 40.4153, longitude: -3.7074 },
-  { id: '2', name: 'Parking Sol', address: 'Puerta del Sol, 5', spots: 3, price: '3.00€/h', latitude: 40.4168, longitude: -3.7038 },
-  { id: '3', name: 'Zaragoza Central', address: 'Av. Gran Vía, 12', spots: 45, price: '1.80€/h', latitude: 41.6488, longitude: -0.8891 },
-];
+import { Parking } from '../../services/parkingService';
 
 interface HomeViewProps {
-  onSelectParking: (id: string) => void;
+  parkings: Parking[];
+  onSelectParking: (id: number) => void;
   onGoToProfile: () => void;
   isLogged: boolean;
+  isLoading: boolean;
 }
 
-const HomeView: React.FC<HomeViewProps> = ({ onSelectParking, onGoToProfile, isLogged }) => {
+const HomeView: React.FC<HomeViewProps> = ({ parkings, onSelectParking, onGoToProfile, isLogged, isLoading }) => {
   const { theme } = useTheme();
   const [viewMode, setViewMode] = useState<'list' | 'map'>('map');
-  const [selectedParking, setSelectedParking] = useState<any>(null);
+  const [selectedParking, setSelectedParking] = useState<Parking | null>(null);
   const [showAdAlert, setShowAdAlert] = useState(true);
 
   const openInGoogleMaps = (lat: number, lng: number) => {
@@ -32,6 +30,14 @@ const HomeView: React.FC<HomeViewProps> = ({ onSelectParking, onGoToProfile, isL
     });
     Linking.openURL(url || '');
   };
+
+  if (isLoading) {
+    return (
+      <SafeAreaView style={[styles.container, { backgroundColor: theme.lightBackground, justifyContent: 'center', alignItems: 'center' }]}>
+        <Typography variant="h2" color={theme.primary}>Loading Parkings...</Typography>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.lightBackground }]} edges={['top', 'bottom']}>
@@ -61,8 +67,8 @@ const HomeView: React.FC<HomeViewProps> = ({ onSelectParking, onGoToProfile, isL
       <View style={styles.content}>
         {viewMode === 'list' ? (
           <FlatList
-            data={MOCK_PARKINGS}
-            keyExtractor={(item) => item.id}
+            data={parkings}
+            keyExtractor={(item) => item.id.toString()}
             contentContainerStyle={styles.list}
             ListHeaderComponent={() => (
               <TouchableOpacity style={[styles.sponsoredBanner, { backgroundColor: theme.background, borderColor: theme.primary }]}>
@@ -77,9 +83,14 @@ const HomeView: React.FC<HomeViewProps> = ({ onSelectParking, onGoToProfile, isL
               <ParkingCard
                 name={item.name}
                 distance={item.address}
-                availableSpots={item.spots}
+                availableSpots={10} // Backend improvement: count available spots
                 onPress={() => onSelectParking(item.id)}
               />
+            )}
+            ListEmptyComponent={() => (
+              <View style={{ padding: 20, alignItems: 'center' }}>
+                <Typography variant="body">No parkings found in your area.</Typography>
+              </View>
             )}
           />
         ) : (
@@ -88,17 +99,17 @@ const HomeView: React.FC<HomeViewProps> = ({ onSelectParking, onGoToProfile, isL
             style={styles.map}
             onPress={() => setSelectedParking(null)}
             initialRegion={{
-              latitude: 40.4168,
-              longitude: -3.7038,
-              latitudeDelta: 0.05,
-              longitudeDelta: 0.05,
+              latitude: parkings.length > 0 ? parkings[0].latitude : 40.4168,
+              longitude: parkings.length > 0 ? parkings[0].longitude : -3.7038,
+              latitudeDelta: 0.1,
+              longitudeDelta: 0.1,
             }}
           >
-            {MOCK_PARKINGS.map(parking => (
+            {parkings.map(parking => (
               <Marker
                 key={parking.id}
                 coordinate={{ latitude: parking.latitude, longitude: parking.longitude }}
-                pinColor={parking.spots < 5 ? theme.danger : theme.primary}
+                pinColor={theme.primary}
                 onPress={(e) => {
                   e.stopPropagation();
                   setSelectedParking(parking);
@@ -116,7 +127,7 @@ const HomeView: React.FC<HomeViewProps> = ({ onSelectParking, onGoToProfile, isL
             <View style={{ flex: 1 }}>
               <Typography variant="h2">{selectedParking.name}</Typography>
               <Typography variant="body" color={theme.textSecondary}>{selectedParking.address}</Typography>
-              <Typography variant="h3" color={theme.primary} style={{marginTop: 4}}>{selectedParking.price}</Typography>
+              <Typography variant="h3" color={theme.primary} style={{marginTop: 4}}>2.00 €/h</Typography>
             </View>
             <TouchableOpacity onPress={() => setSelectedParking(null)} style={styles.closeBtn}>
               <Typography variant="h3">✕</Typography>

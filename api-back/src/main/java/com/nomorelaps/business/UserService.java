@@ -35,6 +35,9 @@ public class UserService implements IUserService {
         if (persistencePort.findByEmail(user.getEmail()).isPresent()) {
             throw new IllegalArgumentException("BusinessRuleException: El email del usuario ya está registrado en el sistema.");
         }
+        if (user.getPassword() == null || user.getPassword().isEmpty()) {
+            throw new IllegalArgumentException("La contraseña es obligatoria para el registro.");
+        }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return persistencePort.save(user);
     }

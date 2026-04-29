@@ -57,7 +57,13 @@ const RegisterScreen = () => {
                 const userDetails = await userService.getUserByEmail(cleanEmail);
                 
                 // 4. GUARDAR Y ENTRAR
-                await login(authResponse.token, userDetails);
+                await login(authResponse.token, {
+                  id: userDetails.id,
+                  name: userDetails.name,
+                  email: userDetails.email,
+                  phone: '',
+                  avatar: undefined
+                });
                 
                 Alert.alert('¡Bienvenido!', `Hola ${cleanName}, tu cuenta ha sido creada y ya has iniciado sesión.`);
                 navigation.replace('Home');

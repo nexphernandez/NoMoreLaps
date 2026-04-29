@@ -6,27 +6,22 @@ import Typography from '../../components/Typography';
 import ScreenContainer from '../../components/ScreenContainer';
 import { useTheme } from '../../context/ThemeContext';
 
-interface SanctionItem {
-  id: string;
-  parkingName: string;
-  date: string;
-  amount: string;
-  reason: string;
-  isPaid: boolean;
-}
+import { Sanction } from '../../services/sanctionService';
+import CustomButton from '../../components/CustomButton';
 
 interface SanctionsViewProps {
-  sanctions: SanctionItem[];
+  sanctions: Sanction[];
+  onPaySanction: (id: number) => void;
 }
 
-const SanctionsView: React.FC<SanctionsViewProps> = ({ sanctions }) => {
+const SanctionsView: React.FC<SanctionsViewProps> = ({ sanctions, onPaySanction }) => {
   const { theme } = useTheme();
 
   return (
     <ScreenContainer withScroll={false}>
       <FlatList
         data={sanctions}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.id.toString()}
         contentContainerStyle={styles.listContent}
         ListHeaderComponent={() => (
           <View style={styles.header}>
@@ -37,10 +32,10 @@ const SanctionsView: React.FC<SanctionsViewProps> = ({ sanctions }) => {
         renderItem={({ item }) => (
           <Card>
             <View style={styles.cardHeader}>
-              <Typography variant="h3">{item.parkingName}</Typography>
+              <Typography variant="h3">Sanction #{item.id}</Typography>
               <Badge 
-                label={item.isPaid ? 'Paid' : 'Unpaid'} 
-                type={item.isPaid ? 'success' : 'danger'} 
+                label={item.paid ? 'Paid' : 'Unpaid'} 
+                type={item.paid ? 'success' : 'danger'} 
               />
             </View>
 
@@ -52,13 +47,23 @@ const SanctionsView: React.FC<SanctionsViewProps> = ({ sanctions }) => {
               <View style={styles.row}>
                 <View style={styles.detailItem}>
                   <Typography variant="label">Date</Typography>
-                  <Typography variant="body" style={{fontWeight: '600'}}>{item.date}</Typography>
+                  <Typography variant="body" style={{fontWeight: '600'}}>{new Date(item.arrivalTime).toLocaleDateString()}</Typography>
                 </View>
                 <View style={styles.amountContainer}>
                   <Typography variant="label">Fine Amount</Typography>
-                  <Typography variant="h2" color={theme.danger}>{item.amount}</Typography>
+                  <Typography variant="h2" color={theme.danger}>{item.amount}€</Typography>
                 </View>
               </View>
+              
+              {!item.paid && (
+                <View style={{marginTop: 16}}>
+                  <CustomButton 
+                    title="Pay Fine" 
+                    onPress={() => onPaySanction(item.id)}
+                    variant="outline"
+                  />
+                </View>
+              )}
             </View>
           </Card>
         )}

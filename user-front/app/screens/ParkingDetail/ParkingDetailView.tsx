@@ -6,24 +6,19 @@ import ScreenContainer from '../../components/ScreenContainer';
 import Typography from '../../components/Typography';
 import { useTheme } from '../../context/ThemeContext';
 
-const MOCK_SPOTS = [
-  { id: '1', number: 'A-01', isOccupied: false },
-  { id: '2', number: 'A-02', isOccupied: true },
-  { id: '3', number: 'A-03', isOccupied: false },
-  { id: '4', number: 'B-01', isOccupied: false },
-  { id: '5', number: 'B-02', isOccupied: true },
-  { id: '6', number: 'B-03', isOccupied: false },
-];
+import { ParkingSpot } from '../../services/parkingService';
 
 interface ParkingDetailViewProps {
   parkingName: string;
+  address?: string;
+  spots: ParkingSpot[];
   selectedSpotId: string | null;
   onSelectSpot: (id: string) => void;
   onReserve: () => void;
 }
 
 const ParkingDetailView: React.FC<ParkingDetailViewProps> = ({ 
-  parkingName, selectedSpotId, onSelectSpot, onReserve 
+  parkingName, address, spots, selectedSpotId, onSelectSpot, onReserve 
 }) => {
   const { theme } = useTheme();
 
@@ -31,41 +26,53 @@ const ParkingDetailView: React.FC<ParkingDetailViewProps> = ({
     <ScreenContainer withScroll={false} style={{padding: 0}}>
       <View style={[styles.header, { backgroundColor: theme.background, borderBottomColor: theme.border }]}>
         <Typography variant="h2">{parkingName}</Typography>
-        <Typography variant="caption">Select a spot to reserve</Typography>
+        {address && <Typography variant="body" color={theme.textSecondary}>{address}</Typography>}
+        <Typography variant="caption" style={{marginTop: 4}}>Select a spot to reserve</Typography>
       </View>
 
       <FlatList
-        data={MOCK_SPOTS}
+        data={spots}
         numColumns={3}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.id.toString()}
         contentContainerStyle={styles.list}
-        renderItem={({ item }) => (
-          <TouchableOpacity 
-            style={[
-              styles.spotCard, 
-              { backgroundColor: theme.background, borderColor: theme.border },
-              item.isOccupied && { backgroundColor: '#FEE2E2', borderColor: theme.danger },
-              selectedSpotId === item.id && { backgroundColor: theme.primary, borderColor: theme.primary }
-            ]}
-            onPress={() => !item.isOccupied && onSelectSpot(item.id)}
-            disabled={item.isOccupied}
-          >
-            <Typography variant="h3" color={item.isOccupied ? theme.danger : selectedSpotId === item.id ? '#FFF' : theme.text}>
-              {item.number}
-            </Typography>
-            <View style={{ marginTop: 4 }}>
-              <Badge 
-                label={item.isOccupied ? 'Full' : 'Free'} 
-                type={item.isOccupied ? 'danger' : 'success'} 
-              />
-            </View>
-          </TouchableOpacity>
+        renderItem={({ item }) => {
+          // In our backend: state = true means available, state = false means occupied
+          const isOccupied = !item.state;
+          const isSelected = selectedSpotId === item.id.toString();
+
+          return (
+            <TouchableOpacity 
+              style={[
+                styles.spotCard, 
+                { backgroundColor: theme.background, borderColor: theme.border },
+                isOccupied && { backgroundColor: '#FEE2E2', borderColor: theme.danger },
+                isSelected && { backgroundColor: theme.primary, borderColor: theme.primary }
+              ]}
+              onPress={() => !isOccupied && onSelectSpot(item.id.toString())}
+              disabled={isOccupied}
+            >
+              <Typography variant="h3" color={isOccupied ? theme.danger : isSelected ? '#FFF' : theme.text}>
+                P-{item.number}
+              </Typography>
+              <View style={{ marginTop: 4 }}>
+                <Badge 
+                  label={isOccupied ? 'Full' : 'Free'} 
+                  type={isOccupied ? 'danger' : 'success'} 
+                />
+              </View>
+            </TouchableOpacity>
+          );
+        }}
+        ListEmptyComponent={() => (
+          <View style={{ padding: 40, alignItems: 'center' }}>
+            <Typography variant="body">No spots available currently.</Typography>
+          </View>
         )}
       />
 
       <View style={[styles.footer, { backgroundColor: theme.background, borderTopColor: theme.border }]}>
         <CustomButton
-          title="Reserve Spot"
+          title={selectedSpotId ? `Reserve Spot P-${spots.find(s => s.id.toString() === selectedSpotId)?.number}` : 'Select a spot'}
           onPress={onReserve}
           disabled={!selectedSpotId}
         />

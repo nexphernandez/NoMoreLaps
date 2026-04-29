@@ -4,11 +4,11 @@ import { useNavigation } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
 import EditProfileView from './EditProfileView';
 import { useAuth } from '../../context/AuthContext';
+import userService from '../../services/userService';
 
 const EditProfileScreen = () => {
     const { user, updateUser } = useAuth();
     
-    // Estados inicializados con los datos del contexto
     const [name, setName] = useState(user?.name || '');
     const [email, setEmail] = useState(user?.email || '');
     const [phone, setPhone] = useState(user?.phone || '');
@@ -17,7 +17,6 @@ const EditProfileScreen = () => {
 
     const navigation = useNavigation();
 
-    // Función para pedir permisos y elegir imagen
     const pickImage = async () => {
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
         
@@ -27,7 +26,7 @@ const EditProfileScreen = () => {
         }
 
         const result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            mediaTypes: ['images'],
             allowsEditing: true,
             aspect: [1, 1],
             quality: 1,
@@ -38,15 +37,28 @@ const EditProfileScreen = () => {
         }
     };
 
-    const handleSave = () => {
+    const handleSave = async () => {
+        if (!user) return;
+
         setLoading(true);
-        setTimeout(() => {
-            // Guardamos todo en el contexto global
-            updateUser({ name, email, phone, avatar: avatar || undefined });
-            setLoading(false);
+        try {
+            const updatedUser = await userService.updateProfile({
+                id: user.id,
+                name,
+                email,
+                calendarEnable: false // Default — UserData doesn't store this field
+            });
+            
+            // Sync with global context — only update what we know
+            updateUser({ name, email });
+            
             Alert.alert('Success', 'Profile updated correctly');
             navigation.goBack();
-        }, 1500);
+        } catch (error: any) {
+            Alert.alert('Error', error.message || 'Failed to update profile');
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -55,7 +67,7 @@ const EditProfileScreen = () => {
             email={email} setEmail={setEmail}
             phone={phone} setPhone={setPhone}
             avatar={avatar}
-            onPickImage={pickImage} // <-- Pasamos la función
+            onPickImage={pickImage}
             onSave={handleSave}
             loading={loading}
         />
