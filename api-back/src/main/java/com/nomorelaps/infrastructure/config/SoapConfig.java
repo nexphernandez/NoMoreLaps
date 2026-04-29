@@ -1,6 +1,15 @@
 package com.nomorelaps.infrastructure.config;
 
-import com.nomorelaps.adapters.in.soap.interfaces.*;
+import com.nomorelaps.adapters.in.soap.interfaces.IAuthSoapService;
+import com.nomorelaps.adapters.in.soap.interfaces.ICompanySoapService;
+import com.nomorelaps.adapters.in.soap.interfaces.IDynamicPriceSoapService;
+import com.nomorelaps.adapters.in.soap.interfaces.IParkingSoapService;
+import com.nomorelaps.adapters.in.soap.interfaces.IParkingSpotSoapService;
+import com.nomorelaps.adapters.in.soap.interfaces.IReservationSoapService;
+import com.nomorelaps.adapters.in.soap.interfaces.IRoleSoapService;
+import com.nomorelaps.adapters.in.soap.interfaces.ISanctionSoapService;
+import com.nomorelaps.adapters.in.soap.interfaces.ISmartCalendarSoapService;
+import com.nomorelaps.adapters.in.soap.interfaces.IUserSoapService;
 import jakarta.xml.ws.Endpoint;
 import org.apache.cxf.Bus;
 import org.apache.cxf.jaxws.EndpointImpl;
@@ -10,15 +19,15 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * Apache CXF Configuration class.
- * Centralizes the publication of all 9 SOAP endpoints.
- * 
+ * Centralizes the publication of all SOAP endpoints.
+ *
  * @author nexphernandez
  */
 @Configuration
 public class SoapConfig {
 
     private final Bus bus;
-    
+
     private final IAuthSoapService authSoapService;
     private final ICompanySoapService companySoapService;
     private final IDynamicPriceSoapService dynamicPriceSoapService;
@@ -27,10 +36,11 @@ public class SoapConfig {
     private final IReservationSoapService reservationSoapService;
     private final IRoleSoapService roleSoapService;
     private final ISanctionSoapService sanctionSoapService;
+    private final ISmartCalendarSoapService smartCalendarSoapService;
     private final IUserSoapService userSoapService;
 
     @Autowired
-    public SoapConfig(Bus bus, 
+    public SoapConfig(Bus bus,
                       IAuthSoapService authSoapService,
                       ICompanySoapService companySoapService,
                       IDynamicPriceSoapService dynamicPriceSoapService,
@@ -39,6 +49,7 @@ public class SoapConfig {
                       IReservationSoapService reservationSoapService,
                       IRoleSoapService roleSoapService,
                       ISanctionSoapService sanctionSoapService,
+                      ISmartCalendarSoapService smartCalendarSoapService,
                       IUserSoapService userSoapService) {
         this.bus = bus;
         this.authSoapService = authSoapService;
@@ -49,6 +60,7 @@ public class SoapConfig {
         this.reservationSoapService = reservationSoapService;
         this.roleSoapService = roleSoapService;
         this.sanctionSoapService = sanctionSoapService;
+        this.smartCalendarSoapService = smartCalendarSoapService;
         this.userSoapService = userSoapService;
     }
 
@@ -60,6 +72,7 @@ public class SoapConfig {
     @Bean public Endpoint reservationEndpoint() { return publish(reservationSoapService, "/ReservationService"); }
     @Bean public Endpoint roleEndpoint() { return publish(roleSoapService, "/RoleService"); }
     @Bean public Endpoint sanctionEndpoint() { return publish(sanctionSoapService, "/SanctionService"); }
+    @Bean public Endpoint smartCalendarEndpoint() { return publish(smartCalendarSoapService, "/SmartCalendarService"); }
     @Bean public Endpoint userEndpoint() { return publish(userSoapService, "/UserService"); }
 
     private Endpoint publish(Object service, String path) {

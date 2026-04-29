@@ -17,7 +17,12 @@ export type RootStackParamList = {
   Home: undefined;
   Login: undefined;
   Register: undefined;
-  ParkingDetail: { parkingId: string };
+  ParkingDetail: { 
+    parkingId: string;
+    initialDate?: string;
+    initialStartHour?: number;
+    initialEndHour?: number;
+  };
   Profile: undefined;
   ReservationHistory: undefined;
   Sanctions: undefined;

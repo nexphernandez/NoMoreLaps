@@ -22,9 +22,9 @@ const ParkingDetailScreen = () => {
   const [loading, setLoading] = useState(true);
   const [selectedSpotId, setSelectedSpotId] = useState<string | null>(null);
   const [occupiedReservations, setOccupiedReservations] = useState<any[]>([]);
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  const [startHour, setStartHour] = useState(new Date().getHours() + 1);
-  const [endHour, setEndHour] = useState(new Date().getHours() + 2);
+  const [selectedDate, setSelectedDate] = useState(route.params.initialDate ? new Date(route.params.initialDate) : new Date());
+  const [startHour, setStartHour] = useState(route.params.initialStartHour !== undefined ? route.params.initialStartHour : new Date().getHours() + 1);
+  const [endHour, setEndHour] = useState(route.params.initialEndHour !== undefined ? route.params.initialEndHour : new Date().getHours() + 2);
 
   useEffect(() => {
     if (isFocused) {
