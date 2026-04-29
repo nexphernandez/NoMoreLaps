@@ -1,4 +1,5 @@
 import api from './api';
+import databaseService from './databaseService';
 
 /**
  * Interface representing a Sanction (fine).
@@ -18,8 +19,14 @@ const sanctionService = {
   getByUserId: async (userId: number): Promise<Sanction[]> => {
     try {
       const response = await api.get<Sanction[]>(`sanctions/user/${userId}`);
+      databaseService.saveUserSanctions(response.data).catch(err => console.error('Sanction cache error:', err));
       return response.data;
     } catch (error: any) {
+      console.warn('Network failed, trying local sanction cache...');
+      const localData = await databaseService.getUserSanctions();
+      if (localData.length > 0) {
+        return localData.map((row: any) => JSON.parse(row.data));
+      }
       throw new Error(error.response?.data?.message || 'Failed to fetch sanctions');
     }
   },

@@ -1,4 +1,5 @@
 import api from './api';
+import databaseService from './databaseService';
 
 /**
  * Interface representing a User.
@@ -18,8 +19,14 @@ const userService = {
   getProfile: async (id: number): Promise<User> => {
     try {
       const response = await api.get<User>(`users/${id}`);
+      databaseService.saveUserProfile(id, response.data).catch(err => console.error('Profile cache error:', err));
       return response.data;
     } catch (error: any) {
+      console.warn('Network failed, trying local profile cache...');
+      const localData = await databaseService.getUserProfile(id) as { data: string } | null;
+      if (localData) {
+        return JSON.parse(localData.data);
+      }
       throw new Error(error.response?.data?.message || 'Failed to fetch profile');
     }
   },
@@ -42,8 +49,17 @@ const userService = {
   updateProfile: async (user: User): Promise<User> => {
     try {
       const response = await api.put<User>(`users/${user.id}`, user);
+      // Update cache
+      databaseService.saveUserProfile(user.id, response.data).catch(err => console.error('Profile cache update error:', err));
       return response.data;
     } catch (error: any) {
+      if (!error.response) {
+        console.warn('Network error, queueing profile update...');
+        await databaseService.addPendingUpdate('PROFILE', user);
+        // Optimistic update in cache
+        databaseService.saveUserProfile(user.id, user).catch(err => console.error('Optimistic cache error:', err));
+        return user;
+      }
       throw new Error(error.response?.data?.message || 'Failed to update profile');
     }
   },

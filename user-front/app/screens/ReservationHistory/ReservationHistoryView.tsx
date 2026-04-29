@@ -33,7 +33,7 @@ const ReservationHistoryView: React.FC<ReservationHistoryViewProps> = ({ history
             <View style={styles.cardHeader}>
               <Typography variant="h3">{(item as any).parkingName || `Reservation #${item.id}`}</Typography>
               <Badge 
-                label={item.state} 
+                label={item.state || 'UNKNOWN'} 
                 type={
                   item.state === 'ACTIVE' ? 'success' : 
                   item.state === 'COMPLETED' ? 'success' : 
