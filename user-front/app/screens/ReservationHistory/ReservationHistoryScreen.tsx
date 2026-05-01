@@ -35,10 +35,20 @@ const ReservationHistoryScreen = () => {
     );
   }
 
+  const handleDelete = async (id: number) => {
+    try {
+      await reservationService.cancel(id);
+      await loadReservations();
+    } catch (error) {
+      console.error('Error deleting reservation:', error);
+    }
+  };
+
   return (
     <ReservationHistoryView 
       history={reservations} 
       onViewReceipt={(id) => console.log('View receipt', id)}
+      onDelete={handleDelete}
     />
   );
 };

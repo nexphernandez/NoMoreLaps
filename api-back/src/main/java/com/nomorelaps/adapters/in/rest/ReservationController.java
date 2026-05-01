@@ -104,7 +104,7 @@ public class ReservationController {
     @Operation(summary = "Get occupied slots for a spot", description = "Retrieves all active reservations for a spot to determine availability.")
     public ResponseEntity<List<ReservationResponse>> getOccupiedHours(@PathVariable Long spotId) {
         List<ReservationResponse> responses = reservationService.findByParkingSpotId(spotId).stream()
-                .filter(r -> "ACTIVA".equals(r.getState()))
+                .filter(r -> "ACTIVE".equals(r.getState()))
                 .map(reservationMapper::toResponse)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(responses);
@@ -120,7 +120,7 @@ public class ReservationController {
     @Operation(summary = "Get all active reservations for a parking", description = "Retrieves all active bookings for any spot in the facility.")
     public ResponseEntity<List<ReservationResponse>> getOccupiedByParking(@PathVariable Long parkingId) {
         List<ReservationResponse> responses = reservationService.findByParkingId(parkingId).stream()
-                .filter(r -> "ACTIVA".equals(r.getState()))
+                .filter(r -> "ACTIVE".equals(r.getState()))
                 .map(reservationMapper::toResponse)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(responses);
@@ -129,11 +129,11 @@ public class ReservationController {
     /**
      * Retrieves all reservations by state.
      *
-     * @param state The state to filter by (ACTIVA, CANCELADA, FINALIZADA).
+     * @param state The state to filter by (ACTIVE, CANCELLED, COMPLETED).
      * @return A list of reservations matching the state.
      */
     @GetMapping("/state/{state}")
-    @Operation(summary = "Filter reservations by state", description = "Retrieves bookings based on their status (ACTIVA, CANCELADA, etc.).")
+    @Operation(summary = "Filter reservations by state", description = "Retrieves bookings based on their status (ACTIVE, CANCELLED, etc.).")
     @ApiResponse(responseCode = "200", description = "List retrieved")
     public ResponseEntity<List<ReservationResponse>> findByState(@PathVariable String state) {
         List<ReservationResponse> responses = reservationService.findByState(state).stream()

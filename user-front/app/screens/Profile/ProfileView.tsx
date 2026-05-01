@@ -39,7 +39,11 @@ const ProfileView: React.FC<ProfileViewProps> = ({
           }
         ]}>
           {userAvatar ? (
-            <Image source={{ uri: userAvatar }} style={styles.avatarImg} />
+            <Image 
+              source={{ uri: userAvatar }} 
+              style={styles.avatarImg} 
+              resizeMode="cover"
+            />
           ) : (
             <Typography variant="h1" color={theme.primary}>
               {userName.charAt(0).toUpperCase()}
@@ -86,16 +90,18 @@ const ProfileView: React.FC<ProfileViewProps> = ({
       <View style={styles.section}>
         <Typography variant="label" style={{marginBottom: 12}}>Current Reservation</Typography>
         {activeReservation ? (
-          <Card style={styles.resCard}>
-            <View style={styles.resInfo}>
-              <Typography variant="h3">{activeReservation.parkingName}</Typography>
-              <Typography variant="caption">Spot: {activeReservation.spot}</Typography>
-            </View>
-            <View style={[styles.resTimer, { backgroundColor: theme.lightBackground, borderColor: theme.border }]}>
-              <Typography variant="h2" color={theme.primary}>{activeReservation.timeRemaining}</Typography>
-              <Typography variant="label">remaining</Typography>
-            </View>
-          </Card>
+          <TouchableOpacity onPress={onViewHistory}>
+            <Card style={styles.resCard}>
+              <View style={styles.resInfo}>
+                <Typography variant="h3">{activeReservation.parkingName}</Typography>
+                <Typography variant="caption">Spot: {activeReservation.spot}</Typography>
+              </View>
+              <View style={[styles.resTimer, { backgroundColor: theme.lightBackground, borderColor: theme.border }]}>
+                <Typography variant="h2" color={theme.primary}>{activeReservation.timeRemaining}</Typography>
+                <Typography variant="label">remaining</Typography>
+              </View>
+            </Card>
+          </TouchableOpacity>
         ) : (
           <Card style={styles.emptyCard}>
             <Typography variant="caption" style={{textAlign: 'center'}}>No active reservations found.</Typography>

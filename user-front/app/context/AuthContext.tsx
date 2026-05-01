@@ -7,6 +7,7 @@ export interface UserData {
   email: string;
   phone: string;
   avatar?: string;
+  calendarEnable?: boolean;
 }
 
 interface AuthContextType {
@@ -15,7 +16,7 @@ interface AuthContextType {
   isLoading: boolean;
   login: (token: string, userData: UserData) => Promise<void>;
   logout: () => Promise<void>;
-  updateUser: (data: Partial<UserData>) => void;
+  updateUser: (data: Partial<UserData>) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -25,8 +26,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<UserData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const updateUser = (newData: Partial<UserData>) => {
-    setUser(prev => prev ? { ...prev, ...newData } : null);
+  const updateUser = async (newData: Partial<UserData>) => {
+    setUser(prev => {
+      if (!prev) return null;
+      const updated = { ...prev, ...newData };
+      
+      SecureStore.setItemAsync('userData', JSON.stringify(updated)).catch(e => 
+        console.error('AuthContext: SecureStore error', e)
+      );
+        
+      return updated;
+    });
   };
 
   useEffect(() => {

@@ -109,7 +109,7 @@ public class ReservationPersistenceAdapter
     @Override
     public List<Reservation> findByParkingId(Long parkingId) {
         return repository.findByParkingSpotParkingId(parkingId).stream()
-                .map(mapper::toDomain)
+                .map(this::toDomain)
                 .collect(Collectors.toList());
     }
 

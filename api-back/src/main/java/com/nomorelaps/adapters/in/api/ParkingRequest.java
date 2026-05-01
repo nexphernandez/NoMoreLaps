@@ -25,6 +25,7 @@ public class ParkingRequest {
     private Double longitude;
     private LocalDateTime openingTime;
     private LocalDateTime closingTime;
+    private Double pricePerHour;
 
     /**
      * Empty constructor
@@ -42,13 +43,14 @@ public class ParkingRequest {
      * @param closingTime of the parking that day
      */
     public ParkingRequest(String address, String name, Double latitude, Double longitude, 
-                          LocalDateTime openingTime, LocalDateTime closingTime) {
+                          LocalDateTime openingTime, LocalDateTime closingTime, Double pricePerHour) {
         this.address = address;
         this.name = name;
         this.latitude = latitude;
         this.longitude = longitude;
         this.openingTime = openingTime;
         this.closingTime = closingTime;
+        this.pricePerHour = pricePerHour;
     }
 
     public String getAddress() {
@@ -97,6 +99,14 @@ public class ParkingRequest {
 
     public void setClosingTime(LocalDateTime closingTime) {
         this.closingTime = closingTime;
+    }
+
+    public Double getPricePerHour() {
+        return pricePerHour;
+    }
+
+    public void setPricePerHour(Double pricePerHour) {
+        this.pricePerHour = pricePerHour;
     }
 
 }

@@ -51,7 +51,7 @@ public class ReservationService implements IReservationService {
             
         }
 
-        reservation.setState("ACTIVA");
+        reservation.setState("ACTIVE");
         return persistencePort.save(reservation);
     }
 
@@ -83,6 +83,11 @@ public class ReservationService implements IReservationService {
     @Override
     public Reservation update(Reservation reservation) {
         return persistencePort.save(reservation);
+    }
+
+    @Override
+    public boolean hasOverlappingReservations(Long spotId, java.time.LocalDateTime start, java.time.LocalDateTime end) {
+        return persistencePort.hasOverlappingReservations(spotId, start, end);
     }
 
     @Override

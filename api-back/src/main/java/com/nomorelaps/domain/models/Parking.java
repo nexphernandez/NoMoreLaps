@@ -21,6 +21,7 @@ public class Parking {
     private LocalDateTime openingTime;
     private LocalDateTime closingTime;
     private LocalDateTime createdAt;
+    private Double pricePerHour = 2.0; 
     private Company company;
     private Set<ParkingSpot> parkingSpots = new HashSet<>();
     private Set<DynamicPrice> dynamicPrice = new HashSet<>();
@@ -49,7 +50,7 @@ public class Parking {
      * @param dynamicPrice pricing algorithm configurations
      */
     public Parking(Long id, String address, String name, Double latitude, Double longitude, LocalDateTime openingTime,
-            LocalDateTime closingTime, LocalDateTime createdAt, Company company, Set<ParkingSpot> parkingSpots,
+            LocalDateTime closingTime, LocalDateTime createdAt, Double pricePerHour, Company company, Set<ParkingSpot> parkingSpots,
             Set<DynamicPrice> dynamicPrice) {
         this.id = id;
         this.address = address;
@@ -59,6 +60,7 @@ public class Parking {
         this.openingTime = openingTime;
         this.closingTime = closingTime;
         this.createdAt = createdAt;
+        this.pricePerHour = pricePerHour;
         this.company = company;
         this.parkingSpots = parkingSpots;
         this.dynamicPrice = dynamicPrice;
@@ -146,6 +148,14 @@ public class Parking {
 
     public Set<DynamicPrice> getDynamicPrice() {
         return dynamicPrice;
+    }
+
+    public Double getPricePerHour() {
+        return pricePerHour;
+    }
+
+    public void setPricePerHour(Double pricePerHour) {
+        this.pricePerHour = pricePerHour;
     }
 
     public Double getSanctionAmount() {

@@ -22,7 +22,6 @@ const ProfileScreen = () => {
     }
   }, [isFocused, user?.id]);
 
-  // TIMER EFFECT
   useEffect(() => {
     let interval: NodeJS.Timeout;
 
@@ -35,20 +34,20 @@ const ProfileScreen = () => {
       if (!activeRes) return;
       
       const now = Date.now();
+      const start = activeRes.startTime ? new Date(activeRes.startTime).getTime() : now;
+      const end = activeRes.endTime ? new Date(activeRes.endTime).getTime() : now;
       
-      // FIX TIMEZONE: If server sends "2024-04-29T12:00:00", it's usually UTC.
-      // JS needs a 'Z' at the end to treat it as UTC, otherwise it assumes Local.
-      let dateStr = activeRes.startTime;
-      if (dateStr && !dateStr.endsWith('Z') && !dateStr.includes('+')) {
-          dateStr += 'Z'; 
+      let diff;
+      
+      if (now < start) {
+        diff = end - start;
+      } else {
+        diff = end - now;
       }
-
-      const start = dateStr ? new Date(dateStr).getTime() : now;
-      const totalWindow = 30 * 60 * 1000;
-      let diff = (start + totalWindow) - now;
 
       if (diff <= 0 || isNaN(diff)) {
         setTimeStr('00:00');
+        if (diff < -5000) loadData(); 
       } else {
         const mins = Math.floor(diff / 60000);
         const secs = Math.floor((diff % 60000) / 1000);
@@ -64,10 +63,16 @@ const ProfileScreen = () => {
   const loadData = async () => {
     try {
       const reservations = await reservationService.getByUserId(user!.id);
-      const active = reservations.find(r => {
-        const s = r.state?.toUpperCase();
-        return s === 'ACTIVA' || s === 'ACTIVE' || s === 'PENDING';
-      });
+      const now = new Date();
+      
+      const active = reservations
+        .filter(r => {
+          const s = r.state?.toUpperCase();
+          return s === 'ACTIVE' || s === 'ACTIVA';
+        })
+        .sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime())
+        .find(r => new Date(r.endTime) > now); 
+
       setActiveRes(active || null);
     } catch (error) {
       console.error('Error loading profile data:', error);
@@ -102,7 +107,7 @@ const ProfileScreen = () => {
     <ProfileView
       userName={user?.name || 'Guest User'}
       userEmail={user?.email || 'guest@nomorelaps.com'}
-      userAvatar={null}
+      userAvatar={user?.avatar || null}
       themeMode={themeMode}
       onThemeChange={setThemeMode}
       activeReservation={activeRes ? {

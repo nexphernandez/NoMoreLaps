@@ -42,15 +42,21 @@ const EditProfileScreen = () => {
 
         setLoading(true);
         try {
-            const updatedUser = await userService.updateProfile({
+            // 1. Guardar en el servidor
+            await userService.updateProfile({
                 id: user.id,
                 name,
                 email,
-                calendarEnable: false // Default — UserData doesn't store this field
+                calendarEnable: user.calendarEnable || false 
             });
             
-            // Sync with global context — only update what we know
-            updateUser({ name, email });
+            // 2. Actualizar el contexto global
+            await updateUser({ 
+              name, 
+              email, 
+              phone, 
+              avatar: avatar || undefined 
+            });
             
             Alert.alert('Success', 'Profile updated correctly');
             navigation.goBack();

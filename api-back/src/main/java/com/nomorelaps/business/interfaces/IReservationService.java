@@ -54,7 +54,7 @@ public interface IReservationService {
     List<Reservation> findByParkingId(Long parkingId);
 
     /**
-     * Lists reservations by their current state (e.g., ACTIVA).
+     * Lists reservations by their current state (e.g., ACTIVE).
      * 
      * @param state The state string.
      * @return List of reservations.
@@ -68,6 +68,16 @@ public interface IReservationService {
      * @return Updated reservation.
      */
     Reservation update(Reservation reservation);
+
+    /**
+     * Checks if there are any overlapping reservations for a specific spot and timeframe.
+     * 
+     * @param spotId The spot ID.
+     * @param start The start time.
+     * @param end The end time.
+     * @return true if there is an overlap, false otherwise.
+     */
+    boolean hasOverlappingReservations(Long spotId, java.time.LocalDateTime start, java.time.LocalDateTime end);
 
     /**
      * Deletes a reservation.

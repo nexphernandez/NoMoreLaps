@@ -15,6 +15,7 @@ import com.nomorelaps.adapters.in.api.SmartRecommendationResponse;
 import com.nomorelaps.business.interfaces.IGeocodingProvider;
 import com.nomorelaps.business.interfaces.IParkingService;
 import com.nomorelaps.business.interfaces.IParkingSpotService;
+import com.nomorelaps.business.interfaces.IReservationService;
 import com.nomorelaps.domain.models.Parking;
 import com.nomorelaps.domain.models.ParkingSpot;
 
@@ -30,12 +31,14 @@ public class SmartCalendarService {
     private static final double EARTH_RADIUS_KM = 6371.0;
     private final IParkingService parkingService;
     private final IParkingSpotService parkingSpotService;
+    private final IReservationService reservationService;
     private final IGeocodingProvider geocodingProvider;
 
     @Autowired
-    public SmartCalendarService(IParkingService parkingService,IParkingSpotService parkingSpotService,IGeocodingProvider geocodingProvider) {
+    public SmartCalendarService(IParkingService parkingService, IParkingSpotService parkingSpotService, IReservationService reservationService, IGeocodingProvider geocodingProvider) {
         this.parkingService = parkingService;
         this.parkingSpotService = parkingSpotService;
+        this.reservationService = reservationService;
         this.geocodingProvider = geocodingProvider;
     }
 
@@ -79,15 +82,24 @@ public class SmartCalendarService {
 
         for (Parking parking : nearby) {
             List<ParkingSpot> spots = parkingSpotService.findAvailableSpots(parking.getId());
-            if (spots.isEmpty()) {
+            
+            // Filtrar plazas que ya tienen reserva en ese horario
+            List<ParkingSpot> trulyAvailableSpots = new ArrayList<>();
+            for (ParkingSpot spot : spots) {
+                if (!reservationService.hasOverlappingReservations(spot.getId(), startTime, endTime)) {
+                    trulyAvailableSpots.add(spot);
+                }
+            }
+
+            if (trulyAvailableSpots.isEmpty()) {
                 continue;
             }
 
             SmartRecommendationItemResponse item = new SmartRecommendationItemResponse(
                     parking.getId(),parking.getName(),parking.getAddress(),
                     distanceInKm(latitude, longitude, parking.getLatitude(), parking.getLongitude()),
-                    spots.size(),spots.get(0).getId(),spots.get(0).getNumber(),
-                    startTime.toString(),endTime.toString(),"Est. 2.00€/h");
+                    trulyAvailableSpots.size(),trulyAvailableSpots.get(0).getId(),trulyAvailableSpots.get(0).getNumber(),
+                    startTime.toString(),endTime.toString(), String.format("Est. %.2f€/h", parking.getPricePerHour()));
             items.add(item);
         }
 

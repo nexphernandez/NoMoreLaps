@@ -49,6 +49,9 @@ public class ParkingJpaEntity {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    @Column(name = "price_per_hour")
+    private Double pricePerHour = 2.0;
+
     @ManyToOne
     @JoinColumn(name = "company_id")
     private CompanyJpaEntity company;
@@ -94,7 +97,7 @@ public class ParkingJpaEntity {
      * @param dynamicPrice parking dynamicPrice
      */
     public ParkingJpaEntity(Long id, String address, String name, Double latitude, Double longitude, LocalDateTime openingTime, 
-        LocalDateTime closingTime, LocalDateTime createdAt, CompanyJpaEntity company, Set<ParkingSpotJpaEntity> parkingSpots, 
+        LocalDateTime closingTime, LocalDateTime createdAt, Double pricePerHour, CompanyJpaEntity company, Set<ParkingSpotJpaEntity> parkingSpots, 
         Set<DynamicPriceJpaEntity> dynamicPrice) {
         this.id = id;
         this.address = address;
@@ -104,6 +107,7 @@ public class ParkingJpaEntity {
         this.openingTime = openingTime;
         this.closingTime = closingTime;
         this.createdAt = createdAt;
+        this.pricePerHour = pricePerHour;
         this.company = company;
         this.parkingSpots = parkingSpots;
         this.dynamicPrice = dynamicPrice;
@@ -195,6 +199,14 @@ public class ParkingJpaEntity {
 
     public void setDynamicPrice(Set<DynamicPriceJpaEntity> dynamicPrice) {
         this.dynamicPrice = dynamicPrice;
+    }
+
+    public Double getPricePerHour() {
+        return this.pricePerHour;
+    }
+
+    public void setPricePerHour(Double pricePerHour) {
+        this.pricePerHour = pricePerHour;
     }
 
     public Double getSanctionAmount() {

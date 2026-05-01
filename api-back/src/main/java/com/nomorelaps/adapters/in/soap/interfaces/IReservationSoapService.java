@@ -41,7 +41,7 @@ public interface IReservationSoapService {
     /**
      * Retrieves reservations filtered by their current state.
      * 
-     * @param state The state (ACTIVA, CANCELADA, FINALIZADA).
+     * @param state The state (ACTIVE, CANCELLED, COMPLETED).
      * @return A list of {@link ReservationResponse}.
      */
     @WebMethod(operationName = "findReservationsByState", action = "urn:FindReservationsByState")
