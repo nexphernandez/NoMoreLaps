@@ -20,6 +20,14 @@ public class Role {
     }
 
     /**
+     * Constructor with the role primary key
+     * @param id role id
+     */
+    public Role(Long id) {
+        this.id = id;
+    }
+
+    /**
      * Constructor with all the attributes
      * 
      * @param id          of the role

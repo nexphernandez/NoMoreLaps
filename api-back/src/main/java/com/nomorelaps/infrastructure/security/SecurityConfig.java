@@ -2,6 +2,7 @@ package com.nomorelaps.infrastructure.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -36,29 +37,26 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        // 1. PUBLIC ZONE: Anyone can access
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
                         
-                        // Public read-only parking data (visible on map for everyone)
-                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/parkings", "/api/parkings/**").permitAll()
-                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/parking-spots", "/api/parking-spots/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/parkings", "/api/parkings/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/parking-spots", "/api/parking-spots/**").permitAll()
                         
-                        // SOAP Services (Public for now, usually managed via interceptors or internal keys)
                         .requestMatchers("/services/**").permitAll()
 
-                        // 2. COMPANY ZONE: Only parking owners
-                        .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/parkings/**").hasRole("COMPANY")
-                        .requestMatchers(org.springframework.http.HttpMethod.PUT, "/api/parkings/**").hasRole("COMPANY")
-                        .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/api/parkings/**").hasRole("COMPANY")
+                        .requestMatchers(HttpMethod.POST, "/api/parkings/**").hasRole("COMPANY")
+                        .requestMatchers(HttpMethod.PUT, "/api/parkings/**").hasRole("COMPANY")
+                        .requestMatchers(HttpMethod.DELETE, "/api/parkings/**").hasRole("COMPANY")
 
-                        // 3. AUTHENTICATED ZONE: Any logged-in user (USER or COMPANY)
                         .requestMatchers("/api/smart-calendar/**").authenticated()
                         .requestMatchers("/api/reservations/**").authenticated()
-                        .requestMatchers("/api/users/me/**").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/users/{id}").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/api/users/{id}").authenticated()
                         
-                        // Everything else requires at least a valid login
+                        .requestMatchers(HttpMethod.GET, "/api/users").hasRole("ADMIN")
+                        
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))

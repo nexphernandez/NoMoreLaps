@@ -81,9 +81,8 @@ public class SmartCalendarService {
         List<SmartRecommendationItemResponse> items = new ArrayList<>();
 
         for (Parking parking : nearby) {
-            List<ParkingSpot> spots = parkingSpotService.findAvailableSpots(parking.getId());
+            List<ParkingSpot> spots = parkingSpotService.findByParkingId(parking.getId());
             
-            // Filtrar plazas que ya tienen reserva en ese horario
             List<ParkingSpot> trulyAvailableSpots = new ArrayList<>();
             for (ParkingSpot spot : spots) {
                 if (!reservationService.hasOverlappingReservations(spot.getId(), startTime, endTime)) {

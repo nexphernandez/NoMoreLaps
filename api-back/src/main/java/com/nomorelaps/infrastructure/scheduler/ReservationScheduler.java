@@ -1,5 +1,6 @@
 package com.nomorelaps.infrastructure.scheduler;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -62,7 +63,7 @@ public class ReservationScheduler {
             return;
         }
 
-        long minutesOverdue = java.time.Duration.between(reservation.getEndTime(), LocalDateTime.now()).toMinutes();
+        long minutesOverdue = Duration.between(reservation.getEndTime(), LocalDateTime.now()).toMinutes();
         long intervalsPassed = (long) Math.ceil((double) minutesOverdue / interval);
         double totalAmount = intervalsPassed * rate;
 

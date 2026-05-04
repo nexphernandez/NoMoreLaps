@@ -1,6 +1,7 @@
 package com.nomorelaps.adapters.out.persistence;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -46,6 +47,6 @@ public class DynamicPricePersistenceAdapter
     public List<DynamicPrice> findByParkingId(Long parkingId) {
         return repository.findByParkingId(parkingId).stream()
                 .map(this::toDomain)
-                .collect(java.util.stream.Collectors.toList());
+                .collect(Collectors.toList());
     }
 }

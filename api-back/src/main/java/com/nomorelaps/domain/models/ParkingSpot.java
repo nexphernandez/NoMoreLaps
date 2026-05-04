@@ -24,6 +24,14 @@ public class ParkingSpot {
     }
 
     /**
+     * Constructor with the parking spot primary key
+     * @param id parking spot id
+     */
+    public ParkingSpot(Long id) {
+        this.id = id;
+    }
+
+    /**
      * Constructor with all attributes
      * 
      * @param id           parking spot unique id

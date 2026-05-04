@@ -25,6 +25,14 @@ public class SanctionResponse {
     }
 
     /**
+     * Constructor with the sanction primary key
+     * @param id sanction id
+     */
+    public SanctionResponse(Long id) {
+        this.id = id;
+    }
+
+    /**
      * Constructor with all the attributes
      * @param id of the sanction
      * @param amount of the sanction

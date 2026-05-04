@@ -13,6 +13,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 /**
  * JPA Entity representing a Company in the database.
@@ -199,10 +200,10 @@ public class CompanyJpaEntity {
      * Life-cycle callback method called before the entity is persisted.
      * Automatically sets the registration date if it hasn't been set yet.
      */
-    @jakarta.persistence.PrePersist
+    @PrePersist
     protected void onCreate() {
         if (this.registerDay == null) {
-            this.registerDay = java.time.LocalDateTime.now();
+            this.registerDay = LocalDateTime.now();
         }
     }
 }

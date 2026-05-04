@@ -27,6 +27,14 @@ public class DynamicPrice {
     }
 
     /**
+     * Constructor with the dynamic price primary key
+     * @param id dynamic price id
+     */
+    public DynamicPrice(Long id) {
+        this.id = id;
+    }
+
+    /**
      * Constructor with all attributes
      * 
      * @param id        dynamic price unique id

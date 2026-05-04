@@ -1,6 +1,7 @@
 package com.nomorelaps.adapters.out.persistence;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -52,13 +53,13 @@ public class SanctionPersistenceAdapter
     public List<Sanction> findByUserId(Long userId) {
         return repository.findByUserId(userId).stream()
                 .map(this::toDomain)
-                .collect(java.util.stream.Collectors.toList());
+                .collect(Collectors.toList());
     }
 
     @Override
     public List<Sanction> findByReservationId(Long reservationId) {
         return repository.findByReservationId(reservationId).stream()
                 .map(this::toDomain)
-                .collect(java.util.stream.Collectors.toList());
+                .collect(Collectors.toList());
     }
 }

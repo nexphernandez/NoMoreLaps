@@ -31,6 +31,14 @@ public class Company {
     }
 
     /**
+     * Constructor with the company primary key
+     * @param id company id
+     */
+    public Company(Long id) {
+        this.id = id;
+    }
+
+    /**
      * Constructor with all attributes
      * 
      * @param id          company id

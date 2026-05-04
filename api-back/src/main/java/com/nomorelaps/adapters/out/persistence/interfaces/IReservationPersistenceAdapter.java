@@ -1,5 +1,6 @@
 package com.nomorelaps.adapters.out.persistence.interfaces;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import com.nomorelaps.domain.models.Reservation;
@@ -55,5 +56,16 @@ public interface IReservationPersistenceAdapter extends IBasePersistenceAdapter<
      * @param end Requested end time.
      * @return true if there is a conflict, false otherwise.
      */
-    boolean hasOverlappingReservations(Long spotId, java.time.LocalDateTime start, java.time.LocalDateTime end);
+    boolean hasOverlappingReservations(Long spotId, LocalDateTime start, LocalDateTime end);
+
+    /**
+     * Checks for overlaps excluding a specific reservation ID (used during updates).
+     * 
+     * @param spotId The parking spot ID.
+     * @param start Requested start time.
+     * @param end Requested end time.
+     * @param excludeId The ID to ignore (the one being updated).
+     * @return true if there is a conflict, false otherwise.
+     */
+    boolean hasOverlappingReservationsExcluding(Long spotId, LocalDateTime start, LocalDateTime end, Long excludeId);
 }

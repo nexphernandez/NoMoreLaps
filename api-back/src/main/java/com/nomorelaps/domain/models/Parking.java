@@ -35,6 +35,14 @@ public class Parking {
     }
 
     /**
+     * Constructor with the parking primary key
+     * @param id parking id
+     */
+    public Parking(Long id) {
+        this.id = id;
+    }
+
+    /**
      * Constructor with all parameters
      * 
      * @param id           parking unique id
@@ -45,13 +53,17 @@ public class Parking {
      * @param openingTime  standard opening daily hours
      * @param closingTime  standard closing daily hours
      * @param createdAt    backend tracking integration date
+     * @param pricePerHour price per hour for standard use
      * @param company      landlord or tenant company
+     * @param sanctionAmount amount charged per interval
+     * @param sanctionIntervalInMinutes duration of each sanction interval
      * @param parkingSpots available physical spots inside
      * @param dynamicPrice pricing algorithm configurations
      */
     public Parking(Long id, String address, String name, Double latitude, Double longitude, LocalDateTime openingTime,
-            LocalDateTime closingTime, LocalDateTime createdAt, Double pricePerHour, Company company, Set<ParkingSpot> parkingSpots,
-            Set<DynamicPrice> dynamicPrice) {
+            LocalDateTime closingTime, LocalDateTime createdAt, Double pricePerHour, Company company, 
+            Double sanctionAmount, Integer sanctionIntervalInMinutes,
+            Set<ParkingSpot> parkingSpots, Set<DynamicPrice> dynamicPrice) {
         this.id = id;
         this.address = address;
         this.name = name;
@@ -62,6 +74,8 @@ public class Parking {
         this.createdAt = createdAt;
         this.pricePerHour = pricePerHour;
         this.company = company;
+        this.sanctionAmount = sanctionAmount;
+        this.sanctionIntervalInMinutes = sanctionIntervalInMinutes;
         this.parkingSpots = parkingSpots;
         this.dynamicPrice = dynamicPrice;
     }

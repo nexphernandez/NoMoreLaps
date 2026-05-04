@@ -68,4 +68,18 @@ public interface ReservationJpaRepository extends JpaRepository<ReservationJpaEn
     @EntityGraph(attributePaths = { "parkingSpot", "parkingSpot.parking" })
     List<ReservationJpaEntity> findByParkingSpotIdAndStateAndStartTimeBeforeAndEndTimeAfter(
             Long spotId, String state, LocalDateTime end, LocalDateTime start);
+
+    /**
+     * Checks for overlapping reservations excluding a specific ID.
+     * 
+     * @param spotId The parking spot ID.
+     * @param state The reservation state (e.g. ACTIVE).
+     * @param end The end time of the range.
+     * @param start The start time of the range.
+     * @param id The reservation ID to exclude.
+     * @return A list of conflicting reservations.
+     */
+    @EntityGraph(attributePaths = { "parkingSpot", "parkingSpot.parking" })
+    List<ReservationJpaEntity> findByParkingSpotIdAndStateAndStartTimeBeforeAndEndTimeAfterAndIdNot(
+            Long spotId, String state, LocalDateTime end, LocalDateTime start, Long id);
 }

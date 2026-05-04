@@ -1,6 +1,7 @@
 package com.nomorelaps.adapters.out.persistence;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -11,6 +12,7 @@ import com.nomorelaps.adapters.out.persistence.interfaces.IParkingPersistenceAda
 import com.nomorelaps.adapters.out.persistence.jpa.CompanyJpaEntity;
 import com.nomorelaps.adapters.out.persistence.jpa.ParkingJpaEntity;
 import com.nomorelaps.adapters.out.persistence.repository.ParkingJpaRepository;
+import com.nomorelaps.domain.models.Company;
 import com.nomorelaps.domain.models.Parking;
 
 /**
@@ -49,24 +51,29 @@ public class ParkingPersistenceAdapter
 
     /**
      * Converts a Parking JPA Entity back to its domain model.
+     * Manually restores the Company reference.
      */
     @Override
     protected Parking toDomain(ParkingJpaEntity entity) {
-        return mapper.toDomain(entity);
+        Parking domain = mapper.toDomain(entity);
+        if (entity.getCompany() != null && entity.getCompany().getId() != null) {
+            domain.setCompany(new Company(entity.getCompany().getId()));
+        }
+        return domain;
     }
 
     @Override
     public List<Parking> findByCompanyId(Long companyId) {
         return repository.findByCompanyId(companyId).stream()
                 .map(this::toDomain)
-                .collect(java.util.stream.Collectors.toList());
+                .collect(Collectors.toList());
     }
 
     @Override
     public List<Parking> searchByNameOrAddress(String query) {
         return repository.findByNameContainingIgnoreCaseOrAddressContainingIgnoreCase(query, query).stream()
                 .map(this::toDomain)
-                .collect(java.util.stream.Collectors.toList());
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -80,6 +87,6 @@ public class ParkingPersistenceAdapter
 
         return repository.findByLatitudeBetweenAndLongitudeBetween(minLat, maxLat, minLng, maxLng).stream()
                 .map(this::toDomain)
-                .collect(java.util.stream.Collectors.toList());
+                .collect(Collectors.toList());
     }
 }

@@ -18,6 +18,8 @@ public class User {
     private String email;
     private String password;
     private boolean calendarEnable;
+    private String avatar;
+    private String phone;
     private LocalDateTime createAt;
     private Role role;
     private Set<Company> companies = new HashSet<>();
@@ -31,6 +33,37 @@ public class User {
     }
 
     /**
+     * Constructor with the user primary key
+     * @param id user id
+     */
+    public User(Long id) {
+        this.id = id;
+    }
+
+    /**
+     * Constructor with basic profile data
+     * 
+     * @param id             user id
+     * @param name           user name
+     * @param email          user email
+     * @param password       user password
+     * @param calendarEnable calendar preference
+     * @param avatar         profile image
+     * @param phone          phone number
+     * @param createAt       creation date
+     */
+    public User(Long id, String name, String email, String password, boolean calendarEnable, String avatar, String phone, LocalDateTime createAt) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.calendarEnable = calendarEnable;
+        this.avatar = avatar;
+        this.phone = phone;
+        this.createAt = createAt;
+    }
+
+    /**
      * Constructor with all parameters
      * 
      * @param id             user unique digital identifier
@@ -38,19 +71,23 @@ public class User {
      * @param email          contact or login coordinate
      * @param password       encoded credential hash key
      * @param calendarEnable user interface preferences setting
+     * @param avatar         profile image URL or base64 string
+     * @param phone          contact telephone number
      * @param createAt       backend auditing tracking stamp
      * @param role           linked basic permissions block
      * @param companies      associated companies for business accounts
      * @param reservations   list of standard user operations
      * @param sanctions      array of punitive applied actions
      */
-    public User(Long id, String name, String email, String password, boolean calendarEnable, LocalDateTime createAt,
+    public User(Long id, String name, String email, String password, boolean calendarEnable, String avatar, String phone, LocalDateTime createAt,
             Role role, Set<Company> companies, Set<Reservation> reservations, Set<Sanction> sanctions) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
         this.calendarEnable = calendarEnable;
+        this.avatar = avatar;
+        this.phone = phone;
         this.createAt = createAt;
         this.role = role;
         this.companies = companies;
@@ -96,6 +133,22 @@ public class User {
 
     public void setCalendarEnable(boolean calendarEnable) {
         this.calendarEnable = calendarEnable;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 
     public LocalDateTime getCreateAt() {

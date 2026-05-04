@@ -1,5 +1,6 @@
 package com.nomorelaps.business;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -78,13 +79,40 @@ public class ReservationService implements IReservationService {
     }
 
     @Override
+    @Transactional
     public Reservation update(Reservation reservation) {
+        if (reservation.getId() == null) {
+            throw new IllegalArgumentException("Cannot update reservation without ID");
+        }
+
+        if (reservation.getEndTime().isBefore(reservation.getStartTime())) {
+            throw new IllegalArgumentException("BusinessRuleException: La hora de finalización no puede ser previa a la de inicio.");
+        }
+
+        if (reservation.getParkingSpot() != null && reservation.getParkingSpot().getId() != null) {
+            boolean isOccupied = persistencePort.hasOverlappingReservationsExcluding(
+                reservation.getParkingSpot().getId(), 
+                reservation.getStartTime(), 
+                reservation.getEndTime(),
+                reservation.getId()
+            );
+
+            if (isOccupied) {
+                throw new IllegalStateException("Conflict: El nuevo horario se solapa con otra reserva existente.");
+            }
+        }
+
         return persistencePort.save(reservation);
     }
 
     @Override
-    public boolean hasOverlappingReservations(Long spotId, java.time.LocalDateTime start, java.time.LocalDateTime end) {
+    public boolean hasOverlappingReservations(Long spotId, LocalDateTime start, LocalDateTime end) {
         return persistencePort.hasOverlappingReservations(spotId, start, end);
+    }
+
+    @Override
+    public boolean hasOverlappingReservationsExcluding(Long spotId, LocalDateTime start, LocalDateTime end, Long excludeId) {
+        return persistencePort.hasOverlappingReservationsExcluding(spotId, start, end, excludeId);
     }
 
     @Override

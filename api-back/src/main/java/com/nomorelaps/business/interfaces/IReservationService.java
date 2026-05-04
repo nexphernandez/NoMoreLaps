@@ -1,5 +1,6 @@
 package com.nomorelaps.business.interfaces;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -77,7 +78,18 @@ public interface IReservationService {
      * @param end The end time.
      * @return true if there is an overlap, false otherwise.
      */
-    boolean hasOverlappingReservations(Long spotId, java.time.LocalDateTime start, java.time.LocalDateTime end);
+    boolean hasOverlappingReservations(Long spotId, LocalDateTime start, LocalDateTime end);
+    
+    /**
+     * Checks for overlaps excluding a specific reservation ID.
+     * 
+     * @param spotId The parking spot ID.
+     * @param start Requested start time.
+     * @param end Requested end time.
+     * @param excludeId The reservation ID to ignore.
+     * @return true if there is a conflict, false otherwise.
+     */
+    boolean hasOverlappingReservationsExcluding(Long spotId, LocalDateTime start, LocalDateTime end, Long excludeId);
 
     /**
      * Deletes a reservation.

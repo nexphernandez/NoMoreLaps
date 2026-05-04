@@ -30,6 +30,14 @@ public class Reservation {
     }
 
     /**
+     * Constructor with the reservation primary key
+     * @param id reservation id
+     */
+    public Reservation(Long id) {
+        this.id = id;
+    }
+
+    /**
      * Constructor with all attributes
      * 
      * @param id           reservation identifier

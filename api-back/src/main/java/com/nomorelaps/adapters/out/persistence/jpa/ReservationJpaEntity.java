@@ -12,6 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 
 /**
@@ -187,10 +188,10 @@ public class ReservationJpaEntity {
      * Life-cycle callback method called before the entity is persisted.
      * Automatically sets the creation time if it hasn't been set yet.
      */
-    @jakarta.persistence.PrePersist
+    @PrePersist
     protected void onCreate() {
         if (this.creationTime == null) {
-            this.creationTime = java.time.LocalDateTime.now();
+            this.creationTime = LocalDateTime.now();
         }
     }
 
