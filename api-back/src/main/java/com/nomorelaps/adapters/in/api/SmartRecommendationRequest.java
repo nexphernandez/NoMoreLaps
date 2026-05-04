@@ -23,7 +23,7 @@ public class SmartRecommendationRequest {
     @NotNull(message = "Duration in hours is required")
     private Integer durationHours;
     @NotNull(message = "Radius in kilometers is required")
-    private Integer radiusKm;
+    private Double radiusKm;
 
     /**
      * Empty constructor
@@ -36,15 +36,15 @@ public class SmartRecommendationRequest {
      *
      * @param destinationText destination text from calendar or user input
      *
-     * @param latitude destination latitude
+     * @param latitude        destination latitude
      *
-     * @param longitude destination longitude
+     * @param longitude       destination longitude
      *
-     * @param startTime reservation start time in ISO local date-time format
+     * @param startTime       reservation start time in ISO local date-time format
      *
-     * @param durationHours reservation duration in hours
+     * @param durationHours   reservation duration in hours
      *
-     * @param radiusKm search radius in kilometers
+     * @param radiusKm        search radius in kilometers
      */
     public SmartRecommendationRequest(
             String destinationText,
@@ -52,7 +52,7 @@ public class SmartRecommendationRequest {
             Double longitude,
             String startTime,
             Integer durationHours,
-            Integer radiusKm) {
+            Double radiusKm) {
         this.destinationText = destinationText;
         this.latitude = latitude;
         this.longitude = longitude;
@@ -101,18 +101,20 @@ public class SmartRecommendationRequest {
         this.durationHours = durationHours;
     }
 
-    public Integer getRadiusKm() {
+    public Double getRadiusKm() {
         return this.radiusKm;
     }
 
-    public void setRadiusKm(Integer radiusKm) {
+    public void setRadiusKm(double radiusKm) {
         this.radiusKm = radiusKm;
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof SmartRecommendationRequest)) return false;
+        if (this == o)
+            return true;
+        if (!(o instanceof SmartRecommendationRequest))
+            return false;
         SmartRecommendationRequest that = (SmartRecommendationRequest) o;
         return Objects.equals(destinationText, that.destinationText)
                 && Objects.equals(startTime, that.startTime);

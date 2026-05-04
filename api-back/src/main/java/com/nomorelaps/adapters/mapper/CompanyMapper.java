@@ -9,7 +9,6 @@ import com.nomorelaps.adapters.in.api.CompanyResponse;
 import com.nomorelaps.adapters.out.persistence.jpa.CompanyJpaEntity;
 import com.nomorelaps.domain.models.Company;
 
-@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 /**
  * Mapper interface for Company entity and DTOs.
  * Uses MapStruct to convert between API Requests/Responses and JPA Entities.
@@ -17,6 +16,7 @@ import com.nomorelaps.domain.models.Company;
  * @author nexphernandez DiazLuisAlejandro
  * @version 1.0.0
  */
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface CompanyMapper {
     /**
      * Converts an API request into a domain model.

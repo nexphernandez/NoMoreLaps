@@ -9,7 +9,6 @@ import com.nomorelaps.adapters.in.api.DynamicPriceResponse;
 import com.nomorelaps.adapters.out.persistence.jpa.DynamicPriceJpaEntity;
 import com.nomorelaps.domain.models.DynamicPrice;
 
-@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 /**
  * Mapper interface for Dynamic Price entity and DTOs.
  * Uses MapStruct to convert between API Requests/Responses and JPA Entities.
@@ -17,6 +16,7 @@ import com.nomorelaps.domain.models.DynamicPrice;
  * @author nexphernandez DiazLuisAlejandro
  * @version 1.0.0
  */
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface DynamicPriceMapper {
     /**
      * Converts an API request into a domain model.

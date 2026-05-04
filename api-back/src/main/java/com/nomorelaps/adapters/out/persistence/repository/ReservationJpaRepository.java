@@ -65,7 +65,6 @@ public interface ReservationJpaRepository extends JpaRepository<ReservationJpaEn
      * @param start  The start time of the check range (must be after endTime).
      * @return A list of overlapping reservations.
      */
-    @EntityGraph(attributePaths = { "parkingSpot", "parkingSpot.parking" })
     List<ReservationJpaEntity> findByParkingSpotIdAndStateAndStartTimeBeforeAndEndTimeAfter(
             Long spotId, String state, LocalDateTime end, LocalDateTime start);
 
@@ -79,7 +78,6 @@ public interface ReservationJpaRepository extends JpaRepository<ReservationJpaEn
      * @param id The reservation ID to exclude.
      * @return A list of conflicting reservations.
      */
-    @EntityGraph(attributePaths = { "parkingSpot", "parkingSpot.parking" })
     List<ReservationJpaEntity> findByParkingSpotIdAndStateAndStartTimeBeforeAndEndTimeAfterAndIdNot(
             Long spotId, String state, LocalDateTime end, LocalDateTime start, Long id);
 }

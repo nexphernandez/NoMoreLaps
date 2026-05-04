@@ -9,7 +9,6 @@ import com.nomorelaps.adapters.in.api.RoleResponse;
 import com.nomorelaps.adapters.out.persistence.jpa.RoleJpaEntity;
 import com.nomorelaps.domain.models.Role;
 
-@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 /**
  * Mapper interface for Role entity and DTOs.
  * Uses MapStruct to convert between API Requests/Responses and JPA Entities.
@@ -17,6 +16,7 @@ import com.nomorelaps.domain.models.Role;
  * @author nexphernandez DiazLuisAlejandro
  * @version 1.0.0
  */
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface RoleMapper {
 
     /**

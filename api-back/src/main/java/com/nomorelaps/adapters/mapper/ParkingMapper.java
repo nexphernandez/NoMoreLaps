@@ -9,7 +9,6 @@ import com.nomorelaps.adapters.in.api.ParkingResponse;
 import com.nomorelaps.adapters.out.persistence.jpa.ParkingJpaEntity;
 import com.nomorelaps.domain.models.Parking;
 
-@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 /**
  * Mapper interface for Parking entity and DTOs.
  * Uses MapStruct to convert between API Requests/Responses and JPA Entities.
@@ -17,6 +16,7 @@ import com.nomorelaps.domain.models.Parking;
  * @author nexphernandez DiazLuisAlejandro
  * @version 1.0.0
  */
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface ParkingMapper {
     /**
      * Converts an API request into a domain model.

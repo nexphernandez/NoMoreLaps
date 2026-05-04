@@ -9,7 +9,6 @@ import com.nomorelaps.adapters.in.api.UserResponse;
 import com.nomorelaps.adapters.out.persistence.jpa.UserJpaEntity;
 import com.nomorelaps.domain.models.User;
 
-@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 /**
  * Mapper interface for User entity and DTOs.
  * Uses MapStruct to convert between API Requests/Responses and JPA Entities.
@@ -17,6 +16,7 @@ import com.nomorelaps.domain.models.User;
  * @author nexphernandez DiazLuisAlejandro
  * @version 1.0.0
  */
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface UserMapper {
     /**
      * Converts an API request into a domain model.
@@ -43,6 +43,7 @@ public interface UserMapper {
     @Mapping(target = "companies", ignore = true)
     @Mapping(target = "reservations", ignore = true)
     @Mapping(target = "sanctions", ignore = true)
+    @Mapping(target = "role", ignore = true)
     UserJpaEntity toJpaEntity(User domain);
 
     /**
@@ -54,5 +55,6 @@ public interface UserMapper {
     @Mapping(target = "companies", ignore = true)
     @Mapping(target = "reservations", ignore = true)
     @Mapping(target = "sanctions", ignore = true)
+    @Mapping(target = "role", ignore = true)
     User toDomain(UserJpaEntity entity);
 }
