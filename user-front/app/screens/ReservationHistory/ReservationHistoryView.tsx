@@ -51,11 +51,16 @@ const ReservationHistoryView: React.FC<ReservationHistoryViewProps> = ({ history
             <View style={styles.cardHeader}>
               <Typography variant="h3">{(item as any).parkingName || `Reservation #${item.id}`}</Typography>
               <Badge 
-                label={item.state || 'UNKNOWN'} 
+                label={
+                  item.state === 'PENDING_SYNC' ? 'WAITING CONNECTION' : 
+                  item.state === 'SYNC_ERROR' ? 'SYNC ERROR' :
+                  (item.state || 'UNKNOWN')
+                } 
                 type={
+                  item.state === 'PENDING_SYNC' ? 'warning' :
+                  item.state === 'SYNC_ERROR' ? 'danger' :
                   item.state === 'ACTIVE' ? 'success' : 
-                  item.state === 'COMPLETED' ? 'success' : 
-                  item.state === 'SANCTIONED' ? 'danger' : 'danger'
+                  item.state === 'COMPLETED' ? 'success' : 'danger'
                 } 
               />
             </View>
@@ -121,14 +126,41 @@ const ReservationHistoryView: React.FC<ReservationHistoryViewProps> = ({ history
                   </View>
                   <View style={styles.modalRow}>
                     <Typography variant="label">Status</Typography>
-                    <Badge label={selectedRes.state || ''} type={selectedRes.state === 'ACTIVE' ? 'success' : 'danger'} />
+                    <Badge 
+                      label={
+                        selectedRes.state === 'PENDING_SYNC' ? 'WAITING CONNECTION' : 
+                        selectedRes.state === 'SYNC_ERROR' ? 'SYNC ERROR' :
+                        (selectedRes.state || '')
+                      } 
+                      type={
+                        selectedRes.state === 'PENDING_SYNC' ? 'warning' : 
+                        selectedRes.state === 'SYNC_ERROR' ? 'danger' :
+                        (selectedRes.state === 'ACTIVE' ? 'success' : 'danger')
+                      } 
+                    />
                   </View>
                   <View style={styles.modalRow}>
                     <Typography variant="label">Total Paid</Typography>
-                    <Typography variant="h2" color={theme.primary}>{selectedRes.price}€</Typography>
+                    <Typography variant="h2" color={theme.primary}>{selectedRes.price || '0'}€</Typography>
                   </View>
-                </View>
+                  
+                  {selectedRes.state === 'PENDING_SYNC' && (
+                    <View style={{ backgroundColor: '#FFFBEB', padding: 12, borderRadius: 8, marginTop: 8 }}>
+                       <Typography variant="caption" color="#92400E">
+                         This reservation is stored on your device. It will be sent to the server as soon as you have internet connection.
+                       </Typography>
+                    </View>
+                  )}
 
+                  {selectedRes.state === 'SYNC_ERROR' && (
+                    <View style={{ backgroundColor: '#FEF2F2', padding: 12, borderRadius: 8, marginTop: 8 }}>
+                       <Typography variant="caption" color={theme.danger}>
+                         There was an error syncing this reservation with the server. This could be due to an expired session. Please try logging in again or contact support.
+                       </Typography>
+                    </View>
+                  )}
+                </View>
+ 
                 {selectedRes.state === 'ACTIVE' && (
                   <View style={styles.modalFooter}>
                     <CustomButton 

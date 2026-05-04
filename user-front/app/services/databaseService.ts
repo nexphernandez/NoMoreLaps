@@ -56,6 +56,7 @@ class DatabaseService {
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             spotId INTEGER,
             parkingId INTEGER,
+            userId INTEGER,
             startTime TEXT,
             endTime TEXT,
             status TEXT DEFAULT 'PENDING'
@@ -168,19 +169,24 @@ class DatabaseService {
   async addPendingReservation(reservation: any) {
     const db = await this.getDb();
     await db.runAsync(
-      'INSERT INTO pending_reservations (spotId, parkingId, startTime, endTime) VALUES (?, ?, ?, ?)',
-      [reservation.spotId, reservation.parkingId, reservation.startTime, reservation.endTime]
+      'INSERT INTO pending_reservations (spotId, parkingId, userId, startTime, endTime) VALUES (?, ?, ?, ?, ?)',
+      [reservation.spotId, reservation.parkingId, reservation.userId, reservation.startTime, reservation.endTime]
     );
   }
 
   async getPendingReservations() {
     const db = await this.getDb();
-    return await db.getAllAsync('SELECT * FROM pending_reservations WHERE status = "PENDING"');
+    return await db.getAllAsync('SELECT * FROM pending_reservations WHERE status != "SYNCED"');
   }
 
   async markAsSynced(id: number) {
     const db = await this.getDb();
     await db.runAsync('UPDATE pending_reservations SET status = "SYNCED" WHERE id = ?', [id]);
+  }
+
+  async markAsFailed(id: number) {
+    const db = await this.getDb();
+    await db.runAsync('UPDATE pending_reservations SET status = "FAILED" WHERE id = ?', [id]);
   }
 
   async addPendingUpdate(type: string, data: any) {

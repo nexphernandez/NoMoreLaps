@@ -22,13 +22,10 @@ import com.nomorelaps.domain.models.Reservation;
 public class ReservationService implements IReservationService {
 
     private final IReservationPersistenceAdapter persistencePort;
-    private final com.nomorelaps.business.interfaces.IParkingSpotService spotService;
 
     @Autowired
-    public ReservationService(IReservationPersistenceAdapter persistencePort, 
-                             com.nomorelaps.business.interfaces.IParkingSpotService spotService) {
+    public ReservationService(IReservationPersistenceAdapter persistencePort) {
         this.persistencePort = persistencePort;
-        this.spotService = spotService;
     }
 
     @Override

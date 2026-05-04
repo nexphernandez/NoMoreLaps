@@ -29,13 +29,13 @@ const reservationService = {
     } catch (error: any) {
       console.log('Reservation Error Object:', JSON.stringify(error));
       
-      // If it's a network error (no response)
       if (!error.response || error.code === 'ERR_NETWORK') {
         console.warn('OFFLINE DETECTED: saving reservation to local queue...');
         try {
           await databaseService.addPendingReservation({
             spotId: reservation.parkingSpotId,
             parkingId: reservation.parkingId || 0,
+            userId: reservation.userId,
             startTime: reservation.startTime,
             endTime: reservation.endTime
           });
@@ -64,13 +64,22 @@ const reservationService = {
       return response.data;
     } catch (error: any) {
       console.warn('[OFFLINE] Fetching reservation history from local cache...');
+      
       const localData = await databaseService.getUserReservations();
-      if (localData.length > 0) {
-        console.log(`[OFFLINE] Loaded ${localData.length} reservations from cache.`);
-        return localData.map((row: any) => JSON.parse(row.data));
-      }
-      console.error('[OFFLINE] No reservations found in local cache.');
-      throw new Error('No offline reservations available');
+      const cached = localData.map((row: any) => JSON.parse(row.data));
+      
+      const pendingData = await databaseService.getPendingReservations();
+      const pending = pendingData.map((row: any) => ({
+        id: -row.id,
+        parkingSpotId: row.spotId,
+        parkingId: row.parkingId,
+        startTime: row.startTime,
+        endTime: row.endTime,
+        state: row.status === 'FAILED' ? 'SYNC_ERROR' : 'PENDING_SYNC',
+        parkingName: row.status === 'FAILED' ? 'Error in sync' : 'Pending Sync...'
+      }));
+
+      return [...pending, ...cached];
     }
   },
 

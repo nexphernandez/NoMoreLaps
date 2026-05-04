@@ -23,7 +23,6 @@ class SyncService {
     this.isSyncing = true;
 
     try {
-      // 1. Sync Pending Reservations
       const pendingRes = await databaseService.getPendingReservations();
       if (pendingRes.length > 0) {
         console.log(`Syncing ${pendingRes.length} pending reservations...`);
@@ -31,17 +30,21 @@ class SyncService {
           try {
             await reservationService.create({
               parkingSpotId: res.spotId,
+              parkingId: res.parkingId,
+              userId: res.userId,
               startTime: res.startTime,
               endTime: res.endTime
             });
             await databaseService.markAsSynced(res.id);
-          } catch (error) {
+          } catch (error: any) {
             console.error(`Failed to sync reservation ${res.id}:`, error);
+            if (error.response || error.status) {
+              await databaseService.markAsFailed(res.id);
+            }
           }
         }
       }
 
-      // 2. Sync Pending Profile Updates
       const pendingUpdates = await databaseService.getPendingUpdates();
       if (pendingUpdates.length > 0) {
         console.log(`Syncing ${pendingUpdates.length} pending updates...`);
