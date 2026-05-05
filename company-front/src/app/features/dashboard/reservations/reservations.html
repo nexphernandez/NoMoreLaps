@@ -1,0 +1,46 @@
+<div class="reservations-container">
+  <header class="page-header">
+    <div class="header-text">
+      <h1 class="page-title">Listado de Reservas</h1>
+      <p class="page-subtitle">Monitorea la actividad en tiempo real de tus parkings.</p>
+    </div>
+  </header>
+
+  <div class="filters-bar glass-card">
+    <div class="search-box">
+      <span class="search-icon">🔍</span>
+      <input type="text" placeholder="Buscar por usuario..." class="filter-input">
+    </div>
+    <div class="filter-actions">
+      <select class="filter-select">
+        <option value="all">Todos los parkings</option>
+        <option *ngFor="let p of mockParkings">{{ p }}</option>
+      </select>
+      
+      <select class="filter-select">
+        <option value="all">Todos los estados</option>
+        <option value="pending">Pendiente</option>
+        <option value="finished">Finalizada</option>
+        <option value="canceled">Cancelada</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="reservations-list">
+    <div class="list-header">
+      <span>USUARIO Y UBICACIÓN</span>
+      <span>FECHA Y HORA</span>
+      <span>ESTADO</span>
+      <span>ACCIONES</span>
+    </div>
+
+    <app-reservation-row 
+      *ngFor="let res of mockReservations"
+      [userName]="res.user"
+      [parkingName]="res.parking"
+      [date]="res.date"
+      [time]="res.time"
+      [status]="res.status"
+    ></app-reservation-row>
+  </div>
+</div>
