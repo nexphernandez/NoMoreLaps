@@ -1,0 +1,56 @@
+<div class="developer-container">
+  <header class="page-header">
+    <div class="header-text">
+      <h1 class="page-title">API & Integración</h1>
+      <p class="page-subtitle">Conecta tus sistemas externos con la plataforma de NoMoreLaps.</p>
+    </div>
+  </header>
+
+  <div class="api-key-section glass-card">
+    <div class="section-header">
+      <h3>Tu Clave de API</h3>
+      <span class="badge-status">Activa</span>
+    </div>
+    
+    <p class="section-desc">Utiliza esta clave para autenticar tus peticiones desde sistemas de terceros. Mantén esta clave en secreto.</p>
+    
+    <div class="key-container">
+      <code class="api-key">{{ showKey ? apiKey : '••••••••••••••••••••••••••••••••' }}</code>
+      <div class="key-actions">
+        <button class="icon-btn" (click)="toggleKey()">{{ showKey ? '👁️‍🗨️' : '👁️' }}</button>
+        <button class="icon-btn" (click)="copyKey()">📋</button>
+      </div>
+    </div>
+
+    <div class="danger-zone">
+      <button class="btn-danger" (click)="onRegenerate()">Regenerar Clave</button>
+      <span class="warning-text">Esto invalidará tu clave actual inmediatamente.</span>
+    </div>
+  </div>
+
+  <div class="docs-section">
+    <h3>Documentación Rápida</h3>
+    
+    <div class="doc-card glass-card">
+      <h4>Autenticación</h4>
+      <p>Todas las peticiones deben incluir tu clave de API en la cabecera HTTP:</p>
+      <pre class="code-block">X-API-KEY: {{ apiKey }}</pre>
+    </div>
+
+    <div class="doc-grid">
+      <div class="doc-card glass-card">
+        <div class="method-badge post">POST</div>
+        <h4>Crear Reserva</h4>
+        <code class="endpoint">/api/v1/external/reservations</code>
+        <p class="endpoint-desc">Permite a tu sistema crear reservas automáticamente.</p>
+      </div>
+
+      <div class="doc-card glass-card">
+        <div class="method-badge get">GET</div>
+        <h4>Estado del Parking</h4>
+        <code class="endpoint">/api/v1/external/parkings/{{ '{id}' }}/status</code>
+        <p class="endpoint-desc">Consulta la disponibilidad en tiempo real.</p>
+      </div>
+    </div>
+  </div>
+</div>

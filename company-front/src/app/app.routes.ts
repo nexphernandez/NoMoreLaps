@@ -6,6 +6,7 @@ import { Home } from './features/dashboard/home/home';
 import { Parkings } from './features/dashboard/parkings/parkings';
 import { ParkingCreate } from './features/dashboard/parkings/parking-create/parking-create';
 import { Reservations } from './features/dashboard/reservations/reservations';
+import { Developer } from './features/dashboard/developer/developer';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -18,6 +19,7 @@ export const routes: Routes = [
       { path: 'parkings', component: Parkings },
       { path: 'parkings/new', component: ParkingCreate },
       { path: 'reservations', component: Reservations },
+      { path: 'developer', component: Developer },
       { path: '**', redirectTo: '' }
     ]
   },
