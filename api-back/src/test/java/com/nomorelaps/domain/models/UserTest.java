@@ -69,4 +69,21 @@ class UserTest {
         assertEquals(now, user1.getCreateAt());
         assertEquals(role, user1.getRole());
     }
+
+    @Test
+    @DisplayName("User - Equals and HashCode")
+    void testUserEquals() {
+        User u1 = new User(1L);
+        User u2 = new User(1L);
+        User u3 = new User(2L);
+        User uNull = null;
+        Object other = new Object();
+
+        assertEquals(u1, u2);
+        assertEquals(u1.hashCode(), u2.hashCode());
+        assertNotEquals(u1, u3);
+        assertNotEquals(u1, uNull);
+        assertNotEquals(u1, other);
+        assertEquals(u1, u1);
+    }
 }

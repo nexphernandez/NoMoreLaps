@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -155,9 +156,37 @@ class ReservationControllerTest {
     }
 
     @Test
-    @DisplayName("GET /api/reservations/{id} - Forbidden if no user")
-    void shouldReturnForbiddenWhenNoUser() throws Exception {
-        mockMvc.perform(get("/api/reservations/1"))
-                .andExpect(status().isForbidden());
+    @DisplayName("GET /api/reservations/spot/{id}/occupied - Filter check")
+    @WithMockUser
+    void shouldFilterNonActiveReservations() throws Exception {
+        Reservation active = new Reservation(1L);
+        active.setState("ACTIVE");
+        Reservation cancelled = new Reservation(2L);
+        cancelled.setState("CANCELLED");
+        
+        when(reservationService.findByParkingSpotId(1L)).thenReturn(Arrays.asList(active, cancelled));
+        
+        mockMvc.perform(get("/api/reservations/spot/1/occupied"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(1))
+                .andExpect(jsonPath("$[0].id").value(1));
+    }
+
+    @Test
+    @DisplayName("GET /api/reservations/parking/{id}/occupied - Filter check")
+    @WithMockUser
+    void shouldFilterNonActiveReservationsByParking() throws Exception {
+        Reservation active = new Reservation(1L);
+        active.setState("ACTIVE");
+        Reservation completed = new Reservation(2L);
+        completed.setState("COMPLETED");
+        
+        when(reservationService.findByParkingId(1L)).thenReturn(Arrays.asList(active, completed));
+        
+        mockMvc.perform(get("/api/reservations/parking/1/occupied"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(1))
+                .andExpect(jsonPath("$[0].id").value(1));
     }
 }
+

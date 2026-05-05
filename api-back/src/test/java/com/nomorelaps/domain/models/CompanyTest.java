@@ -44,4 +44,19 @@ class CompanyTest {
         assertEquals(2L, c1.getId());
         assertEquals("New Corp", c1.getName());
     }
+
+    @Test
+    @DisplayName("Company - Equals and HashCode")
+    void testCompanyEquals() {
+        Company c1 = new Company(1L);
+        Company c2 = new Company(1L);
+        Company c3 = new Company(2L);
+
+        assertEquals(c1, c2);
+        assertEquals(c1.hashCode(), c2.hashCode());
+        assertNotEquals(c1, c3);
+        assertNotEquals(c1, null);
+        assertNotEquals(c1, new Object());
+        assertEquals(c1, c1);
+    }
 }

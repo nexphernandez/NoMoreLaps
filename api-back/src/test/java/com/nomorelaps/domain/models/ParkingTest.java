@@ -63,4 +63,19 @@ class ParkingTest {
         assertEquals(4.0, p1.getPricePerHour());
         assertEquals(company, p1.getCompany());
     }
+
+    @Test
+    @DisplayName("Parking - Equals and HashCode")
+    void testParkingEquals() {
+        Parking p1 = new Parking(1L);
+        Parking p2 = new Parking(1L);
+        Parking p3 = new Parking(2L);
+
+        assertEquals(p1, p2);
+        assertEquals(p1.hashCode(), p2.hashCode());
+        assertNotEquals(p1, p3);
+        assertNotEquals(p1, null);
+        assertNotEquals(p1, new Object());
+        assertEquals(p1, p1);
+    }
 }

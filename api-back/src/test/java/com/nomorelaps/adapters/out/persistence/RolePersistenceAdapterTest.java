@@ -3,6 +3,8 @@ package com.nomorelaps.adapters.out.persistence;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -75,10 +77,10 @@ class RolePersistenceAdapterTest {
     @Test
     @DisplayName("findAll - Should return mapped domain list")
     void shouldFindAll() {
-        when(repository.findAll()).thenReturn(java.util.Collections.singletonList(entity));
+        when(repository.findAll()).thenReturn(Collections.singletonList(entity));
         when(mapper.toDomain(entity)).thenReturn(role);
 
-        java.util.List<Role> roles = adapter.findAll();
+        List<Role> roles = adapter.findAll();
 
         assertNotNull(roles);
         assertEquals(1, roles.size());

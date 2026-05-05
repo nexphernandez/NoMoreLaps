@@ -234,5 +234,44 @@ class UserServiceTest {
         assertEquals("alice@test.com", existingUser.getEmail());
         verify(passwordEncoder, never()).encode(anyString());
     }
+
+    @Test
+    @DisplayName("update - Should update calendarEnable")
+    void shouldUpdateCalendarEnable() {
+        User existingUser = new User(1L);
+        existingUser.setCalendarEnable(false);
+
+        User updates = new User(1L);
+        updates.setCalendarEnable(true);
+
+        when(persistencePort.findById(1L)).thenReturn(Optional.of(existingUser));
+        when(persistencePort.save(any(User.class))).thenReturn(existingUser);
+
+        User result = userService.update(updates);
+
+        assertTrue(result.isCalendarEnable());
+        verify(persistencePort).save(existingUser);
+    }
+
+    @Test
+    @DisplayName("update - Should skip name and password when they are empty strings")
+    void shouldSkipEmptyStringsOnUpdate() {
+        User existingUser = new User(1L);
+        existingUser.setName("Alice");
+        existingUser.setPassword("encoded");
+
+        User updates = new User(1L);
+        updates.setName("");
+        updates.setPassword("");
+
+        when(persistencePort.findById(1L)).thenReturn(Optional.of(existingUser));
+        when(persistencePort.save(any(User.class))).thenReturn(existingUser);
+
+        userService.update(updates);
+
+        assertEquals("Alice", existingUser.getName());
+        assertEquals("encoded", existingUser.getPassword());
+        verify(passwordEncoder, never()).encode(anyString());
+    }
 }
 

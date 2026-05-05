@@ -46,4 +46,19 @@ class ReservationTest {
         assertEquals(10.0, r1.getPrice());
         assertEquals("COMPLETED", r1.getState());
     }
+
+    @Test
+    @DisplayName("Reservation - Equals and HashCode")
+    void testReservationEquals() {
+        Reservation r1 = new Reservation(1L);
+        Reservation r2 = new Reservation(1L);
+        Reservation r3 = new Reservation(2L);
+
+        assertEquals(r1, r2);
+        assertEquals(r1.hashCode(), r2.hashCode());
+        assertNotEquals(r1, r3);
+        assertNotEquals(r1, null);
+        assertNotEquals(r1, new Object());
+        assertEquals(r1, r1);
+    }
 }

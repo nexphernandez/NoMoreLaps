@@ -39,4 +39,19 @@ class DynamicPriceTest {
         assertEquals(2, d1.getDayOfWeek());
         assertEquals(2.0, d1.getMinPrice());
     }
+
+    @Test
+    @DisplayName("DynamicPrice - Equals and HashCode")
+    void testDynamicPriceEquals() {
+        DynamicPrice d1 = new DynamicPrice(1L);
+        DynamicPrice d2 = new DynamicPrice(1L);
+        DynamicPrice d3 = new DynamicPrice(2L);
+
+        assertEquals(d1, d2);
+        assertEquals(d1.hashCode(), d2.hashCode());
+        assertNotEquals(d1, d3);
+        assertNotEquals(d1, null);
+        assertNotEquals(d1, new Object());
+        assertEquals(d1, d1);
+    }
 }

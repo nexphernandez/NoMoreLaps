@@ -4,6 +4,9 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+import java.util.List;
+import java.util.Optional;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -36,8 +39,8 @@ class DynamicPriceServiceTest {
     @Test
     @DisplayName("Should find dynamic price by id")
     void shouldFindById() {
-        when(persistencePort.findById(1L)).thenReturn(java.util.Optional.of(validPrice));
-        java.util.Optional<DynamicPrice> found = dynamicPriceService.findById(1L);
+        when(persistencePort.findById(1L)).thenReturn(Optional.of(validPrice));
+        Optional<DynamicPrice> found = dynamicPriceService.findById(1L);
         assertTrue(found.isPresent());
         assertEquals(validPrice, found.get());
     }
@@ -45,16 +48,16 @@ class DynamicPriceServiceTest {
     @Test
     @DisplayName("Should find all dynamic prices")
     void shouldFindAll() {
-        when(persistencePort.findAll()).thenReturn(java.util.List.of(validPrice));
-        java.util.List<DynamicPrice> found = dynamicPriceService.findAll();
+        when(persistencePort.findAll()).thenReturn(List.of(validPrice));
+        List<DynamicPrice> found = dynamicPriceService.findAll();
         assertEquals(1, found.size());
     }
 
     @Test
     @DisplayName("Should find dynamic prices by parking id")
     void shouldFindByParkingId() {
-        when(persistencePort.findByParkingId(1L)).thenReturn(java.util.List.of(validPrice));
-        java.util.List<DynamicPrice> found = dynamicPriceService.findByParkingId(1L);
+        when(persistencePort.findByParkingId(1L)).thenReturn(List.of(validPrice));
+        List<DynamicPrice> found = dynamicPriceService.findByParkingId(1L);
         assertEquals(1, found.size());
     }
 

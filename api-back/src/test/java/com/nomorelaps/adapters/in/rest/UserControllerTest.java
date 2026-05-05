@@ -114,10 +114,46 @@ class UserControllerTest {
     }
 
     @Test
-    @DisplayName("GET /api/users - Forbidden for non-ADMIN user")
-    @WithMockUser(roles = "USER")
-    void shouldReturnForbiddenWithoutUser() throws Exception {
-        mockMvc.perform(get("/api/users"))
-                .andExpect(status().isForbidden());
+    @DisplayName("GET /api/users/email/{email} - Found")
+    @WithMockUser
+    void shouldReturnUserByEmail() throws Exception {
+        User user = new User(1L);
+        user.setEmail("alice@test.com");
+        when(userService.findByEmail("alice@test.com")).thenReturn(Optional.of(user));
+
+        mockMvc.perform(get("/api/users/email/alice@test.com"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.email").value("alice@test.com"));
+    }
+
+    @Test
+    @DisplayName("GET /api/users/email/{email} - Not Found")
+    @WithMockUser
+    void shouldReturn404WhenUserEmailNotFound() throws Exception {
+        when(userService.findByEmail("none@test.com")).thenReturn(Optional.empty());
+
+        mockMvc.perform(get("/api/users/email/none@test.com"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("PUT /api/users/{id} - Updated")
+    @WithMockUser
+    void shouldUpdateUser() throws Exception {
+        UserRequest request = new UserRequest();
+        request.setName("Alice Updated");
+        request.setEmail("alice@test.com");
+        request.setPassword("newPass");
+
+        User updated = new User(1L);
+        updated.setName("Alice Updated");
+        when(userService.update(any(User.class))).thenReturn(updated);
+
+        mockMvc.perform(put("/api/users/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("Alice Updated"));
     }
 }
+

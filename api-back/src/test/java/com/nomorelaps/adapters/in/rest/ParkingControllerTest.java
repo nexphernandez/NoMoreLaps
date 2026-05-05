@@ -1,6 +1,7 @@
 package com.nomorelaps.adapters.in.rest;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyDouble;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -124,7 +125,7 @@ class ParkingControllerTest {
     @Test
     @DisplayName("GET /api/parkings - Returns 200 even without authentication (permitAll)")
     void shouldReturnOkWithoutUserForPublicEndpoint() throws Exception {
-        when(parkingService.findAll()).thenReturn(java.util.Collections.emptyList());
+        when(parkingService.findAll()).thenReturn(Collections.emptyList());
         mockMvc.perform(get("/api/parkings"))
                 .andExpect(status().isOk());
     }
@@ -141,4 +142,52 @@ class ParkingControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray());
     }
+    @Test
+    @DisplayName("GET /api/parkings/nearby - Should return nearby results")
+    void shouldFindNearbyParkings() throws Exception {
+        Parking p = new Parking(1L);
+        p.setName("Nearby Parking");
+        when(parkingService.findNearby(anyDouble(), anyDouble(), anyDouble())).thenReturn(Collections.singletonList(p));
+
+        mockMvc.perform(get("/api/parkings/nearby")
+                .param("lat", "40.0")
+                .param("lng", "-3.0")
+                .param("radius", "5.0"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray());
+    }
+
+    @Test
+    @DisplayName("GET /api/parkings/company/{id} - Should return company results")
+    @WithMockUser
+    void shouldFindParkingsByCompany() throws Exception {
+        Parking p = new Parking(1L);
+        when(parkingService.findAllByCompanyId(10L)).thenReturn(Collections.singletonList(p));
+
+        mockMvc.perform(get("/api/parkings/company/10"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray());
+    }
+
+    @Test
+    @DisplayName("PUT /api/parkings/{id} - Updated")
+    @WithMockUser(roles = "COMPANY")
+    void shouldUpdateParking() throws Exception {
+        ParkingRequest request = new ParkingRequest();
+        request.setName("Updated Parking");
+        request.setAddress("New Address");
+        request.setLatitude(1.0);
+        request.setLongitude(1.0);
+
+        Parking updated = new Parking(1L);
+        updated.setName("Updated Parking");
+        when(parkingService.update(any(Parking.class))).thenReturn(updated);
+
+        mockMvc.perform(put("/api/parkings/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("Updated Parking"));
+    }
 }
+

@@ -37,4 +37,19 @@ class ParkingSpotTest {
         assertEquals(202, s1.getNumber());
         assertFalse(s1.isState());
     }
+
+    @Test
+    @DisplayName("ParkingSpot - Equals and HashCode")
+    void testParkingSpotEquals() {
+        ParkingSpot s1 = new ParkingSpot(1L);
+        ParkingSpot s2 = new ParkingSpot(1L);
+        ParkingSpot s3 = new ParkingSpot(2L);
+
+        assertEquals(s1, s2);
+        assertEquals(s1.hashCode(), s2.hashCode());
+        assertNotEquals(s1, s3);
+        assertNotEquals(s1, null);
+        assertNotEquals(s1, new Object());
+        assertEquals(s1, s1);
+    }
 }

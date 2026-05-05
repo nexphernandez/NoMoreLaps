@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -56,16 +57,16 @@ class SanctionServiceTest {
     @Test
     @DisplayName("Should find sanctions by user id")
     void shouldFindByUserId() {
-        when(persistencePort.findByUserId(1L)).thenReturn(java.util.List.of(testSanction));
-        java.util.List<Sanction> found = sanctionService.findByUserId(1L);
+        when(persistencePort.findByUserId(1L)).thenReturn(List.of(testSanction));
+        List<Sanction> found = sanctionService.findByUserId(1L);
         assertEquals(1, found.size());
     }
 
     @Test
     @DisplayName("Should find sanctions by reservation id")
     void shouldFindByReservationId() {
-        when(persistencePort.findByReservationId(1L)).thenReturn(java.util.List.of(testSanction));
-        java.util.List<Sanction> found = sanctionService.findByReservationId(1L);
+        when(persistencePort.findByReservationId(1L)).thenReturn(List.of(testSanction));
+        List<Sanction> found = sanctionService.findByReservationId(1L);
         assertEquals(1, found.size());
     }
 

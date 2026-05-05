@@ -2,6 +2,7 @@ package com.nomorelaps.domain.models;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -186,5 +187,18 @@ public class Parking {
 
     public void setSanctionIntervalInMinutes(Integer sanctionIntervalInMinutes) {
         this.sanctionIntervalInMinutes = sanctionIntervalInMinutes;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Parking parking = (Parking) o;
+        return Objects.equals(id, parking.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

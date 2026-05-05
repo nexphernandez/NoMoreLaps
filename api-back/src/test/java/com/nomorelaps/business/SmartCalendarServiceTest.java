@@ -157,5 +157,20 @@ class SmartCalendarServiceTest {
         // latitude is present, destinationText null → first if is false, second if throws
         assertThrows(IllegalArgumentException.class, () -> smartCalendarService.recommend(request));
     }
+
+    @Test
+    @DisplayName("Should geocode when latitude is null but destinationText is present")
+    void shouldGeocodeWhenLatitudeNull() {
+        request.setLatitude(null);
+        request.setDestinationText("Some Address");
+        
+        SmartGeocodeResponse geocodeResponse = new SmartGeocodeResponse("Formatted", 40.0, -3.0);
+        when(geocodingProvider.geocode("Some Address")).thenReturn(geocodeResponse);
+        when(parkingService.findNearby(anyDouble(), anyDouble(), anyDouble())).thenReturn(Collections.emptyList());
+
+        smartCalendarService.recommend(request);
+
+        verify(geocodingProvider).geocode("Some Address");
+    }
 }
 

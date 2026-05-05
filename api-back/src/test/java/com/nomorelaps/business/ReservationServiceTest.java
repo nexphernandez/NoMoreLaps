@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -110,32 +111,32 @@ class ReservationServiceTest {
     @Test
     @DisplayName("Should find reservations by user id")
     void shouldFindByUserId() {
-        when(persistencePort.findByUserId(1L)).thenReturn(java.util.List.of(validReservation));
-        java.util.List<Reservation> found = reservationService.findByUserId(1L);
+        when(persistencePort.findByUserId(1L)).thenReturn(List.of(validReservation));
+        List<Reservation> found = reservationService.findByUserId(1L);
         assertEquals(1, found.size());
     }
 
     @Test
     @DisplayName("Should find reservations by parking spot id")
     void shouldFindByParkingSpotId() {
-        when(persistencePort.findByParkingSpotId(1L)).thenReturn(java.util.List.of(validReservation));
-        java.util.List<Reservation> found = reservationService.findByParkingSpotId(1L);
+        when(persistencePort.findByParkingSpotId(1L)).thenReturn(List.of(validReservation));
+        List<Reservation> found = reservationService.findByParkingSpotId(1L);
         assertEquals(1, found.size());
     }
 
     @Test
     @DisplayName("Should find reservations by parking id")
     void shouldFindByParkingId() {
-        when(persistencePort.findByParkingId(1L)).thenReturn(java.util.List.of(validReservation));
-        java.util.List<Reservation> found = reservationService.findByParkingId(1L);
+        when(persistencePort.findByParkingId(1L)).thenReturn(List.of(validReservation));
+        List<Reservation> found = reservationService.findByParkingId(1L);
         assertEquals(1, found.size());
     }
 
     @Test
     @DisplayName("Should find reservations by state")
     void shouldFindByState() {
-        when(persistencePort.findByState("ACTIVE")).thenReturn(java.util.List.of(validReservation));
-        java.util.List<Reservation> found = reservationService.findByState("ACTIVE");
+        when(persistencePort.findByState("ACTIVE")).thenReturn(List.of(validReservation));
+        List<Reservation> found = reservationService.findByState("ACTIVE");
         assertEquals(1, found.size());
     }
 
@@ -203,6 +204,33 @@ class ReservationServiceTest {
     void shouldUpdateWhenSpotIsNull() {
         validReservation.setId(100L);
         validReservation.setParkingSpot(null);
+        when(persistencePort.save(any(Reservation.class))).thenReturn(validReservation);
+
+        Reservation updated = reservationService.update(validReservation);
+
+        assertNotNull(updated);
+        verify(persistencePort, never()).hasOverlappingReservationsExcluding(anyLong(), any(), any(), anyLong());
+        verify(persistencePort).save(validReservation);
+    }
+
+    @Test
+    @DisplayName("Should create reservation when parking spot ID is null (no overlap check)")
+    void shouldCreateWhenSpotIdIsNull() {
+        validReservation.getParkingSpot().setId(null);
+        when(persistencePort.save(any(Reservation.class))).thenReturn(validReservation);
+
+        Reservation created = reservationService.create(validReservation);
+
+        assertNotNull(created);
+        verify(persistencePort, never()).hasOverlappingReservations(anyLong(), any(), any());
+        verify(persistencePort).save(validReservation);
+    }
+
+    @Test
+    @DisplayName("Should update reservation when parking spot ID is null (no overlap check)")
+    void shouldUpdateWhenSpotIdIsNull() {
+        validReservation.setId(100L);
+        validReservation.getParkingSpot().setId(null);
         when(persistencePort.save(any(Reservation.class))).thenReturn(validReservation);
 
         Reservation updated = reservationService.update(validReservation);

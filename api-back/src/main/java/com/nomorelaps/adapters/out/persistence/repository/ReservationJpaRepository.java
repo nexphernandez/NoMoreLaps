@@ -43,7 +43,6 @@ public interface ReservationJpaRepository extends JpaRepository<ReservationJpaEn
      * @param parkingId The parking ID.
      * @return A list of matching reservations.
      */
-    @EntityGraph(attributePaths = { "parkingSpot", "parkingSpot.parking" })
     List<ReservationJpaEntity> findByParkingSpotParkingId(Long parkingId);
 
     /**

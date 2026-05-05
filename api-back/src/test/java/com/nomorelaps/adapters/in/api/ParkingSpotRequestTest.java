@@ -1,33 +1,25 @@
 package com.nomorelaps.adapters.in.api;
 
 import static org.junit.jupiter.api.Assertions.*;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 class ParkingSpotRequestTest {
 
     @Test
-    @DisplayName("Should test getters, setters and empty constructor for ParkingSpotRequest")
-    void testGettersAndSetters() {
-        ParkingSpotRequest dto = new ParkingSpotRequest();
-        assertNotNull(dto);
+    @DisplayName("ParkingSpotRequest - Constructors and Accessors")
+    void testRequest() {
+        ParkingSpotRequest req1 = new ParkingSpotRequest();
+        req1.setState(true);
+        req1.setNumber(10);
+        
+        assertTrue(req1.isState());
+        assertTrue(req1.getState());
+        assertEquals(10, req1.getNumber());
 
-        dto.setState(true);
-        assertTrue(dto.isState());
-        assertTrue(dto.getState()); // covers getState()
-        dto.setState(false);
-        assertFalse(dto.getState());
-        dto.setNumber(1);
-        assertEquals(1, dto.getNumber());
+        ParkingSpotRequest req2 = new ParkingSpotRequest(false, 20);
+        assertFalse(req2.isState());
+        assertEquals(20, req2.getNumber());
     }
-
-    @Test
-    @DisplayName("Should test parameterized constructor")
-    void testParameterizedConstructor() {
-        ParkingSpotRequest dto = new ParkingSpotRequest(true, 5);
-        assertTrue(dto.isState());
-        assertEquals(5, dto.getNumber());
-    }
-
 }
-

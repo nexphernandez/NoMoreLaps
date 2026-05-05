@@ -38,7 +38,18 @@ public class SanctionPersistenceAdapter
      */
     @Override
     protected SanctionJpaEntity toEntity(Sanction domain) {
-        return mapper.toJpaEntity(domain);
+        SanctionJpaEntity entity = mapper.toJpaEntity(domain);
+        if (domain.getUser() != null && domain.getUser().getId() != null) {
+            com.nomorelaps.adapters.out.persistence.jpa.UserJpaEntity userEntity = new com.nomorelaps.adapters.out.persistence.jpa.UserJpaEntity();
+            userEntity.setId(domain.getUser().getId());
+            entity.setUser(userEntity);
+        }
+        if (domain.getReservation() != null && domain.getReservation().getId() != null) {
+            com.nomorelaps.adapters.out.persistence.jpa.ReservationJpaEntity resEntity = new com.nomorelaps.adapters.out.persistence.jpa.ReservationJpaEntity();
+            resEntity.setId(domain.getReservation().getId());
+            entity.setReservation(resEntity);
+        }
+        return entity;
     }
 
     /**
@@ -46,7 +57,18 @@ public class SanctionPersistenceAdapter
      */
     @Override
     protected Sanction toDomain(SanctionJpaEntity entity) {
-        return mapper.toDomain(entity);
+        Sanction domain = mapper.toDomain(entity);
+        if (entity.getUser() != null) {
+            com.nomorelaps.domain.models.User user = new com.nomorelaps.domain.models.User();
+            user.setId(entity.getUser().getId());
+            domain.setUser(user);
+        }
+        if (entity.getReservation() != null) {
+            com.nomorelaps.domain.models.Reservation res = new com.nomorelaps.domain.models.Reservation();
+            res.setId(entity.getReservation().getId());
+            domain.setReservation(res);
+        }
+        return domain;
     }
 
     @Override

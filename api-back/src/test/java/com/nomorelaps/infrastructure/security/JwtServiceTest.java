@@ -1,7 +1,8 @@
 package com.nomorelaps.infrastructure.security;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.anyString;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -59,5 +60,62 @@ class JwtServiceTest {
         when(otherUser.getUsername()).thenReturn("other@test.com");
         
         assertFalse(jwtService.isTokenValid(token, otherUser));
+    }
+
+    @Test
+    @DisplayName("isTokenValid - Should return false for expired token")
+    void shouldReturnFalseForExpiredToken() {
+        ReflectionTestUtils.setField(jwtService, "jwtExpiration", -60L); // Expired 60 minutes ago
+        when(userDetails.getUsername()).thenReturn("user@test.com");
+        
+        String token = jwtService.generateToken(userDetails);
+        
+        assertFalse(jwtService.isTokenValid(token, userDetails));
+    }
+
+    @Test
+    @DisplayName("isTokenValid - Should return false when username does not match")
+    void shouldReturnFalseWhenUsernameMismatch() {
+        // Arrange
+        when(userDetails.getUsername()).thenReturn("user@test.com");
+        String token = jwtService.generateToken(userDetails);
+        
+        UserDetails otherUser = org.mockito.Mockito.mock(UserDetails.class);
+        when(otherUser.getUsername()).thenReturn("wrong@test.com");
+        
+        // Act & Assert
+        assertFalse(jwtService.isTokenValid(token, otherUser));
+    }
+
+    @Test
+    @DisplayName("isTokenValid - Should return false when token is expired (covering the && second part)")
+    void shouldReturnFalseWhenExpiredPartTwo() {
+        // Arrange
+        JwtService spyService = spy(jwtService);
+        ReflectionTestUtils.setField(spyService, "secretKey", SECRET);
+        ReflectionTestUtils.setField(spyService, "jwtExpiration", 60L);
+        
+        when(userDetails.getUsername()).thenReturn("user@test.com");
+        String token = jwtService.generateToken(userDetails);
+        
+        // We mock extractUsername to succeed, but isTokenExpired to return true
+        doReturn("user@test.com").when(spyService).extractUsername(anyString());
+        doReturn(true).when(spyService).isTokenExpired(anyString());
+        
+        // Act
+        boolean isValid = spyService.isTokenValid(token, userDetails);
+        
+        // Assert
+        assertFalse(isValid, "Should be false because it is expired, even if username matches");
+    }
+
+    @Test
+    @DisplayName("isTokenValid - Should return false on any exception")
+    void shouldReturnFalseOnException() {
+        // Act
+        boolean isValid = jwtService.isTokenValid("invalid-token", userDetails);
+        
+        // Assert
+        assertFalse(isValid);
     }
 }

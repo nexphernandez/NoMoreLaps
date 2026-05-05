@@ -115,5 +115,24 @@ class ParkingSpotPersistenceAdapterTest {
         assertNotNull(saved);
         assertNull(entityNoParking.getParking());
     }
+
+    @Test
+    @DisplayName("toEntity - Should skip parking when parking ID is null")
+    void shouldHandleNullParkingId() {
+        // Arrange
+        spot.setParking(new Parking()); // ID is null
+        when(mapper.toJpaEntity(spot)).thenReturn(entity);
+        when(repository.save(any())).thenReturn(entity);
+        when(mapper.toDomain(entity)).thenReturn(spot);
+
+        // Act
+        adapter.save(spot);
+
+        // Assert
+        // Since spot has an ID (1L from setUp), it will go to the 'else if' 
+        // and try to find existing parking in DB. In this test, findById(1L) 
+        // is not stubbed to return anything, so it won't set parking.
+        assertNull(entity.getParking());
+    }
 }
 
