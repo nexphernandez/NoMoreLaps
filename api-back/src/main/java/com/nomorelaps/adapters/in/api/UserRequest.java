@@ -17,9 +17,10 @@ public class UserRequest {
     @NotBlank(message = "El email no puede estar vacío")
     @Email(message = "Debe ser un formato de email correcto")
     private String email;
-    @NotBlank(message = "La contraseña no puede estar vacía")
     private String password;
     private boolean calendarEnable;
+    private String avatar;
+    private String phone;
 
 
     /**
@@ -34,12 +35,16 @@ public class UserRequest {
      * @param email of the User
      * @param password of the User
      * @param enable status of the User calendar
+     * @param avatar profile image of the User
+     * @param phone phone number of the User
      */
-    public UserRequest(String name, String email, String password, boolean enable) {
+    public UserRequest(String name, String email, String password, boolean enable, String avatar, String phone) {
         this.name = name;
         this.email = email;
         this.password = password;
         this.calendarEnable = enable;
+        this.avatar = avatar;
+        this.phone = phone;
     }
 
 
@@ -79,4 +84,19 @@ public class UserRequest {
         this.calendarEnable = enable;
     }
 
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
 }

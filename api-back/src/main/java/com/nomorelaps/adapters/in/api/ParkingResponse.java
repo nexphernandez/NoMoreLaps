@@ -20,6 +20,9 @@ public class ParkingResponse {
     private LocalDateTime openingTime;
     private LocalDateTime closingTime;
     private LocalDateTime createdAt;
+    private Double sanctionAmount;
+    private Integer sanctionIntervalInMinutes;
+    private Double pricePerHour;
     
     /**
      * Empty constructor
@@ -47,7 +50,7 @@ public class ParkingResponse {
      * @param createdAt of the parking creation day
      */
     public ParkingResponse(Long id, String address, String name, Double latitude, Double longitude, 
-                           LocalDateTime openingTime, LocalDateTime closingTime, LocalDateTime createdAt) {
+                           LocalDateTime openingTime, LocalDateTime closingTime, LocalDateTime createdAt, Double pricePerHour) {
         this.id = id;
         this.address = address;
         this.name = name;
@@ -56,6 +59,7 @@ public class ParkingResponse {
         this.openingTime = openingTime;
         this.closingTime = closingTime;
         this.createdAt = createdAt;
+        this.pricePerHour = pricePerHour;
     }
 
     public Long getId() {
@@ -120,6 +124,30 @@ public class ParkingResponse {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public Double getSanctionAmount() {
+        return sanctionAmount;
+    }
+
+    public void setSanctionAmount(Double sanctionAmount) {
+        this.sanctionAmount = sanctionAmount;
+    }
+
+    public Integer getSanctionIntervalInMinutes() {
+        return sanctionIntervalInMinutes;
+    }
+
+    public void setSanctionIntervalInMinutes(Integer sanctionIntervalInMinutes) {
+        this.sanctionIntervalInMinutes = sanctionIntervalInMinutes;
+    }
+
+    public Double getPricePerHour() {
+        return pricePerHour;
+    }
+
+    public void setPricePerHour(Double pricePerHour) {
+        this.pricePerHour = pricePerHour;
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.nomorelaps.domain.models;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 /**
  * Domain model representing a Sanction applied to a User.
@@ -23,6 +24,14 @@ public class Sanction {
      * Empty constructor
      */
     public Sanction() {
+    }
+
+    /**
+     * Constructor with the sanction primary key
+     * @param id sanction id
+     */
+    public Sanction(Long id) {
+        this.id = id;
     }
 
     /**
@@ -101,5 +110,18 @@ public class Sanction {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Sanction sanction = (Sanction) o;
+        return Objects.equals(id, sanction.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

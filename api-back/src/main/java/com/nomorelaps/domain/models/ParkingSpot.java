@@ -1,6 +1,7 @@
 package com.nomorelaps.domain.models;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 /**
  * Domain model representing a Parking Spot.
@@ -21,6 +22,14 @@ public class ParkingSpot {
      * Empty constructor
      */
     public ParkingSpot() {
+    }
+
+    /**
+     * Constructor with the parking spot primary key
+     * @param id parking spot id
+     */
+    public ParkingSpot(Long id) {
+        this.id = id;
     }
 
     /**
@@ -78,5 +87,18 @@ public class ParkingSpot {
 
     public void setParking(Parking parking) {
         this.parking = parking;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ParkingSpot that = (ParkingSpot) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

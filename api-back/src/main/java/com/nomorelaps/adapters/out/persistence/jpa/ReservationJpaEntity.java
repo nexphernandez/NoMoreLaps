@@ -12,6 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 
 /**
@@ -69,17 +70,17 @@ public class ReservationJpaEntity {
     }
 
     /**
-     * Constructor with the reservation atributes
+     * Constructor with the reservation attributes.
      * 
-     * @param id           reservation spot id
+     * @param id           reservation id
      * @param startTime    reservation arrival time
      * @param endTime      reservation departure time
      * @param price        reservation price
      * @param state        reservation state
-     * @param creationTime reservation creationTime
+     * @param creationTime reservation creation time
      * @param parkingSpot  reservation parking spot
      * @param user         reservation user
-     * @param sanction    reservation saction
+     * @param sanctions    reservation sanctions
      */
     public ReservationJpaEntity(Long id, LocalDateTime startTime, LocalDateTime endTime, double price, String state,
             LocalDateTime creationTime, ParkingSpotJpaEntity parkingSpot, UserJpaEntity user,
@@ -183,10 +184,14 @@ public class ReservationJpaEntity {
         return Objects.hash(id);
     }
 
-    @jakarta.persistence.PrePersist
+    /**
+     * Life-cycle callback method called before the entity is persisted.
+     * Automatically sets the creation time if it hasn't been set yet.
+     */
+    @PrePersist
     protected void onCreate() {
         if (this.creationTime == null) {
-            this.creationTime = java.time.LocalDateTime.now();
+            this.creationTime = LocalDateTime.now();
         }
     }
 

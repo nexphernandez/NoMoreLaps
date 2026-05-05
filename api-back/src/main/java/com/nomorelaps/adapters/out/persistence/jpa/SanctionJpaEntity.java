@@ -9,6 +9,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 
 import java.util.Objects;
@@ -160,10 +161,14 @@ public class SanctionJpaEntity {
         return Objects.hash(id);
     }
 
-    @jakarta.persistence.PrePersist
+    /**
+     * Life-cycle callback method called before the entity is persisted.
+     * Automatically sets the arrival time (creation date) if it hasn't been set yet.
+     */
+    @PrePersist
     protected void onCreate() {
         if (this.arrivalTime == null) {
-            this.arrivalTime = java.time.LocalDateTime.now();
+            this.arrivalTime = LocalDateTime.now();
         }
     }
 

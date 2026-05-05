@@ -35,6 +35,9 @@ public class UserService implements IUserService {
         if (persistencePort.findByEmail(user.getEmail()).isPresent()) {
             throw new IllegalArgumentException("BusinessRuleException: El email del usuario ya está registrado en el sistema.");
         }
+        if (user.getPassword() == null || user.getPassword().isEmpty()) {
+            throw new IllegalArgumentException("La contraseña es obligatoria para el registro.");
+        }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return persistencePort.save(user);
     }
@@ -56,10 +59,22 @@ public class UserService implements IUserService {
 
     @Override
     public User update(User user) {
-        if (user.getPassword() != null && !user.getPassword().isEmpty()) {
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
+        User existingUser = persistencePort.findById(user.getId())
+                .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + user.getId()));
+
+        if (user.getName() != null && !user.getName().isEmpty()) {
+            existingUser.setName(user.getName());
         }
-        return persistencePort.save(user);
+        if (user.getEmail() != null && !user.getEmail().isEmpty()) {
+            existingUser.setEmail(user.getEmail());
+        }
+        if (user.getPassword() != null && !user.getPassword().isEmpty()) {
+            existingUser.setPassword(passwordEncoder.encode(user.getPassword()));
+        }
+        
+        existingUser.setCalendarEnable(user.isCalendarEnable());
+
+        return persistencePort.save(existingUser);
     }
 
     @Override

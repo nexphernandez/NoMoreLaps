@@ -22,6 +22,14 @@ public class RoleResponse {
     }
 
     /**
+     * Constructor with the role primary key
+     * @param id role id
+     */
+    public RoleResponse(Long id) {
+        this.id = id;
+    }
+
+    /**
      * Constructor with all the attributes
      * @param id of the role
      * @param name of the role

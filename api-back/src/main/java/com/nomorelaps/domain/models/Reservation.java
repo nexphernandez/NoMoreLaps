@@ -2,6 +2,7 @@ package com.nomorelaps.domain.models;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -27,6 +28,14 @@ public class Reservation {
      * Empty constructor
      */
     public Reservation() {
+    }
+
+    /**
+     * Constructor with the reservation primary key
+     * @param id reservation id
+     */
+    public Reservation(Long id) {
+        this.id = id;
     }
 
     /**
@@ -125,5 +134,18 @@ public class Reservation {
 
     public void setSanctions(Set<Sanction> sanctions) {
         this.sanctions = sanctions;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Reservation that = (Reservation) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

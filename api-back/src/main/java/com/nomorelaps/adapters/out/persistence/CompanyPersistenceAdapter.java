@@ -32,11 +32,17 @@ public class CompanyPersistenceAdapter
         this.mapper = mapper;
     }
 
+    /**
+     * Converts a Company domain object to its JPA Entity equivalent.
+     */
     @Override
     protected CompanyJpaEntity toEntity(Company domain) {
         return mapper.toJpaEntity(domain);
     }
 
+    /**
+     * Converts a Company JPA Entity to its domain model equivalent.
+     */
     @Override
     protected Company toDomain(CompanyJpaEntity entity) {
         return mapper.toDomain(entity);

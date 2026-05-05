@@ -1,5 +1,6 @@
 package com.nomorelaps.business;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,11 @@ public class RoleService implements IRoleService {
     @Override
     public Optional<Role> findById(Long id) {
         return persistencePort.findById(id);
+    }
+
+    @Override
+    public List<Role> findAll() {
+        return persistencePort.findAll();
     }
 
     @Override

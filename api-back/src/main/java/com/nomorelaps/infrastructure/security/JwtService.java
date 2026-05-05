@@ -1,17 +1,17 @@
 package com.nomorelaps.infrastructure.security;
 
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Function;
+import javax.crypto.SecretKey;
+
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-
-import javax.crypto.SecretKey;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Function;
 
 /**
  * Service to handle JWT generation, parsing and validation.
@@ -70,11 +70,15 @@ public class JwtService {
      * Validates if a token belongs to the user and is not expired.
      */
     public boolean isTokenValid(String token, UserDetails userDetails) {
-        final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
+        try {
+            final String username = extractUsername(token);
+            return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
+        } catch (Exception e) {
+            return false;
+        }
     }
 
-    private boolean isTokenExpired(String token) {
+    protected boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
 

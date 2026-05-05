@@ -17,6 +17,8 @@ public class UserResponse {
     private String email;
     private String password;
     private boolean calendarEnable;
+    private String avatar;
+    private String phone;
     private LocalDateTime createAt;
 
 
@@ -40,14 +42,18 @@ public class UserResponse {
      * @param email of the User
      * @param password of the User
      * @param enable of the User
+     * @param avatar profile image of the User
+     * @param phone phone number of the User
      * @param createAt of the User
      */
-    public UserResponse(Long id, String name, String email, String password, boolean enable, LocalDateTime createAt) {
+    public UserResponse(Long id, String name, String email, String password, boolean enable, String avatar, String phone, LocalDateTime createAt) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
         this.calendarEnable = enable;
+        this.avatar = avatar;
+        this.phone = phone;
         this.createAt = createAt;
     }
 
@@ -101,6 +107,22 @@ public class UserResponse {
 
     public void setCreateAt(LocalDateTime createAt) {
         this.createAt = createAt;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 
     @Override

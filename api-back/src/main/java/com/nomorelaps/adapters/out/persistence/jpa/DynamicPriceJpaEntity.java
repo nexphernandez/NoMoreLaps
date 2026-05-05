@@ -9,6 +9,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 
 import java.util.Objects;
@@ -167,10 +168,14 @@ public class DynamicPriceJpaEntity {
         return Objects.hash(id);
     }
 
-    @jakarta.persistence.PrePersist
+    /**
+     * Life-cycle callback method called before the entity is persisted.
+     * Automatically sets the creation date if it hasn't been set yet.
+     */
+    @PrePersist
     protected void onCreate() {
         if (this.createAt == null) {
-            this.createAt = java.time.LocalDateTime.now();
+            this.createAt = LocalDateTime.now();
         }
     }
 }

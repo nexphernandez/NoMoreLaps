@@ -38,6 +38,11 @@ public class ParkingService implements IParkingService {
     }
 
     @Override
+    public List<Parking> findAll() {
+        return persistencePort.findAll();
+    }
+
+    @Override
     public List<Parking> findAllByCompanyId(Long companyId) {
         return persistencePort.findByCompanyId(companyId);
     }
@@ -50,5 +55,15 @@ public class ParkingService implements IParkingService {
     @Override
     public void deleteById(Long id) {
         persistencePort.deleteById(id);
+    }
+
+    @Override
+    public List<Parking> searchByNameOrAddress(String query) {
+        return persistencePort.searchByNameOrAddress(query);
+    }
+
+    @Override
+    public List<Parking> findNearby(double lat, double lng, double radiusInKm) {
+        return persistencePort.findNearby(lat, lng, radiusInKm);
     }
 }

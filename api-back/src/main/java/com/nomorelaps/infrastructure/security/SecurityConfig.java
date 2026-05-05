@@ -2,10 +2,12 @@ package com.nomorelaps.infrastructure.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -19,13 +21,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
-/**
- * Main security configuration for the application.
- * Defines the security filter chain, encryption, and authentication providers.
- *
- * @author nexphernandez DiazLuisAlejandro
- * @version 1.0.0
- */
+@EnableMethodSecurity
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthFilter;
@@ -41,21 +37,33 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        // Public endpoints
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
-                        // Protected endpoints
-                        .anyRequest().authenticated()
-                )
+                        
+                        .requestMatchers(HttpMethod.GET, "/api/parkings", "/api/parkings/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/parking-spots", "/api/parking-spots/**").permitAll()
+                        
+                        .requestMatchers("/services/**").permitAll()
+
+                        .requestMatchers(HttpMethod.POST, "/api/parkings/**").hasRole("COMPANY")
+                        .requestMatchers(HttpMethod.PUT, "/api/parkings/**").hasRole("COMPANY")
+                        .requestMatchers(HttpMethod.DELETE, "/api/parkings/**").hasRole("COMPANY")
+
+                        .requestMatchers("/api/smart-calendar/**").authenticated()
+                        .requestMatchers("/api/reservations/**").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/users/{id}").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/api/users/{id}").authenticated()
+                        
+                        .requestMatchers(HttpMethod.GET, "/api/users").hasRole("ADMIN")
+                        
+                        .anyRequest().authenticated())
                 .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                )
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .headers(headers -> headers
-                        .frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin)
-                );
+                        .frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin));
 
         return http.build();
     }

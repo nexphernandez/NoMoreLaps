@@ -1,72 +1,91 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import * as SecureStore from 'expo-secure-store';
-import authService, { LoginData } from '../services/authService';
 
-/**
- * Interface to describe the 'cloud' of data we are sharing.
- */
-interface AuthContextType {
-  userToken: string | null;
-  isLoading: boolean;
-  login: (data: LoginData) => Promise<void>;
-  logout: () => Promise<void>;
+export interface UserData {
+  id: number;
+  name: string;
+  email: string;
+  phone: string;
+  avatar?: string;
+  calendarEnable?: boolean;
 }
 
-// 1. Create the Context (the container for the cloud)
+interface AuthContextType {
+  userToken: string | null;
+  user: UserData | null;
+  isLoading: boolean;
+  login: (token: string, userData: UserData) => Promise<void>;
+  logout: () => Promise<void>;
+  updateUser: (data: Partial<UserData>) => Promise<void>;
+}
+
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// 2. The Provider component that will wrap the whole app
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [userToken, setUserToken] = useState<string | null>(null);
+  const [user, setUser] = useState<UserData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  const updateUser = async (newData: Partial<UserData>) => {
+    setUser(prev => {
+      if (!prev) return null;
+      const updated = { ...prev, ...newData };
+      
+      SecureStore.setItemAsync('userData', JSON.stringify(updated)).catch(e => 
+        console.error('AuthContext: SecureStore error', e)
+      );
+        
+      return updated;
+    });
+  };
+
   useEffect(() => {
-    /**
-     * When the app starts, check if we already have a token
-     * saved in the phone from a previous session.
-     */
-    const loadToken = async () => {
+    const loadStorageData = async () => {
       try {
         const token = await SecureStore.getItemAsync('userToken');
-        setUserToken(token);
+        const userData = await SecureStore.getItemAsync('userData');
+        
+        if (token) setUserToken(token);
+        if (userData) setUser(JSON.parse(userData));
       } catch (e) {
-        console.error('Error recovering token', e);
+        console.error('Error recovering storage data', e);
       } finally {
         setIsLoading(false);
       }
     };
-    loadToken();
+    loadStorageData();
   }, []);
 
-  const login = async (data: LoginData) => {
+  const login = async (token: string, userData: UserData) => {
     try {
-      const response = await authService.login(data);
-      // Save the token locally on the phone (persistence)
-      await SecureStore.setItemAsync('userToken', response.token);
-      // Update our state so the whole app knows we are logged in
-      setUserToken(response.token);
+      await SecureStore.setItemAsync('userToken', token);
+      await SecureStore.setItemAsync('userData', JSON.stringify(userData));
+      
+      setUserToken(token);
+      setUser(userData);
     } catch (e) {
-      throw e;
+      console.error('Login storage error:', e);
     }
   };
 
   const logout = async () => {
     try {
       await SecureStore.deleteItemAsync('userToken');
+      await SecureStore.deleteItemAsync('userData');
       setUserToken(null);
+      setUser(null);
     } catch (e) {
-      console.error('Logout error', e);
+      console.error('Logout storage error', e);
     }
   };
 
   return (
-    <AuthContext.Provider value={{ userToken, isLoading, login, logout }}>
+    <AuthContext.Provider value={{ userToken, user, isLoading, login, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
-// 3. A custom hook to easily use this context in any component
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {

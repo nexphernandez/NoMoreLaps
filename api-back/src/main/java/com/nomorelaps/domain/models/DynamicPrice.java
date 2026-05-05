@@ -1,6 +1,7 @@
 package com.nomorelaps.domain.models;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 /**
  * Domain model representing a Dynamic Price rule.
@@ -24,6 +25,14 @@ public class DynamicPrice {
      * Empty constructor
      */
     public DynamicPrice() {
+    }
+
+    /**
+     * Constructor with the dynamic price primary key
+     * @param id dynamic price id
+     */
+    public DynamicPrice(Long id) {
+        this.id = id;
     }
 
     /**
@@ -112,5 +121,18 @@ public class DynamicPrice {
 
     public void setParking(Parking parking) {
         this.parking = parking;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DynamicPrice that = (DynamicPrice) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

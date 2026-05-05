@@ -10,6 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 
 import java.util.Objects;
@@ -39,6 +40,12 @@ public class UserJpaEntity {
 
     @Column(name = "enabled")
     private boolean calendarEnable = false;
+
+    @Column(name = "avatar", length = 2048)
+    private String avatar;
+
+    @Column(name = "phone")
+    private String phone;
 
     @Column(name = "created_at")
     private LocalDateTime createAt;
@@ -71,19 +78,21 @@ public class UserJpaEntity {
     }
 
     /**
-     * Constructor with the user atributes
+     * Constructor with the user attributes
      * @param id user id
      * @param name user name
      * @param email user email
      * @param password user password
      * @param calendarEnable user calendar enable
+     * @param avatar user profile image
+     * @param phone user phone number
      * @param createAt user creation date
-     * @param roles user roles
+     * @param role user role
      * @param companies companies list
      * @param reservations reservations list
      * @param sanctions sanctions list
      */
-    public UserJpaEntity(Long id, String name, String email, String password, boolean calendarEnable, 
+    public UserJpaEntity(Long id, String name, String email, String password, boolean calendarEnable, String avatar, String phone,
         LocalDateTime createAt, RoleJpaEntity role, Set<CompanyJpaEntity> companies, 
         Set<ReservationJpaEntity> reservations, Set<SanctionJpaEntity> sanctions) {
         this.id = id;
@@ -91,6 +100,8 @@ public class UserJpaEntity {
         this.email = email;
         this.password = password;
         this.calendarEnable = calendarEnable;
+        this.avatar = avatar;
+        this.phone = phone;
         this.createAt = createAt;
         this.role = role;
         this.companies = companies;
@@ -136,6 +147,22 @@ public class UserJpaEntity {
 
     public void setCalendarEnable(boolean calendarEnable) {
         this.calendarEnable = calendarEnable;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 
     public LocalDateTime getCreateAt() {
@@ -194,10 +221,14 @@ public class UserJpaEntity {
         return Objects.hash(id);
     }
 
-    @jakarta.persistence.PrePersist
+    /**
+     * Life-cycle callback method called before the entity is persisted.
+     * Automatically sets the creation timestamp if it hasn't been set yet.
+     */
+    @PrePersist
     protected void onCreate() {
         if (this.createAt == null) {
-            this.createAt = java.time.LocalDateTime.now();
+            this.createAt = LocalDateTime.now();
         }
     }
 }

@@ -12,6 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 
 /**
@@ -145,10 +146,14 @@ public class ParkingSpotJpaEntity {
         return Objects.hash(id);
     }
 
-    @jakarta.persistence.PrePersist
+    /**
+     * Life-cycle callback method called before the entity is persisted.
+     * Automatically sets the registration date if it hasn't been set yet.
+     */
+    @PrePersist
     protected void onCreate() {
         if (this.registerDate == null) {
-            this.registerDate = java.time.LocalDateTime.now();
+            this.registerDate = LocalDateTime.now();
         }
     }
 

@@ -11,6 +11,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 
 import java.util.Objects;
@@ -49,9 +50,18 @@ public class ParkingJpaEntity {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    @Column(name = "price_per_hour")
+    private Double pricePerHour = 2.0;
+
     @ManyToOne
     @JoinColumn(name = "company_id")
     private CompanyJpaEntity company;
+
+    @Column(name = "sanction_amount")
+    private Double sanctionAmount = 0.0;
+
+    @Column(name = "sanction_interval")
+    private Integer sanctionIntervalInMinutes = 15;
 
     @OneToMany(mappedBy = "parking")
     private Set<ParkingSpotJpaEntity> parkingSpots;
@@ -74,22 +84,26 @@ public class ParkingJpaEntity {
     }
 
     /**
-     * Constructor with the parking atributes
+     * Constructor with the parking attributes
      * @param id parking id
-     * @param address parking addres
+     * @param address parking address
      * @param name parking name
-     * @param latitude latitude in grade of the parking
-     * @param longitude longitude in grade of the parhing
+     * @param latitude latitude in degrees of the parking
+     * @param longitude longitude in degrees of the parking
      * @param openingTime parking opening time
      * @param closingTime parking closing time
-     * @param createdAt creation date of parking
-     * @param company parking company
-     * @param parkingSpots parking spots
-     * @param dynamicPrice parking dynamicPrice
+     * @param createdAt    creation date of parking
+     * @param pricePerHour price per hour
+     * @param company      parking company
+     * @param sanctionAmount amount for each sanction interval
+     * @param sanctionIntervalInMinutes interval in minutes for sanctions
+     * @param parkingSpots available physical spots inside
+     * @param dynamicPrice pricing algorithm configurations
      */
     public ParkingJpaEntity(Long id, String address, String name, Double latitude, Double longitude, LocalDateTime openingTime, 
-        LocalDateTime closingTime, LocalDateTime createdAt, CompanyJpaEntity company, Set<ParkingSpotJpaEntity> parkingSpots, 
-        Set<DynamicPriceJpaEntity> dynamicPrice) {
+        LocalDateTime closingTime, LocalDateTime createdAt, Double pricePerHour, CompanyJpaEntity company, 
+        Double sanctionAmount, Integer sanctionIntervalInMinutes,
+        Set<ParkingSpotJpaEntity> parkingSpots, Set<DynamicPriceJpaEntity> dynamicPrice) {
         this.id = id;
         this.address = address;
         this.name = name;
@@ -98,7 +112,10 @@ public class ParkingJpaEntity {
         this.openingTime = openingTime;
         this.closingTime = closingTime;
         this.createdAt = createdAt;
+        this.pricePerHour = pricePerHour;
         this.company = company;
+        this.sanctionAmount = sanctionAmount;
+        this.sanctionIntervalInMinutes = sanctionIntervalInMinutes;
         this.parkingSpots = parkingSpots;
         this.dynamicPrice = dynamicPrice;
     }
@@ -191,6 +208,30 @@ public class ParkingJpaEntity {
         this.dynamicPrice = dynamicPrice;
     }
 
+    public Double getPricePerHour() {
+        return this.pricePerHour;
+    }
+
+    public void setPricePerHour(Double pricePerHour) {
+        this.pricePerHour = pricePerHour;
+    }
+
+    public Double getSanctionAmount() {
+        return sanctionAmount;
+    }
+
+    public void setSanctionAmount(Double sanctionAmount) {
+        this.sanctionAmount = sanctionAmount;
+    }
+
+    public Integer getSanctionIntervalInMinutes() {
+        return sanctionIntervalInMinutes;
+    }
+
+    public void setSanctionIntervalInMinutes(Integer sanctionIntervalInMinutes) {
+        this.sanctionIntervalInMinutes = sanctionIntervalInMinutes;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == this)
@@ -207,10 +248,14 @@ public class ParkingJpaEntity {
         return Objects.hash(id);
     }
 
-    @jakarta.persistence.PrePersist
+    /**
+     * Life-cycle callback method called before the entity is persisted.
+     * Automatically sets the creation date if it hasn't been set yet.
+     */
+    @PrePersist
     protected void onCreate() {
         if (this.createdAt == null) {
-            this.createdAt = java.time.LocalDateTime.now();
+            this.createdAt = LocalDateTime.now();
         }
     }
 

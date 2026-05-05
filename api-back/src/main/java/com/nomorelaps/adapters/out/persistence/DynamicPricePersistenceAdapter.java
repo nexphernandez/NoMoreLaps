@@ -1,6 +1,7 @@
 package com.nomorelaps.adapters.out.persistence;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -9,8 +10,10 @@ import com.nomorelaps.adapters.mapper.DynamicPriceMapper;
 import com.nomorelaps.adapters.out.persistence.abstracta.BasePersistenceAdapter;
 import com.nomorelaps.adapters.out.persistence.interfaces.IDynamicPricePersistenceAdapter;
 import com.nomorelaps.adapters.out.persistence.jpa.DynamicPriceJpaEntity;
+import com.nomorelaps.adapters.out.persistence.jpa.ParkingJpaEntity;
 import com.nomorelaps.adapters.out.persistence.repository.DynamicPriceJpaRepository;
 import com.nomorelaps.domain.models.DynamicPrice;
+import com.nomorelaps.domain.models.Parking;
 
 /**
  * Persistence implementation for DynamicPrice via Spring Data repositories.
@@ -34,18 +37,30 @@ public class DynamicPricePersistenceAdapter
 
     @Override
     protected DynamicPriceJpaEntity toEntity(DynamicPrice domain) {
-        return mapper.toJpaEntity(domain);
+        DynamicPriceJpaEntity entity = mapper.toJpaEntity(domain);
+        if (domain.getParking() != null && domain.getParking().getId() != null) {
+            ParkingJpaEntity parkingEntity = new ParkingJpaEntity();
+            parkingEntity.setId(domain.getParking().getId());
+            entity.setParking(parkingEntity);
+        }
+        return entity;
     }
 
     @Override
     protected DynamicPrice toDomain(DynamicPriceJpaEntity entity) {
-        return mapper.toDomain(entity);
+        DynamicPrice domain = mapper.toDomain(entity);
+        if (entity.getParking() != null) {
+            Parking parking = new Parking();
+            parking.setId(entity.getParking().getId());
+            domain.setParking(parking);
+        }
+        return domain;
     }
 
     @Override
     public List<DynamicPrice> findByParkingId(Long parkingId) {
         return repository.findByParkingId(parkingId).stream()
                 .map(this::toDomain)
-                .collect(java.util.stream.Collectors.toList());
+                .collect(Collectors.toList());
     }
 }
