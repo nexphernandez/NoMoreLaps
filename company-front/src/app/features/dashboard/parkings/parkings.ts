@@ -1,7 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { ParkingCard } from '../../../shared/components/parking-card/parking-card';
+import { ParkingService } from '../../../core/services/parking';
+import { AuthService } from '../../../core/services/auth';
+import { Parking } from '../../../core/models/parking.model';
 
 @Component({
   selector: 'app-parkings',
@@ -10,15 +13,31 @@ import { ParkingCard } from '../../../shared/components/parking-card/parking-car
   templateUrl: './parkings.html',
   styleUrls: ['./parkings.css'],
 })
-export class Parkings {
-  constructor(private router: Router) {}
+export class Parkings implements OnInit {
+  parkings: Parking[] = [];
+  loading = true;
 
-  mockParkings = [
-    { name: 'Parking Central Plaza', address: 'Calle Mayor 1, Madrid', capacity: 150, status: 'Abierto' },
-    { name: 'Parking Estación Sur', address: 'Av. Mediterráneo 12, Valencia', capacity: 300, status: 'Abierto' },
-    { name: 'Parking Puerto Marina', address: 'Paseo Marítimo 45, Barcelona', capacity: 200, status: 'Cerrado' },
-    { name: 'Parking Centro Histórico', address: 'Plaza Nueva 3, Sevilla', capacity: 80, status: 'Abierto' },
-  ];
+  constructor(
+    private router: Router,
+    private parkingService: ParkingService,
+    private authService: AuthService
+  ) {}
+
+  ngOnInit() {
+    const user = this.authService.currentUser();
+    if (user) {
+      this.parkingService.getParkingsByCompany(user.companyId).subscribe({
+        next: (data) => {
+          this.parkings = data;
+          this.loading = false;
+        },
+        error: (err) => {
+          this.loading = false;
+          console.error('Error fetching parkings:', err);
+        }
+      });
+    }
+  }
 
   onAddParking() {
     this.router.navigate(['/dashboard/parkings/new']);

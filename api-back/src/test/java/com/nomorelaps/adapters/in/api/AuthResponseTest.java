@@ -16,8 +16,19 @@ public class AuthResponseTest {
 
         res.setMessage("msg");
         assertEquals("msg", res.getMessage());
+
+        res.setCompanyId(1L);
+        assertEquals(1L, res.getCompanyId());
+
+        res.setEmail("test@company.com");
+        assertEquals("test@company.com", res.getEmail());
+
+        res.setName("Test Company");
+        assertEquals("Test Company", res.getName());
         
-        AuthResponse r2 = new AuthResponse("token", "msg");
+        AuthResponse r2 = new AuthResponse("token", "msg", 1L, "test@company.com", "Test Company");
         assertEquals("token", r2.getToken());
+        assertEquals(1L, r2.getCompanyId());
+        assertEquals("test@company.com", r2.getEmail());
     }
 }

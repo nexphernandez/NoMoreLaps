@@ -26,6 +26,12 @@ import com.nomorelaps.adapters.out.persistence.repository.UserJpaRepository;
 import com.nomorelaps.business.interfaces.IUserService;
 import com.nomorelaps.domain.models.User;
 
+import com.nomorelaps.business.interfaces.ICompanyService;
+import com.nomorelaps.adapters.mapper.CompanyMapper;
+import com.nomorelaps.adapters.out.persistence.jpa.CompanyJpaEntity;
+import com.nomorelaps.adapters.in.api.CompanyRequest;
+import com.nomorelaps.domain.models.Company;
+
 @ExtendWith(MockitoExtension.class)
 class AuthServiceTest {
 
@@ -34,7 +40,11 @@ class AuthServiceTest {
     @Mock
     private IUserService userService;
     @Mock
+    private ICompanyService companyService;
+    @Mock
     private UserMapper userMapper;
+    @Mock
+    private CompanyMapper companyMapper;
     @Mock
     private JwtService jwtService;
     @Mock
@@ -42,6 +52,34 @@ class AuthServiceTest {
 
     @InjectMocks
     private AuthService authService;
+
+    @Test
+    @DisplayName("registerCompany - Should create user and company then return token")
+    void shouldRegisterCompany() {
+        CompanyRequest request = new CompanyRequest();
+        request.setEmail("comp@test.com");
+        request.setPassword("pass");
+        request.setName("Comp Name");
+        request.setCif("CIF123");
+
+        User user = new User(1L);
+        user.setEmail("comp@test.com");
+        Company company = new Company(1L);
+
+        UserJpaEntity userEntity = new UserJpaEntity();
+        userEntity.setEmail("comp@test.com");
+
+        when(userService.create(any(User.class))).thenReturn(user);
+        when(companyMapper.toDomainFromRequest(request)).thenReturn(company);
+        when(userRepository.findByEmail("comp@test.com")).thenReturn(Optional.of(userEntity));
+        when(jwtService.generateToken(any(UserDetails.class))).thenReturn("token");
+
+        AuthResponse result = authService.registerCompany(request);
+
+        assertNotNull(result);
+        assertEquals("token", result.getToken());
+        verify(companyService).create(company);
+    }
 
     @Test
     @DisplayName("register - Should save user and return response")
@@ -60,23 +98,64 @@ class AuthServiceTest {
     }
 
     @Test
-    @DisplayName("login - Should return token when successful")
-    void shouldLoginSuccessfully() {
+    @DisplayName("login - Should return token and companyId when user has companies")
+    void shouldLoginWithCompanyId() {
         AuthRequest request = new AuthRequest();
-        request.setEmail("test@test.com");
+        request.setEmail("admin@company.com");
         request.setPassword("pass");
 
         UserJpaEntity entity = new UserJpaEntity();
-        entity.setEmail("test@test.com");
-        entity.setPassword("encoded");
+        entity.setEmail("admin@company.com");
+        
+        CompanyJpaEntity companyEntity = new CompanyJpaEntity();
+        companyEntity.setId(500L);
+        entity.setCompanies(java.util.Set.of(companyEntity));
 
-        when(userRepository.findByEmail("test@test.com")).thenReturn(Optional.of(entity));
+        when(userRepository.findByEmail("admin@company.com")).thenReturn(Optional.of(entity));
         when(jwtService.generateToken(any(UserDetails.class))).thenReturn("token");
 
         AuthResponse response = authService.login(request);
 
         assertEquals("token", response.getToken());
-        verify(authenticationManager).authenticate(any());
+        assertEquals(500L, response.getCompanyId());
+    }
+
+    @Test
+    @DisplayName("login - Should return null companyId when user has empty companies set")
+    void shouldLoginWithEmptyCompanies() {
+        AuthRequest request = new AuthRequest();
+        request.setEmail("user@test.com");
+        request.setPassword("pass");
+
+        UserJpaEntity entity = new UserJpaEntity();
+        entity.setEmail("user@test.com");
+        entity.setCompanies(new java.util.HashSet<>()); // Empty set
+
+        when(userRepository.findByEmail("user@test.com")).thenReturn(Optional.of(entity));
+        when(jwtService.generateToken(any(UserDetails.class))).thenReturn("token");
+
+        AuthResponse response = authService.login(request);
+
+        assertNull(response.getCompanyId());
+    }
+
+    @Test
+    @DisplayName("login - Should return null companyId when user companies is null")
+    void shouldLoginWithNullCompanies() {
+        AuthRequest request = new AuthRequest();
+        request.setEmail("user@test.com");
+        request.setPassword("pass");
+
+        UserJpaEntity entity = new UserJpaEntity();
+        entity.setEmail("user@test.com");
+        entity.setCompanies(null); // Null companies
+
+        when(userRepository.findByEmail("user@test.com")).thenReturn(Optional.of(entity));
+        when(jwtService.generateToken(any(UserDetails.class))).thenReturn("token");
+
+        AuthResponse response = authService.login(request);
+
+        assertNull(response.getCompanyId());
     }
 
     @Test

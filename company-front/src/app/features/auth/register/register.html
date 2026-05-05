@@ -5,17 +5,26 @@
       <p class="subtitle">Crear Cuenta de Empresa</p>
     </div>
 
-    <form class="register-form">
+    <form class="register-form" [formGroup]="registerForm" (ngSubmit)="onRegister()">
       <app-input 
         label="Nombre de la Empresa" 
         placeholder="Mi Parking S.L."
         type="text"
+        formControlName="name"
+      ></app-input>
+
+      <app-input 
+        label="CIF de la Empresa" 
+        placeholder="A12345678"
+        type="text"
+        formControlName="cif"
       ></app-input>
 
       <app-input 
         label="Correo Corporativo" 
         placeholder="contacto@empresa.com"
         type="email"
+        formControlName="email"
       ></app-input>
 
       <div class="password-row">
@@ -23,13 +32,21 @@
           label="Contraseña" 
           placeholder="••••••••"
           type="password"
+          formControlName="password"
         ></app-input>
         
         <app-input 
           label="Confirmar Contraseña" 
           placeholder="••••••••"
           type="password"
+          formControlName="confirmPassword"
         ></app-input>
+      </div>
+
+      <div class="error-container" *ngIf="errorMessage || registerForm.get('email')?.invalid && registerForm.get('email')?.touched || registerForm.hasError('mismatch')">
+        <p class="error-text" *ngIf="errorMessage">{{ errorMessage }}</p>
+        <p class="error-text" *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched">Email inválido</p>
+        <p class="error-text" *ngIf="registerForm.hasError('mismatch') && registerForm.get('confirmPassword')?.touched">Las contraseñas no coinciden</p>
       </div>
 
       <div class="terms-container">
@@ -42,7 +59,8 @@
       <app-button 
         text="Crear Cuenta" 
         customClass="w-full"
-        (onClick)="onRegister($event)"
+        [loading]="loading"
+        type="submit"
       ></app-button>
 
       <div class="login-prompt">
