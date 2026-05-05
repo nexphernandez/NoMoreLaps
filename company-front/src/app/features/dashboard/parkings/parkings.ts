@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { ParkingCard } from '../../../shared/components/parking-card/parking-card';
 
 @Component({
@@ -10,6 +11,8 @@ import { ParkingCard } from '../../../shared/components/parking-card/parking-car
   styleUrls: ['./parkings.css'],
 })
 export class Parkings {
+  constructor(private router: Router) {}
+
   mockParkings = [
     { name: 'Parking Central Plaza', address: 'Calle Mayor 1, Madrid', capacity: 150, status: 'Abierto' },
     { name: 'Parking Estación Sur', address: 'Av. Mediterráneo 12, Valencia', capacity: 300, status: 'Abierto' },
@@ -18,6 +21,6 @@ export class Parkings {
   ];
 
   onAddParking() {
-    console.log('Opening add parking form...');
+    this.router.navigate(['/dashboard/parkings/new']);
   }
 }

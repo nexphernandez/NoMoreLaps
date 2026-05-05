@@ -1,0 +1,73 @@
+<div class="create-container">
+  <header class="page-header">
+    <div class="header-text">
+      <h1 class="page-title">Añadir Nuevo Parking</h1>
+      <p class="page-subtitle">Configura una nueva ubicación física para tu red.</p>
+    </div>
+    <button class="btn-secondary" routerLink="/dashboard/parkings">Volver</button>
+  </header>
+
+  <div class="form-card glass-card">
+    <form class="parking-form">
+      <div class="form-section">
+        <h3>Información General</h3>
+        <app-input 
+          label="Nombre del Parking" 
+          placeholder="Ej: Central Plaza"
+          type="text"
+        ></app-input>
+        
+        <app-input 
+          label="Dirección Completa" 
+          placeholder="Calle Falsa 123, Madrid"
+          type="text"
+        ></app-input>
+
+        <div class="coords-row">
+          <app-input 
+            label="Latitud" 
+            placeholder="40.4168"
+            type="number"
+          ></app-input>
+          <app-input 
+            label="Longitud" 
+            placeholder="-3.7038"
+            type="number"
+          ></app-input>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h3>Configuración de Sanciones</h3>
+        <p class="section-help">Define cómo se penalizará a los usuarios que excedan su tiempo de reserva.</p>
+        
+        <div class="sanction-row">
+          <app-input 
+            label="Importe Sanción (€)" 
+            placeholder="15.00"
+            type="number"
+          ></app-input>
+          
+          <app-input 
+            label="Intervalo de Sanción (Minutos)" 
+            placeholder="30"
+            type="number"
+          ></app-input>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <app-button 
+          text="Cancelar" 
+          customClass="btn-outline"
+          routerLink="/dashboard/parkings"
+        ></app-button>
+        
+        <app-button 
+          text="Guardar Parking" 
+          (onClick)="onSave($event)"
+        ></app-button>
+      </div>
+    </form>
+  </div>
+</div>
