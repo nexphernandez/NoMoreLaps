@@ -1,0 +1,37 @@
+<div class="login-container">
+  <div class="login-card glass-card">
+    <div class="login-header">
+      <h1 class="gradient-text">NoMoreLaps</h1>
+      <p class="subtitle">Portal de Empresas</p>
+    </div>
+
+    <form class="login-form">
+      <app-input 
+        label="Correo Electrónico" 
+        placeholder="ejemplo@empresa.com"
+        type="email"
+      ></app-input>
+
+      <app-input 
+        label="Contraseña" 
+        placeholder="••••••••"
+        type="password"
+      ></app-input>
+
+      <div class="form-footer">
+        <a href="#" class="forgot-password">¿Has olvidado tu contraseña?</a>
+      </div>
+
+      <app-button 
+        text="Iniciar Sesión" 
+        customClass="w-full"
+        (onClick)="onLogin($event)"
+      ></app-button>
+
+      <div class="register-prompt">
+        <span>¿No tienes cuenta?</span>
+        <a href="#" class="register-link">Regístrate ahora</a>
+      </div>
+    </form>
+  </div>
+</div>
