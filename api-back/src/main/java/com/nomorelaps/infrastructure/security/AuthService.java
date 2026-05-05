@@ -23,10 +23,16 @@ import org.springframework.stereotype.Service;
  */
 import com.nomorelaps.adapters.in.api.CompanyRequest;
 import com.nomorelaps.adapters.mapper.CompanyMapper;
+import com.nomorelaps.adapters.mapper.RoleMapper;
 import com.nomorelaps.business.interfaces.ICompanyService;
 import com.nomorelaps.domain.models.Company;
 
+import com.nomorelaps.adapters.out.persistence.jpa.RoleJpaEntity;
+import com.nomorelaps.adapters.out.persistence.repository.RoleJpaRepository;
+import org.springframework.transaction.annotation.Transactional;
+
 @Service
+@Transactional
 public class AuthService {
 
     private final AuthenticationManager authenticationManager;
@@ -34,23 +40,29 @@ public class AuthService {
     private final ICompanyService companyService;
     private final UserMapper userMapper;
     private final CompanyMapper companyMapper;
+    private final RoleMapper roleMapper;
     private final JwtService jwtService;
     private final UserJpaRepository userRepository;
+    private final RoleJpaRepository roleRepository;
 
     public AuthService(AuthenticationManager authenticationManager, 
                        IUserService userService, 
                        ICompanyService companyService,
                        UserMapper userMapper, 
                        CompanyMapper companyMapper,
+                       RoleMapper roleMapper,
                        JwtService jwtService,
-                       UserJpaRepository userRepository) {
+                       UserJpaRepository userRepository,
+                       RoleJpaRepository roleRepository) {
         this.authenticationManager = authenticationManager;
         this.userService = userService;
         this.companyService = companyService;
         this.userMapper = userMapper;
         this.companyMapper = companyMapper;
+        this.roleMapper = roleMapper;
         this.jwtService = jwtService;
         this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
     }
 
     /**
@@ -60,6 +72,11 @@ public class AuthService {
      */
     public UserResponse register(UserRequest request) {
         User domain = userMapper.toDomainFromRequest(request);
+        
+        // Assign default ROLE_USER to maintain compatibility with mobile app/user api
+        roleRepository.findByName("ROLE_USER")
+            .ifPresent(roleEntity -> domain.setRole(roleMapper.toDomain(roleEntity)));
+            
         User saved = userService.create(domain);
         return userMapper.toResponse(saved);
     }
@@ -75,15 +92,19 @@ public class AuthService {
         userDomain.setName(request.getName());
         userDomain.setEmail(request.getEmail());
         userDomain.setPassword(request.getPassword());
-        // Note: The service should handle role assignment or we can set it here if role is available in domain
+        
+        // Assign ROLE_COMPANY specifically for portal registrations
+        roleRepository.findByName("ROLE_COMPANY")
+            .ifPresent(roleEntity -> userDomain.setRole(roleMapper.toDomain(roleEntity)));
+            
         User savedUser = userService.create(userDomain);
 
-        // 2. Create the company
+        // 2. Create the company linked to the user
         Company companyDomain = companyMapper.toDomainFromRequest(request);
         companyDomain.setUser(savedUser);
         companyService.create(companyDomain);
 
-        // 3. Login
+        // 3. Perform login
         AuthRequest authRequest = new AuthRequest();
         authRequest.setEmail(request.getEmail());
         authRequest.setPassword(request.getPassword());
