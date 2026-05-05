@@ -25,17 +25,19 @@ export class Parkings implements OnInit {
 
   ngOnInit() {
     const user = this.authService.currentUser();
-    if (user) {
+    if (user && user.companyId) {
       this.parkingService.getParkingsByCompany(user.companyId).subscribe({
         next: (data) => {
           this.parkings = data;
           this.loading = false;
         },
         error: (err) => {
-          this.loading = false;
           console.error('Error fetching parkings:', err);
+          this.loading = false;
         }
       });
+    } else {
+      this.loading = false;
     }
   }
 

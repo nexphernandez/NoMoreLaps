@@ -27,6 +27,7 @@ import com.nomorelaps.business.interfaces.IUserService;
 import com.nomorelaps.domain.models.User;
 
 import com.nomorelaps.business.interfaces.ICompanyService;
+import com.nomorelaps.adapters.mapper.RoleMapper;
 import com.nomorelaps.adapters.mapper.CompanyMapper;
 import com.nomorelaps.adapters.out.persistence.jpa.CompanyJpaEntity;
 import com.nomorelaps.adapters.in.api.CompanyRequest;
@@ -45,6 +46,8 @@ class AuthServiceTest {
     private UserMapper userMapper;
     @Mock
     private CompanyMapper companyMapper;
+    @Mock
+    private RoleMapper roleMapper;
     @Mock
     private JwtService jwtService;
     @Mock
