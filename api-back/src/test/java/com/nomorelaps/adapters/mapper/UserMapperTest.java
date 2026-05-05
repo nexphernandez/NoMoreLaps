@@ -12,7 +12,7 @@ import com.nomorelaps.domain.models.User;
 
 class UserMapperTest {
 
-    private final UserMapper userMapper = new UserMapperImpl();
+    private final UserMapper userMapper = org.mapstruct.factory.Mappers.getMapper(UserMapper.class);
 
 
     @Test

@@ -12,7 +12,7 @@ import com.nomorelaps.domain.models.Company;
 
 class CompanyMapperTest {
 
-    private final CompanyMapper companyMapper = new CompanyMapperImpl();
+    private final CompanyMapper companyMapper = org.mapstruct.factory.Mappers.getMapper(CompanyMapper.class);
 
 
     @Test

@@ -21,7 +21,26 @@ class ParkingSpotResponseTest {
         assertEquals(1, dto.getNumber());
         dto.setRegisterDate(LocalDateTime.of(2026, 1, 1, 0, 0).plusDays(1));
         assertEquals(LocalDateTime.of(2026, 1, 1, 0, 0).plusDays(1), dto.getRegisterDate());
+        
+        dto.setState(true);
+        assertTrue(dto.getState()); // Tests getState() and isState() since we set it to true
     }
+
+    @Test
+    @DisplayName("Should test parameterized constructors")
+    void testConstructors() {
+        ParkingSpotResponse dto1 = new ParkingSpotResponse(1L);
+        assertEquals(1L, dto1.getId());
+        assertFalse(dto1.getState());
+
+        LocalDateTime now = LocalDateTime.now();
+        ParkingSpotResponse dto2 = new ParkingSpotResponse(2L, true, 10, now);
+        assertEquals(2L, dto2.getId());
+        assertTrue(dto2.getState());
+        assertEquals(10, dto2.getNumber());
+        assertEquals(now, dto2.getRegisterDate());
+    }
+
 
     @Test
     @DisplayName("Should test equals and hashCode branches for ParkingSpotResponse")

@@ -61,4 +61,18 @@ class SanctionPersistenceAdapterTest {
 
         assertEquals(1, result.size());
     }
+
+    @Test
+    @DisplayName("save - Should call toEntity and toDomain (covers protected toEntity)")
+    void shouldSave() {
+        when(mapper.toJpaEntity(sanction)).thenReturn(entity);
+        when(repository.save(entity)).thenReturn(entity);
+        when(mapper.toDomain(entity)).thenReturn(sanction);
+
+        Sanction saved = adapter.save(sanction);
+
+        assertNotNull(saved);
+        assertEquals(1L, saved.getId());
+    }
 }
+

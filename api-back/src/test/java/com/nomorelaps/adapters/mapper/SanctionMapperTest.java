@@ -12,7 +12,7 @@ import com.nomorelaps.domain.models.Sanction;
 
 class SanctionMapperTest {
 
-    private final SanctionMapper mapper = new SanctionMapperImpl();
+    private final SanctionMapper mapper = org.mapstruct.factory.Mappers.getMapper(SanctionMapper.class);
 
 
     @Test

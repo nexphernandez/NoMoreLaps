@@ -15,7 +15,7 @@ import com.nomorelaps.domain.models.User;
 
 class ReservationMapperTest {
 
-    private final ReservationMapper reservationMapper = new ReservationMapperImpl();
+    private final ReservationMapper reservationMapper = org.mapstruct.factory.Mappers.getMapper(ReservationMapper.class);
 
 
     @Test

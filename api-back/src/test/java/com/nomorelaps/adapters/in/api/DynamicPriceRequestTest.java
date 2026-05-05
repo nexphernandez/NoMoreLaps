@@ -24,4 +24,16 @@ class DynamicPriceRequestTest {
         assertEquals(1.0, dto.getMaxPrice());
     }
 
+    @Test
+    @DisplayName("Should test parameterized constructor for DynamicPriceRequest")
+    void testParameterizedConstructor() {
+        DynamicPriceRequest dto = new DynamicPriceRequest(1, "08:00", "20:00", 1.0, 5.0);
+        assertEquals(1, dto.getDayOfWeek());
+        assertEquals("08:00", dto.getStartHour());
+        assertEquals("20:00", dto.getEndHour());
+        assertEquals(1.0, dto.getMinPrice());
+        assertEquals(5.0, dto.getMaxPrice());
+    }
+
 }
+

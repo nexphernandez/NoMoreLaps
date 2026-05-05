@@ -24,4 +24,16 @@ class SanctionRequestTest {
         assertEquals(1L, dto.getUserId());
     }
 
+    @Test
+    @DisplayName("Should test parameterized constructor")
+    void testParameterizedConstructor() {
+        SanctionRequest dto = new SanctionRequest(50.0, "Late", true, 100L, 200L);
+        assertEquals(50.0, dto.getAmount());
+        assertEquals("Late", dto.getReason());
+        assertTrue(dto.isPaid());
+        assertEquals(100L, dto.getReservationId());
+        assertEquals(200L, dto.getUserId());
+    }
+
+
 }

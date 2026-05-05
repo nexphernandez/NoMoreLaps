@@ -12,7 +12,7 @@ import com.nomorelaps.domain.models.Role;
 
 class RoleMapperTest {
 
-    private final RoleMapper mapper = new RoleMapperImpl();
+    private final RoleMapper mapper = org.mapstruct.factory.Mappers.getMapper(RoleMapper.class);
 
 
     @Test

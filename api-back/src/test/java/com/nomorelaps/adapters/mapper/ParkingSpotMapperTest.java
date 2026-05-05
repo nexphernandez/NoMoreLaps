@@ -12,7 +12,7 @@ import com.nomorelaps.domain.models.ParkingSpot;
 
 class ParkingSpotMapperTest {
 
-    private final ParkingSpotMapper mapper = new ParkingSpotMapperImpl();
+    private final ParkingSpotMapper mapper = org.mapstruct.factory.Mappers.getMapper(ParkingSpotMapper.class);
 
     @Test
     @DisplayName("toDomainFromRequest - Should map request to domain")

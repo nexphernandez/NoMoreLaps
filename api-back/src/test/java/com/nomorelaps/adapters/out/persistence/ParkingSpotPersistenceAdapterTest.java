@@ -98,4 +98,22 @@ class ParkingSpotPersistenceAdapterTest {
         assertNotNull(entity.getParking());
         assertEquals(20L, entity.getParking().getId());
     }
+
+    @Test
+    @DisplayName("toEntity - Should skip parking lookup when both parking and id are null")
+    void shouldHandleNullParkingAndNullId() {
+        ParkingSpot spotNoId = new ParkingSpot();
+        spotNoId.setId(null);
+        spotNoId.setParking(null);
+
+        ParkingSpotJpaEntity entityNoParking = new ParkingSpotJpaEntity();
+        when(mapper.toJpaEntity(spotNoId)).thenReturn(entityNoParking);
+        when(repository.save(any())).thenReturn(entityNoParking);
+        when(mapper.toDomain(entityNoParking)).thenReturn(spotNoId);
+
+        ParkingSpot saved = adapter.save(spotNoId);
+        assertNotNull(saved);
+        assertNull(entityNoParking.getParking());
+    }
 }
+

@@ -209,4 +209,30 @@ class UserServiceTest {
 
         verify(persistencePort).deleteById(1L);
     }
+
+    @Test
+    @DisplayName("update - Should skip name/email update when null or empty")
+    void shouldSkipNullFieldsOnUpdate() {
+        User existingUser = new User(1L);
+        existingUser.setName("Alice");
+        existingUser.setEmail("alice@test.com");
+
+        // Provide null name, empty email, null password → no fields should be updated
+        User updates = new User(1L);
+        updates.setName(null);
+        updates.setEmail("");
+        updates.setPassword(null);
+
+        when(persistencePort.findById(1L)).thenReturn(Optional.of(existingUser));
+        when(persistencePort.save(any(User.class))).thenReturn(existingUser);
+
+        User result = userService.update(updates);
+
+        assertNotNull(result);
+        // original values preserved
+        assertEquals("Alice", existingUser.getName());
+        assertEquals("alice@test.com", existingUser.getEmail());
+        verify(passwordEncoder, never()).encode(anyString());
+    }
 }
+

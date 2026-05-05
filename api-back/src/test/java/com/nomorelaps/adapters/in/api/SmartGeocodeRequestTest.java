@@ -17,6 +17,14 @@ class SmartGeocodeRequestTest {
     }
 
     @Test
+    @DisplayName("Should test parameterized constructor")
+    void testParameterizedConstructor() {
+        SmartGeocodeRequest dto = new SmartGeocodeRequest("Madrid");
+        assertEquals("Madrid", dto.getQuery());
+    }
+
+
+    @Test
     @DisplayName("Should test equals and hashCode branches for SmartGeocodeRequest")
     void testEqualsAndHashCode() {
         SmartGeocodeRequest dto1 = new SmartGeocodeRequest();

@@ -92,4 +92,38 @@ class ParkingPersistenceAdapterTest {
         Parking saved = adapter.save(parking);
         assertNotNull(saved);
     }
+
+    @Test
+    @DisplayName("toEntity - Should skip company when null")
+    void shouldMapToEntityWithNullCompany() {
+        parking.setCompany(null);
+        ParkingJpaEntity entityNoCompany = new ParkingJpaEntity();
+        entityNoCompany.setId(1L);
+        // no company set
+
+        when(mapper.toJpaEntity(parking)).thenReturn(entityNoCompany);
+        when(repository.save(any())).thenReturn(entityNoCompany);
+        when(mapper.toDomain(entityNoCompany)).thenReturn(parking);
+
+        Parking saved = adapter.save(parking);
+        assertNotNull(saved);
+    }
+
+    @Test
+    @DisplayName("toDomain - Should skip company when entity company is null")
+    void shouldMapToDomainWithNullCompany() {
+        ParkingJpaEntity entityNoCompany = new ParkingJpaEntity();
+        entityNoCompany.setId(2L);
+        // no company
+
+        Parking parkingNoCompany = new Parking(2L);
+        when(repository.findByCompanyId(99L)).thenReturn(List.of(entityNoCompany));
+        when(mapper.toDomain(entityNoCompany)).thenReturn(parkingNoCompany);
+
+        List<Parking> result = adapter.findByCompanyId(99L);
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertNull(result.get(0).getCompany());
+    }
 }
+

@@ -18,4 +18,13 @@ class RoleRequestTest {
         assertEquals("dummy1", dto.getDescription());
     }
 
+    @Test
+    @DisplayName("Should test parameterized constructor")
+    void testParameterizedConstructor() {
+        RoleRequest dto = new RoleRequest("Admin", "Admin desc");
+        assertEquals("Admin", dto.getName());
+        assertEquals("Admin desc", dto.getDescription());
+    }
+
+
 }

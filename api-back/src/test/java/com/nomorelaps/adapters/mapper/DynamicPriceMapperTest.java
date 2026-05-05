@@ -12,9 +12,11 @@ import com.nomorelaps.adapters.in.api.DynamicPriceResponse;
 import com.nomorelaps.adapters.out.persistence.jpa.DynamicPriceJpaEntity;
 import com.nomorelaps.domain.models.DynamicPrice;
 
+import org.mapstruct.factory.Mappers;
+
 class DynamicPriceMapperTest {
 
-    private final DynamicPriceMapper mapper = new DynamicPriceMapperImpl();
+    private final DynamicPriceMapper mapper = Mappers.getMapper(DynamicPriceMapper.class);
 
     @Test
     @DisplayName("toDomainFromRequest - Should map request to domain")

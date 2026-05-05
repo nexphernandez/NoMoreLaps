@@ -81,6 +81,20 @@ class ParkingSpotServiceTest {
     }
 
     @Test
+    @DisplayName("Should successfully update an existing spot")
+    void shouldUpdateSpot() {
+        when(persistencePort.findById(validSpot.getId())).thenReturn(Optional.of(validSpot));
+        when(persistencePort.save(validSpot)).thenReturn(validSpot);
+
+        ParkingSpot updated = parkingSpotService.update(validSpot);
+
+        assertNotNull(updated);
+        assertEquals(validSpot.getId(), updated.getId());
+        verify(persistencePort).save(validSpot);
+    }
+
+
+    @Test
     @DisplayName("Should find spot by id")
     void shouldFindById() {
         when(persistencePort.findById(1L)).thenReturn(Optional.of(validSpot));

@@ -27,6 +27,19 @@ class SmartRecommendationRequestTest {
     }
 
     @Test
+    @DisplayName("Should test parameterized constructor")
+    void testParameterizedConstructor() {
+        SmartRecommendationRequest dto = new SmartRecommendationRequest("Madrid", 40.0, -3.0, "10:00", 2, 5.0);
+        assertEquals("Madrid", dto.getDestinationText());
+        assertEquals(40.0, dto.getLatitude());
+        assertEquals(-3.0, dto.getLongitude());
+        assertEquals("10:00", dto.getStartTime());
+        assertEquals(2, dto.getDurationHours());
+        assertEquals(5.0, dto.getRadiusKm());
+    }
+
+
+    @Test
     @DisplayName("Should test equals and hashCode branches for SmartRecommendationRequest")
     void testEqualsAndHashCode() {
         SmartRecommendationRequest dto1 = new SmartRecommendationRequest();

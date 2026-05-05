@@ -174,4 +174,42 @@ class ReservationServiceTest {
         reservationService.deleteById(1L);
         verify(persistencePort).deleteById(1L);
     }
+
+    @Test
+    @DisplayName("Should create reservation when parking spot is null (no overlap check)")
+    void shouldCreateWhenSpotIsNull() {
+        validReservation.setParkingSpot(null);
+        when(persistencePort.save(any(Reservation.class))).thenReturn(validReservation);
+
+        Reservation created = reservationService.create(validReservation);
+
+        assertNotNull(created);
+        verify(persistencePort, never()).hasOverlappingReservations(anyLong(), any(), any());
+        verify(persistencePort).save(validReservation);
+    }
+
+    @Test
+    @DisplayName("Should throw when updating with end time before start time")
+    void shouldThrowWhenUpdateEndTimeInvalid() {
+        validReservation.setId(100L);
+        validReservation.setEndTime(validReservation.getStartTime().minusHours(1));
+
+        assertThrows(IllegalArgumentException.class, () -> reservationService.update(validReservation));
+        verify(persistencePort, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("Should update when parking spot is null (no overlap check)")
+    void shouldUpdateWhenSpotIsNull() {
+        validReservation.setId(100L);
+        validReservation.setParkingSpot(null);
+        when(persistencePort.save(any(Reservation.class))).thenReturn(validReservation);
+
+        Reservation updated = reservationService.update(validReservation);
+
+        assertNotNull(updated);
+        verify(persistencePort, never()).hasOverlappingReservationsExcluding(anyLong(), any(), any(), anyLong());
+        verify(persistencePort).save(validReservation);
+    }
 }
+

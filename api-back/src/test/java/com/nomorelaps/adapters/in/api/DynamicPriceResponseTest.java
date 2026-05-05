@@ -30,6 +30,25 @@ class DynamicPriceResponseTest {
     }
 
     @Test
+    @DisplayName("Should test parameterized constructors for DynamicPriceResponse")
+    void testConstructors() {
+        DynamicPriceResponse dto1 = new DynamicPriceResponse(1L);
+        assertEquals(1L, dto1.getId());
+        assertEquals(0, dto1.getDayOfWeek());
+
+        LocalDateTime now = LocalDateTime.now();
+        DynamicPriceResponse dto2 = new DynamicPriceResponse(2L, 1, "08:00", "12:00", 1.0, 5.0, now);
+        assertEquals(2L, dto2.getId());
+        assertEquals(1, dto2.getDayOfWeek());
+        assertEquals("08:00", dto2.getStartHour());
+        assertEquals("12:00", dto2.getEndHour());
+        assertEquals(1.0, dto2.getMinPrice());
+        assertEquals(5.0, dto2.getMaxPrice());
+        assertEquals(now, dto2.getCreateAt());
+    }
+
+
+    @Test
     @DisplayName("Should test equals and hashCode branches for DynamicPriceResponse")
     void testEqualsAndHashCode() {
         DynamicPriceResponse dto1 = new DynamicPriceResponse();

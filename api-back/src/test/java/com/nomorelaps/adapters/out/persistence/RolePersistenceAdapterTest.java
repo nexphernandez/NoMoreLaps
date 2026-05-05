@@ -51,4 +51,38 @@ class RolePersistenceAdapterTest {
         assertTrue(result.isPresent());
         assertEquals(1L, result.get().getId());
     }
+
+    @Test
+    @DisplayName("deleteById - Should call repository deleteById")
+    void shouldDeleteById() {
+        adapter.deleteById(1L);
+        org.mockito.Mockito.verify(repository, org.mockito.Mockito.times(1)).deleteById(1L);
+    }
+
+    @Test
+    @DisplayName("save - Should map to entity, save, and map back")
+    void shouldSave() {
+        when(mapper.toJpaEntity(role)).thenReturn(entity);
+        when(repository.save(entity)).thenReturn(entity);
+        when(mapper.toDomain(entity)).thenReturn(role);
+
+        Role savedRole = adapter.save(role);
+
+        assertNotNull(savedRole);
+        assertEquals(1L, savedRole.getId());
+    }
+
+    @Test
+    @DisplayName("findAll - Should return mapped domain list")
+    void shouldFindAll() {
+        when(repository.findAll()).thenReturn(java.util.Collections.singletonList(entity));
+        when(mapper.toDomain(entity)).thenReturn(role);
+
+        java.util.List<Role> roles = adapter.findAll();
+
+        assertNotNull(roles);
+        assertEquals(1, roles.size());
+        assertEquals(1L, roles.get(0).getId());
+    }
 }
+

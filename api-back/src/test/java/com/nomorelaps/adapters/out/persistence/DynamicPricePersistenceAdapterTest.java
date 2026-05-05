@@ -50,4 +50,18 @@ class DynamicPricePersistenceAdapterTest {
 
         assertEquals(1, result.size());
     }
+
+    @Test
+    @DisplayName("save - Should call toEntity and toDomain (covers protected toEntity)")
+    void shouldSave() {
+        when(mapper.toJpaEntity(price)).thenReturn(entity);
+        when(repository.save(entity)).thenReturn(entity);
+        when(mapper.toDomain(entity)).thenReturn(price);
+
+        DynamicPrice saved = adapter.save(price);
+
+        assertNotNull(saved);
+        assertEquals(1L, saved.getId());
+    }
 }
+

@@ -139,4 +139,23 @@ class SmartCalendarServiceTest {
             smartCalendarService.recommend(request);
         });
     }
+
+    @Test
+    @DisplayName("Should throw exception when coords null and destinationText is blank")
+    void shouldThrowWhenCoordsNullAndDestBlank() {
+        request.setLatitude(null);
+        request.setLongitude(null);
+        request.setDestinationText("   ");
+
+        assertThrows(IllegalArgumentException.class, () -> smartCalendarService.recommend(request));
+    }
+
+    @Test
+    @DisplayName("Should skip geocode when only longitude is null but latitude provided")
+    void shouldThrowWhenOnlyLongitudeNull() {
+        request.setLongitude(null);
+        // latitude is present, destinationText null → first if is false, second if throws
+        assertThrows(IllegalArgumentException.class, () -> smartCalendarService.recommend(request));
+    }
 }
+

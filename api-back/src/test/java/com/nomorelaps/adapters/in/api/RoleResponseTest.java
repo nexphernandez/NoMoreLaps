@@ -21,6 +21,20 @@ class RoleResponseTest {
     }
 
     @Test
+    @DisplayName("Should test parameterized constructors for RoleResponse")
+    void testConstructors() {
+        RoleResponse dto1 = new RoleResponse(1L);
+        assertEquals(1L, dto1.getId());
+        assertNull(dto1.getName());
+
+        RoleResponse dto2 = new RoleResponse(2L, "Admin", "Admin role");
+        assertEquals(2L, dto2.getId());
+        assertEquals("Admin", dto2.getName());
+        assertEquals("Admin role", dto2.getDescription());
+    }
+
+
+    @Test
     @DisplayName("Should test equals and hashCode branches for RoleResponse")
     void testEqualsAndHashCode() {
         RoleResponse dto1 = new RoleResponse();

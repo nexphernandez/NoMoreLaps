@@ -10,9 +10,11 @@ import com.nomorelaps.adapters.in.api.ParkingResponse;
 import com.nomorelaps.adapters.out.persistence.jpa.ParkingJpaEntity;
 import com.nomorelaps.domain.models.Parking;
 
+import org.mapstruct.factory.Mappers;
+
 class ParkingMapperTest {
 
-    private final ParkingMapper parkingMapper = new ParkingMapperImpl();
+    private final ParkingMapper parkingMapper = Mappers.getMapper(ParkingMapper.class);
 
 
     @Test

@@ -26,6 +26,23 @@ class SanctionResponseTest {
     }
 
     @Test
+    @DisplayName("Should test parameterized constructors")
+    void testConstructors() {
+        SanctionResponse dto1 = new SanctionResponse(1L);
+        assertEquals(1L, dto1.getId());
+        assertFalse(dto1.isPaid());
+
+        LocalDateTime now = LocalDateTime.now();
+        SanctionResponse dto2 = new SanctionResponse(2L, 50.0, "Late", true, now);
+        assertEquals(2L, dto2.getId());
+        assertEquals(50.0, dto2.getAmount());
+        assertEquals("Late", dto2.getReason());
+        assertTrue(dto2.isPaid());
+        assertEquals(now, dto2.getArrivalTime());
+    }
+
+
+    @Test
     @DisplayName("Should test equals and hashCode branches for SanctionResponse")
     void testEqualsAndHashCode() {
         SanctionResponse dto1 = new SanctionResponse();
