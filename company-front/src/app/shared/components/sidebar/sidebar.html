@@ -1,0 +1,47 @@
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <h2 class="gradient-text">NML</h2>
+    <span class="version">Business v1.0</span>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a routerLink="/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-item">
+      <span class="icon">📊</span>
+      <span>Dashboard</span>
+    </a>
+    
+    <a routerLink="/dashboard/parkings" routerLinkActive="active" class="nav-item">
+      <span class="icon">🅿️</span>
+      <span>Mis Parkings</span>
+    </a>
+
+    <a routerLink="/dashboard/reservations" routerLinkActive="active" class="nav-item">
+      <span class="icon">📅</span>
+      <span>Reservas</span>
+    </a>
+
+    <a routerLink="/dashboard/sanctions" routerLinkActive="active" class="nav-item">
+      <span class="icon">⚖️</span>
+      <span>Sanciones</span>
+    </a>
+
+    <div class="nav-divider"></div>
+
+    <a routerLink="/dashboard/profile" routerLinkActive="active" class="nav-item">
+      <span class="icon">👤</span>
+      <span>Perfil</span>
+    </a>
+    
+    <a routerLink="/dashboard/developer" routerLinkActive="active" class="nav-item">
+      <span class="icon">🔑</span>
+      <span>API & Integración</span>
+    </a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <button class="logout-btn" (click)="onLogout()">
+      <span class="icon">🚪</span>
+      <span>Cerrar Sesión</span>
+    </button>
+  </div>
+</aside>
