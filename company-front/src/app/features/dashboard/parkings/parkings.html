@@ -1,0 +1,33 @@
+<div class="parkings-container">
+  <header class="page-header">
+    <div class="header-text">
+      <h1 class="page-title">Gestión de Parkings</h1>
+      <p class="page-subtitle">Administra tus ubicaciones y configuraciones de sanción.</p>
+    </div>
+    <button class="btn-primary" (click)="onAddParking()">+ Añadir Parking</button>
+  </header>
+
+  <div class="filters-bar glass-card">
+    <div class="search-box">
+      <span class="search-icon">🔍</span>
+      <input type="text" placeholder="Filtrar por nombre o dirección..." class="filter-input">
+    </div>
+    <div class="filter-actions">
+      <select class="filter-select">
+        <option value="all">Todos los estados</option>
+        <option value="active">Abierto</option>
+        <option value="inactive">Cerrado</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="parkings-grid">
+    <app-parking-card 
+      *ngFor="let parking of mockParkings"
+      [name]="parking.name"
+      [address]="parking.address"
+      [capacity]="parking.capacity"
+      [status]="parking.status"
+    ></app-parking-card>
+  </div>
+</div>
