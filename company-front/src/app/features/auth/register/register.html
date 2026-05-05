@@ -1,0 +1,54 @@
+<div class="register-container">
+  <div class="register-card glass-card">
+    <div class="register-header">
+      <h1 class="gradient-text">NoMoreLaps</h1>
+      <p class="subtitle">Crear Cuenta de Empresa</p>
+    </div>
+
+    <form class="register-form">
+      <app-input 
+        label="Nombre de la Empresa" 
+        placeholder="Mi Parking S.L."
+        type="text"
+      ></app-input>
+
+      <app-input 
+        label="Correo Corporativo" 
+        placeholder="contacto@empresa.com"
+        type="email"
+      ></app-input>
+
+      <div class="password-row">
+        <app-input 
+          label="Contraseña" 
+          placeholder="••••••••"
+          type="password"
+        ></app-input>
+        
+        <app-input 
+          label="Confirmar Contraseña" 
+          placeholder="••••••••"
+          type="password"
+        ></app-input>
+      </div>
+
+      <div class="terms-container">
+        <label class="checkbox-label">
+          <input type="checkbox">
+          <span>Acepto los <a href="#">términos y condiciones</a> de servicio</span>
+        </label>
+      </div>
+
+      <app-button 
+        text="Crear Cuenta" 
+        customClass="w-full"
+        (onClick)="onRegister($event)"
+      ></app-button>
+
+      <div class="login-prompt">
+        <span>¿Ya tienes una cuenta?</span>
+        <a routerLink="/login" class="login-link">Inicia sesión</a>
+      </div>
+    </form>
+  </div>
+</div>
