@@ -8,6 +8,7 @@ import { ParkingCreate } from './features/dashboard/parkings/parking-create/park
 import { Reservations } from './features/dashboard/reservations/reservations';
 import { Developer } from './features/dashboard/developer/developer';
 import { Sanctions } from './features/dashboard/sanctions/sanctions';
+import { Profile } from './features/dashboard/profile/profile';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -21,6 +22,7 @@ export const routes: Routes = [
       { path: 'parkings/new', component: ParkingCreate },
       { path: 'reservations', component: Reservations },
       { path: 'sanctions', component: Sanctions },
+      { path: 'profile', component: Profile },
       { path: 'developer', component: Developer },
       { path: '**', redirectTo: '' }
     ]

@@ -1,0 +1,57 @@
+<div class="profile-container">
+  <header class="page-header">
+    <div class="header-text">
+      <h1 class="page-title">Perfil de Empresa</h1>
+      <p class="page-subtitle">Gestiona la información pública y de contacto de tu organización.</p>
+    </div>
+  </header>
+
+  <div class="profile-layout">
+    <aside class="profile-sidebar glass-card">
+      <div class="avatar-section">
+        <div class="avatar-circle">🏢</div>
+        <button class="btn-avatar">Cambiar Logo</button>
+      </div>
+      
+      <nav class="profile-nav">
+        <button class="nav-btn active">Información General</button>
+        <button class="nav-btn">Seguridad</button>
+        <button class="nav-btn">Facturación</button>
+        <button class="nav-btn">Notificaciones</button>
+      </nav>
+    </aside>
+
+    <main class="profile-content glass-card">
+      <form class="profile-form">
+        <div class="form-section">
+          <h3>Detalles de la Organización</h3>
+          <div class="input-row">
+            <app-input label="Nombre Comercial" value="Nexus Corp S.L." type="text"></app-input>
+            <app-input label="CIF / NIF" value="B12345678" type="text"></app-input>
+          </div>
+          
+          <app-input label="Correo Electrónico de Contacto" value="admin@nexuscorp.com" type="email"></app-input>
+          
+          <div class="input-row">
+            <app-input label="Teléfono" value="+34 600 000 000" type="tel"></app-input>
+            <app-input label="Sitio Web" value="https://nexuscorp.com" type="url"></app-input>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h3>Dirección Fiscal</h3>
+          <app-input label="Calle y Número" value="Avenida de la Innovación, 42" type="text"></app-input>
+          <div class="input-row">
+            <app-input label="Ciudad" value="Madrid" type="text"></app-input>
+            <app-input label="Código Postal" value="28001" type="text"></app-input>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <app-button text="Descartar Cambios" customClass="btn-outline"></app-button>
+          <app-button text="Guardar Perfil" (onClick)="onSave($event)"></app-button>
+        </div>
+      </form>
+    </main>
+  </div>
+</div>
