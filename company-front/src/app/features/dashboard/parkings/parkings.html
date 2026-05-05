@@ -21,13 +21,21 @@
     </div>
   </div>
 
-  <div class="parkings-grid">
+  <div class="parkings-grid" *ngIf="!loading">
     <app-parking-card 
-      *ngFor="let parking of mockParkings"
+      *ngFor="let parking of parkings"
       [name]="parking.name"
       [address]="parking.address"
-      [capacity]="parking.capacity"
+      [capacity]="100" 
       [status]="parking.status"
     ></app-parking-card>
+  </div>
+
+  <div class="loading-container" *ngIf="loading">
+    <p>Cargando tus parkings...</p>
+  </div>
+
+  <div class="empty-container" *ngIf="!loading && parkings.length === 0">
+    <p>No tienes parkings registrados. ¡Empieza añadiendo uno!</p>
   </div>
 </div>

@@ -8,19 +8,21 @@
   </header>
 
   <div class="form-card glass-card">
-    <form class="parking-form">
+    <form class="parking-form" [formGroup]="parkingForm" (ngSubmit)="onSave()">
       <div class="form-section">
         <h3>Información General</h3>
         <app-input 
           label="Nombre del Parking" 
           placeholder="Ej: Central Plaza"
           type="text"
+          formControlName="name"
         ></app-input>
         
         <app-input 
           label="Dirección Completa" 
           placeholder="Calle Falsa 123, Madrid"
           type="text"
+          formControlName="address"
         ></app-input>
 
         <div class="coords-row">
@@ -28,11 +30,13 @@
             label="Latitud" 
             placeholder="40.4168"
             type="number"
+            formControlName="latitude"
           ></app-input>
           <app-input 
             label="Longitud" 
             placeholder="-3.7038"
             type="number"
+            formControlName="longitude"
           ></app-input>
         </div>
       </div>
@@ -46,12 +50,14 @@
             label="Importe Sanción (€)" 
             placeholder="15.00"
             type="number"
+            formControlName="sanctionAmount"
           ></app-input>
           
           <app-input 
             label="Intervalo de Sanción (Minutos)" 
             placeholder="30"
             type="number"
+            formControlName="sanctionIntervalInMinutes"
           ></app-input>
         </div>
       </div>
@@ -65,7 +71,8 @@
         
         <app-button 
           text="Guardar Parking" 
-          (onClick)="onSave($event)"
+          type="submit"
+          [loading]="loading"
         ></app-button>
       </div>
     </form>

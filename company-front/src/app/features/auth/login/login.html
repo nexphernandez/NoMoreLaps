@@ -5,18 +5,24 @@
       <p class="subtitle">Portal de Empresas</p>
     </div>
 
-    <form class="login-form">
+    <form class="login-form" [formGroup]="loginForm" (ngSubmit)="onLogin()">
       <app-input 
         label="Correo Electrónico" 
         placeholder="ejemplo@empresa.com"
         type="email"
+        formControlName="email"
       ></app-input>
 
       <app-input 
         label="Contraseña" 
         placeholder="••••••••"
         type="password"
+        formControlName="password"
       ></app-input>
+
+      <div class="error-container" *ngIf="errorMessage">
+        <p class="error-text">{{ errorMessage }}</p>
+      </div>
 
       <div class="form-footer">
         <a href="#" class="forgot-password">¿Has olvidado tu contraseña?</a>
@@ -25,7 +31,8 @@
       <app-button 
         text="Iniciar Sesión" 
         customClass="w-full"
-        (onClick)="onLogin($event)"
+        [loading]="loading"
+        type="submit"
       ></app-button>
 
       <div class="register-prompt">
