@@ -24,6 +24,7 @@ public interface ParkingMapper {
      * @param request The incoming request DTO.
      * @return The domain model representation.
      */
+    @Mapping(target = "company.id", source = "companyId")
     Parking toDomainFromRequest(ParkingRequest request);
 
     /**
