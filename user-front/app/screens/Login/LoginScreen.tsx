@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Alert } from 'react-native';
 import { useAuth } from '../../context/AuthContext';
 import LoginView from './LoginView';
@@ -9,21 +9,46 @@ import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../../navigation/RootNavigator';
 
+import { isValidEmail } from '../../utils/validation';
+
 const LoginScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState<{email?: string, password?: string}>({});
   const { login } = useAuth();
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
 
+  // Real-time validation
+  useEffect(() => {
+    const newErrors: any = {};
+    if (email && !isValidEmail(email.trim())) {
+      newErrors.email = 'El formato del email no es válido';
+    }
+    setErrors(newErrors);
+  }, [email, password]);
+
+  const validate = () => {
+    const newErrors: any = {};
+    if (!email.trim()) {
+      newErrors.email = 'El email es obligatorio';
+    } else if (!isValidEmail(email.trim())) {
+      newErrors.email = 'El formato del email no es válido';
+    }
+    
+    if (!password.trim()) {
+      newErrors.password = 'La contraseña es obligatoria';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleLogin = async () => {
+    if (!validate()) return;
+
     const cleanEmail = email.trim();
     const cleanPassword = password.trim();
-
-    if (!cleanEmail || !cleanPassword) {
-      Alert.alert('Error', 'Por favor, rellena todos los campos');
-      return;
-    }
 
     setLoading(true);
     try {
@@ -66,6 +91,7 @@ const LoginScreen = () => {
       setEmail={setEmail}
       password={password}
       setPassword={setPassword}
+      errors={errors}
       onLogin={handleLogin}
       loading={loading}
     />

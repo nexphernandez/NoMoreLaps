@@ -14,12 +14,16 @@ interface LoginViewProps {
   setEmail: (text: string) => void;
   password: string;
   setPassword: (text: string) => void;
+  errors: {
+    email?: string;
+    password?: string;
+  };
   onLogin: () => void;
   loading: boolean;
 }
 
 const LoginView: React.FC<LoginViewProps> = ({
-  email, setEmail, password, setPassword, onLogin, loading
+  email, setEmail, password, setPassword, errors, onLogin, loading
 }) => {
   const { theme } = useTheme();
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
@@ -34,21 +38,23 @@ const LoginView: React.FC<LoginViewProps> = ({
         <Typography variant="body" color={theme.textSecondary} style={styles.subtitle}>Welcome back</Typography>
 
         <InputField
-          label="Email Address"
-          placeholder="example@test.com"
+          label="Correo Electrónico"
+          placeholder="ejemplo@test.com"
           autoCapitalize="none"
           autoCorrect={false}
           value={email}
           onChangeText={setEmail}
           keyboardType="email-address"
+          error={errors.email}
         />
 
         <InputField
-          label="Password"
+          label="Contraseña"
           placeholder="••••••••"
           secureTextEntry
           value={password}
           onChangeText={setPassword}
+          error={errors.password}
         />
 
         <CustomButton

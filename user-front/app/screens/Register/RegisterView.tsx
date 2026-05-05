@@ -18,13 +18,19 @@ interface RegisterViewProps {
   setPassword: (text: string) => void;
   confirmPassword: string;
   setConfirmPassword: (text: string) => void;
+  errors: {
+    name?: string;
+    email?: string;
+    password?: string;
+    confirmPassword?: string;
+  };
   onRegister: () => void;
   isLoading: boolean;
 }
 
 const RegisterView: React.FC<RegisterViewProps> = ({
   name, setName, email, setEmail, password, setPassword, 
-  confirmPassword, setConfirmPassword, onRegister, isLoading
+  confirmPassword, setConfirmPassword, errors, onRegister, isLoading
 }) => {
   const { theme } = useTheme();
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
@@ -39,35 +45,39 @@ const RegisterView: React.FC<RegisterViewProps> = ({
 
         <View style={styles.form}>
           <InputField
-            label="Full Name"
-            placeholder="John Doe"
+            label="Nombre Completo"
+            placeholder="Juan Pérez"
             value={name}
             onChangeText={setName}
+            error={errors.name}
           />
 
           <InputField
-            label="Email Address"
-            placeholder="example@test.com"
+            label="Correo Electrónico"
+            placeholder="ejemplo@test.com"
             value={email}
             onChangeText={setEmail}
             keyboardType="email-address"
             autoCapitalize="none"
+            error={errors.email}
           />
 
           <InputField
-            label="Password"
+            label="Contraseña"
             placeholder="••••••••"
             value={password}
             onChangeText={setPassword}
             secureTextEntry
+            error={errors.password}
           />
 
           <InputField
-            label="Confirm Password"
+            label="Confirmar Contraseña"
             placeholder="••••••••"
             value={confirmPassword}
             onChangeText={setConfirmPassword}
             secureTextEntry
+            error={errors.confirmPassword}
           />
 
           <CustomButton
