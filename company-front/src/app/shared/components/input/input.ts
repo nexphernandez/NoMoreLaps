@@ -35,8 +35,8 @@ export class InputComponent implements ControlValueAccessor {
   @Input() type = 'text';
   @Input() placeholder = '';
   
-  value: any = '';
-  disabled = false;
+  @Input() value: any = '';
+  @Input() disabled = false;
 
   onChange: any = () => {};
   onTouched: any = () => {};
