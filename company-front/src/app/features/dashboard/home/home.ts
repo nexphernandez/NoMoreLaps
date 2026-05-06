@@ -1,5 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ParkingService } from '../../../core/services/parking';
+import { ReservationService } from '../../../core/services/reservation';
+import { SanctionService } from '../../../core/services/sanction';
+import { AuthService } from '../../../core/services/auth';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-home',
@@ -14,7 +19,7 @@ import { CommonModule } from '@angular/common';
           <span class="stat-icon">🅿️</span>
           <div class="stat-info">
             <span class="stat-label">Parkings Activos</span>
-            <span class="stat-value">12</span>
+            <span class="stat-value">{{ stats.activeParkings }}</span>
           </div>
         </div>
 
@@ -22,15 +27,15 @@ import { CommonModule } from '@angular/common';
           <span class="stat-icon">📅</span>
           <div class="stat-info">
             <span class="stat-label">Reservas Hoy</span>
-            <span class="stat-value">84</span>
+            <span class="stat-value">{{ stats.todayReservations }}</span>
           </div>
         </div>
 
         <div class="stat-card glass-card">
           <span class="stat-icon">💰</span>
           <div class="stat-info">
-            <span class="stat-label">Ingresos Hoy</span>
-            <span class="stat-value">1.240€</span>
+            <span class="stat-label">Ingresos Totales</span>
+            <span class="stat-value">{{ stats.totalRevenue | currency:'EUR' }}</span>
           </div>
         </div>
 
@@ -38,14 +43,27 @@ import { CommonModule } from '@angular/common';
           <span class="stat-icon">⚖️</span>
           <div class="stat-info">
             <span class="stat-label">Sanciones Pendientes</span>
-            <span class="stat-value">5</span>
+            <span class="stat-value">{{ stats.pendingSanctions }}</span>
           </div>
         </div>
       </div>
 
       <div class="recent-activity glass-card">
         <h3>Actividad Reciente</h3>
-        <p style="color: var(--text-secondary); margin-top: 1rem;">No hay actividad nueva para mostrar.</p>
+        <div class="activity-list" *ngIf="recentActivity.length > 0; else noActivity">
+          <div class="activity-item" *ngFor="let item of recentActivity">
+            <span class="activity-type" [class.reservation]="item.type === 'reservation'">
+              {{ item.type === 'reservation' ? '📅' : '⚖️' }}
+            </span>
+            <div class="activity-details">
+              <p class="activity-text">{{ item.message }}</p>
+              <span class="activity-time">{{ item.time | date:'short' }}</span>
+            </div>
+          </div>
+        </div>
+        <ng-template #noActivity>
+          <p style="color: var(--text-secondary); margin-top: 1rem;">No hay actividad nueva para mostrar.</p>
+        </ng-template>
       </div>
     </div>
   `,
@@ -97,10 +115,113 @@ import { CommonModule } from '@angular/common';
       padding: 2rem;
       min-height: 300px;
     }
+    .activity-list {
+      margin-top: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .activity-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 0.75rem;
+    }
+    .activity-type {
+      font-size: 1.25rem;
+      padding: 0.5rem;
+      border-radius: 0.5rem;
+      background: rgba(255, 255, 255, 0.05);
+    }
+    .activity-details {
+      display: flex;
+      flex-direction: column;
+    }
+    .activity-text {
+      font-weight: 500;
+      margin: 0;
+    }
+    .activity-time {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+    }
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
     }
   `]
 })
-export class Home {}
+export class Home implements OnInit {
+  stats = {
+    activeParkings: 0,
+    todayReservations: 0,
+    totalRevenue: 0,
+    pendingSanctions: 0
+  };
+
+  recentActivity: any[] = [];
+
+  constructor(
+    private parkingService: ParkingService,
+    private reservationService: ReservationService,
+    private sanctionService: SanctionService,
+    private authService: AuthService
+  ) {}
+
+  ngOnInit() {
+    const user = this.authService.currentUser();
+    if (user && user.companyId) {
+      this.loadDashboardData(user.companyId);
+    }
+  }
+
+  loadDashboardData(companyId: number) {
+    forkJoin({
+      parkings: this.parkingService.getParkingsByCompany(companyId),
+      reservations: this.reservationService.getReservationsByCompany(companyId),
+      sanctions: this.sanctionService.getSanctionsByCompany(companyId)
+    }).subscribe({
+      next: (data) => {
+        this.calculateStats(data);
+        this.processActivity(data);
+      },
+      error: (err) => console.error('Error loading dashboard data:', err)
+    });
+  }
+
+  calculateStats(data: any) {
+    const today = new Date().toLocaleDateString();
+    
+    this.stats.activeParkings = data.parkings.length;
+    this.stats.todayReservations = data.reservations.filter((r: any) => 
+      new Date(r.startTime).toLocaleDateString() === today
+    ).length;
+    
+    this.stats.totalRevenue = data.reservations
+      .filter((r: any) => r.state === 'COMPLETED' || r.state === 'ACTIVE')
+      .reduce((acc: number, r: any) => acc + r.price, 0);
+      
+    this.stats.pendingSanctions = data.sanctions.filter((s: any) => !s.paid).length;
+  }
+
+  processActivity(data: any) {
+    const activities = [
+      ...data.reservations.map((r: any) => ({
+        type: 'reservation',
+        time: r.creationTime,
+        message: `Nueva reserva de ${r.userName} en ${r.parkingName}`
+      })),
+      ...data.sanctions.map((s: any) => ({
+        type: 'sanction',
+        time: s.arrivalTime,
+        message: `Sanción aplicada a ${s.userName} (${s.amount}€)`
+      }))
+    ];
+
+    this.recentActivity = activities
+      .sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime())
+      .slice(0, 5);
+  }
+}
