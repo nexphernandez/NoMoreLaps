@@ -13,19 +13,19 @@ import jakarta.validation.constraints.Positive;
  */
 public class SanctionRequest {
 
-    @NotNull(message = "El monto es obligatorio")
-    @Positive(message = "El monto debe ser positivo")
-    private double amount;
+    @NotNull(message = "Amount is mandatory")
+    @Positive(message = "Amount must be positive")
+    private Double amount;
 
-    @NotBlank(message = "La razón o motivo no puede estar vacía")
+    @NotBlank(message = "Reason cannot be empty")
     private String reason;
 
     private boolean paid;
 
-    @NotNull(message = "El ID de la reserva es obligatorio")
+    @NotNull(message = "Reservation ID is mandatory")
     private Long reservationId;
 
-    @NotNull(message = "El ID del usuario es obligatorio")
+    @NotNull(message = "User ID is mandatory")
     private Long userId;
 
     /**

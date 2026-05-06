@@ -28,7 +28,8 @@ public class SecurityConfig {
     private final ApiKeyFilter apiKeyFilter;
     private final UserDetailsService userDetailsService;
 
-    public SecurityConfig(JwtAuthenticationFilter jwtAuthFilter, ApiKeyFilter apiKeyFilter, UserDetailsService userDetailsService) {
+    public SecurityConfig(JwtAuthenticationFilter jwtAuthFilter, ApiKeyFilter apiKeyFilter,
+            UserDetailsService userDetailsService) {
         this.jwtAuthFilter = jwtAuthFilter;
         this.apiKeyFilter = apiKeyFilter;
         this.userDetailsService = userDetailsService;
@@ -41,27 +42,31 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/auth/company/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
-                        
-                        .requestMatchers(HttpMethod.GET, "/api/parkings", "/api/parkings/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/parking-spots", "/api/parking-spots/**").permitAll()
-                        
-                        .requestMatchers("/api/companies/**").permitAll()
-                        .requestMatchers("/services/**").permitAll()
 
-                        .requestMatchers(HttpMethod.POST, "/api/parkings/**").hasRole("COMPANY")
-                        .requestMatchers(HttpMethod.PUT, "/api/parkings/**").hasRole("COMPANY")
-                        .requestMatchers(HttpMethod.DELETE, "/api/parkings/**").hasRole("COMPANY")
+                        .requestMatchers(HttpMethod.GET, "/api/parkings").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/parkings/{id}").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/parkings/search").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/parkings/nearby").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/parking-spots/parking/**").permitAll()
 
-                        .requestMatchers("/api/smart-calendar/**").authenticated()
-                        .requestMatchers("/api/reservations/**").authenticated()
-                        .requestMatchers(HttpMethod.GET, "/api/users/{id}").authenticated()
-                        .requestMatchers(HttpMethod.PUT, "/api/users/{id}").authenticated()
-                        
+                        .requestMatchers("/api/parkings/company/**").hasAnyRole("COMPANY", "ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/parkings/**").hasAnyRole("COMPANY", "ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/parkings/**").hasAnyRole("COMPANY", "ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/parkings/**").hasAnyRole("COMPANY", "ADMIN")
+
+                        .requestMatchers("/api/parking-spots/**").hasAnyRole("COMPANY", "ADMIN")
+                        .requestMatchers("/api/dynamic-prices/**").hasAnyRole("COMPANY", "ADMIN")
+
+                        .requestMatchers("/api/companies/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/users").hasRole("ADMIN")
-                        
+
+                        .requestMatchers("/api/reservations/**").authenticated()
+                        .requestMatchers("/api/sanctions/**").authenticated()
+                        .requestMatchers("/api/smart-calendar/**").authenticated()
+                        .requestMatchers("/api/users/{id}").authenticated()
+
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))

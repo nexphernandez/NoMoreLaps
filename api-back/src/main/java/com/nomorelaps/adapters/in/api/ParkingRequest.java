@@ -14,14 +14,14 @@ import jakarta.validation.constraints.NotNull;
  */
 public class ParkingRequest {
 
-    @NotBlank(message = "La dirección no puede estar vacía")
+    @NotBlank(message = "Address cannot be empty")
     private String address;
     
-    @NotBlank(message = "El nombre no puede estar vacío")
+    @NotBlank(message = "Name cannot be empty")
     private String name;
-    @NotNull(message = "La latitud es obligatoria")
+    @NotNull(message = "Latitude is mandatory")
     private Double latitude;
-    @NotNull(message = "La longitud es obligatoria")
+    @NotNull(message = "Longitude is mandatory")
     private Double longitude;
     private LocalDateTime openingTime;
     private LocalDateTime closingTime;

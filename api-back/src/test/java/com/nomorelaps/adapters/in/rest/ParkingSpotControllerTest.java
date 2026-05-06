@@ -62,7 +62,7 @@ class ParkingSpotControllerTest {
 
     @Test
     @DisplayName("GET /api/parking-spots/{id} - Found")
-    @WithMockUser
+    @WithMockUser(roles = "COMPANY")
     void shouldReturnParkingSpotById() throws Exception {
         ParkingSpot spot = new ParkingSpot(1L);
         when(parkingSpotService.findById(1L)).thenReturn(Optional.of(spot));
@@ -74,7 +74,7 @@ class ParkingSpotControllerTest {
 
     @Test
     @DisplayName("GET /api/parking-spots/parking/{id} - List")
-    @WithMockUser
+    @WithMockUser(roles = "COMPANY")
     void shouldReturnParkingSpots() throws Exception {
         when(parkingSpotService.findByParkingId(1L)).thenReturn(Collections.emptyList());
 

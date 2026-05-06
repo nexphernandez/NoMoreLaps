@@ -44,14 +44,12 @@ class ReservationServiceTest {
     @Test
     @DisplayName("Should create reservation when valid")
     void shouldCreateReservationWhenValid() {
-        // Arrange
+        
         when(persistencePort.hasOverlappingReservations(anyLong(), any(), any())).thenReturn(false);
         when(persistencePort.save(any(Reservation.class))).thenReturn(validReservation);
 
-        // Act
         Reservation created = reservationService.create(validReservation);
 
-        // Assert
         assertNotNull(created);
         assertEquals("ACTIVE", created.getState());
         verify(persistencePort).save(validReservation);
@@ -60,10 +58,8 @@ class ReservationServiceTest {
     @Test
     @DisplayName("Should throw exception when end time is before start time")
     void shouldThrowExceptionWhenEndTimeIsInvalid() {
-        // Arrange
         validReservation.setEndTime(validReservation.getStartTime().minusHours(1));
 
-        // Act & Assert
         assertThrows(IllegalArgumentException.class, () -> {
             reservationService.create(validReservation);
         });
@@ -73,10 +69,8 @@ class ReservationServiceTest {
     @Test
     @DisplayName("Should throw exception when reservation overlaps")
     void shouldThrowExceptionWhenOverlaps() {
-        // Arrange
         when(persistencePort.hasOverlappingReservations(anyLong(), any(), any())).thenReturn(true);
 
-        // Act & Assert
         assertThrows(IllegalStateException.class, () -> {
             reservationService.create(validReservation);
         });
@@ -86,15 +80,12 @@ class ReservationServiceTest {
     @Test
     @DisplayName("Should update reservation when valid")
     void shouldUpdateReservationWhenValid() {
-        // Arrange
         validReservation.setId(100L);
         when(persistencePort.hasOverlappingReservationsExcluding(anyLong(), any(), any(), anyLong())).thenReturn(false);
         when(persistencePort.save(any(Reservation.class))).thenReturn(validReservation);
 
-        // Act
         Reservation updated = reservationService.update(validReservation);
 
-        // Assert
         assertNotNull(updated);
         verify(persistencePort).save(validReservation);
     }

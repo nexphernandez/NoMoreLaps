@@ -49,7 +49,6 @@ class UserServiceTest {
         testUser.setPassword("plainPassword");
     }
 
-    // ── create ──────────────────────────────────────────────────────────────
 
     @Test
     @DisplayName("create - Should encode password and save user successfully")
@@ -94,7 +93,6 @@ class UserServiceTest {
         verify(persistencePort, never()).save(any());
     }
 
-    // ── findById ─────────────────────────────────────────────────────────────
 
     @Test
     @DisplayName("findById - Should return user when found")
@@ -117,7 +115,6 @@ class UserServiceTest {
         assertFalse(result.isPresent());
     }
 
-    // ── findByEmail ───────────────────────────────────────────────────────────
 
     @Test
     @DisplayName("findByEmail - Should return user by email")
@@ -130,7 +127,6 @@ class UserServiceTest {
         assertEquals(1L, result.get().getId());
     }
 
-    // ── findAll ───────────────────────────────────────────────────────────────
 
     @Test
     @DisplayName("findAll - Should return all users")
@@ -144,7 +140,6 @@ class UserServiceTest {
         assertEquals(2, result.size());
     }
 
-    // ── update ────────────────────────────────────────────────────────────────
 
     @Test
     @DisplayName("update - Should update name and email when provided")
@@ -198,7 +193,6 @@ class UserServiceTest {
         assertThrows(IllegalArgumentException.class, () -> userService.update(updates));
     }
 
-    // ── deleteById ────────────────────────────────────────────────────────────
 
     @Test
     @DisplayName("deleteById - Should call persistence deleteById")
@@ -217,7 +211,6 @@ class UserServiceTest {
         existingUser.setName("Alice");
         existingUser.setEmail("alice@test.com");
 
-        // Provide null name, empty email, null password → no fields should be updated
         User updates = new User(1L);
         updates.setName(null);
         updates.setEmail("");
@@ -229,7 +222,6 @@ class UserServiceTest {
         User result = userService.update(updates);
 
         assertNotNull(result);
-        // original values preserved
         assertEquals("Alice", existingUser.getName());
         assertEquals("alice@test.com", existingUser.getEmail());
         verify(passwordEncoder, never()).encode(anyString());

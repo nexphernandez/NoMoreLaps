@@ -62,21 +62,16 @@ class CompanyJpaEntityTest {
         CompanyJpaEntity entity2 = new CompanyJpaEntity(1L);
         CompanyJpaEntity entity3 = new CompanyJpaEntity(2L);
 
-        // Same object
         assertEquals(entity1, entity1);
 
-        // Equal objects
         assertEquals(entity1, entity2);
         assertEquals(entity1.hashCode(), entity2.hashCode());
 
-        // Different objects
         assertNotEquals(entity1, entity3);
 
-        // Null and different class
         assertNotEquals(entity1, null);
         assertNotEquals(entity1, new Object());
 
-        // Null ID coverage
         CompanyJpaEntity entityNull1 = new CompanyJpaEntity(null);
         CompanyJpaEntity entityNull2 = new CompanyJpaEntity(null);
         assertEquals(entityNull1, entityNull2);
@@ -89,11 +84,11 @@ class CompanyJpaEntityTest {
         CompanyJpaEntity entity = new CompanyJpaEntity();
         assertNull(entity.getRegisterDay());
 
-        entity.onCreate(); // Directly call pre-persist
+        entity.onCreate(); 
         assertNotNull(entity.getRegisterDay());
 
         LocalDateTime originalTime = entity.getRegisterDay();
-        entity.onCreate(); // Should not overwrite existing time
+        entity.onCreate(); 
         assertEquals(originalTime, entity.getRegisterDay());
     }
 }

@@ -43,7 +43,6 @@ class CompanyServiceTest {
         testCompany.setEmail("parking@corp.com");
     }
 
-    // ── create ──────────────────────────────────────────────────────────────
 
     @Test
     @DisplayName("create - Should save company when email is not registered")
@@ -67,7 +66,6 @@ class CompanyServiceTest {
         verify(persistencePort, never()).save(any());
     }
 
-    // ── findById ─────────────────────────────────────────────────────────────
 
     @Test
     @DisplayName("findById - Should return company when found")
@@ -90,7 +88,6 @@ class CompanyServiceTest {
         assertFalse(result.isPresent());
     }
 
-    // ── findAll ───────────────────────────────────────────────────────────────
 
     @Test
     @DisplayName("findAll - Should return all companies")
@@ -104,7 +101,6 @@ class CompanyServiceTest {
         assertEquals(2, result.size());
     }
 
-    // ── findByEmail ───────────────────────────────────────────────────────────
 
     @Test
     @DisplayName("findByEmail - Should return company when found")
@@ -126,7 +122,6 @@ class CompanyServiceTest {
         assertFalse(result.isPresent());
     }
 
-    // ── findByApiKey ──────────────────────────────────────────────────────────
 
     @Test
     @DisplayName("findByApiKey - Should return company by API key")
@@ -149,7 +144,6 @@ class CompanyServiceTest {
         assertFalse(result.isPresent());
     }
 
-    // ── update ────────────────────────────────────────────────────────────────
 
     @Test
     @DisplayName("update - Should delegate to persistence save")
@@ -163,7 +157,6 @@ class CompanyServiceTest {
         verify(persistencePort).save(testCompany);
     }
 
-    // ── deleteById ────────────────────────────────────────────────────────────
 
     @Test
     @DisplayName("deleteById - Should call persistence deleteById")

@@ -46,7 +46,6 @@ class ParkingServiceTest {
         testParking.setLongitude(-3.7038);
     }
 
-    // ── create ──────────────────────────────────────────────────────────────
 
     @Test
     @DisplayName("create - Should delegate to persistence and return saved parking")
@@ -60,7 +59,6 @@ class ParkingServiceTest {
         verify(persistencePort).save(testParking);
     }
 
-    // ── findById ─────────────────────────────────────────────────────────────
 
     @Test
     @DisplayName("findById - Should return parking when found")
@@ -83,7 +81,6 @@ class ParkingServiceTest {
         assertFalse(result.isPresent());
     }
 
-    // ── findAll ───────────────────────────────────────────────────────────────
 
     @Test
     @DisplayName("findAll - Should return all parkings")
@@ -107,7 +104,6 @@ class ParkingServiceTest {
         assertTrue(result.isEmpty());
     }
 
-    // ── findAllByCompanyId ────────────────────────────────────────────────────
 
     @Test
     @DisplayName("findAllByCompanyId - Should return parkings for a company")
@@ -120,7 +116,6 @@ class ParkingServiceTest {
         verify(persistencePort).findByCompanyId(5L);
     }
 
-    // ── update ────────────────────────────────────────────────────────────────
 
     @Test
     @DisplayName("update - Should delegate to persistence save")
@@ -134,7 +129,6 @@ class ParkingServiceTest {
         verify(persistencePort).save(testParking);
     }
 
-    // ── deleteById ────────────────────────────────────────────────────────────
 
     @Test
     @DisplayName("deleteById - Should call persistence deleteById")
@@ -146,7 +140,6 @@ class ParkingServiceTest {
         verify(persistencePort).deleteById(1L);
     }
 
-    // ── searchByNameOrAddress ─────────────────────────────────────────────────
 
     @Test
     @DisplayName("searchByNameOrAddress - Should return matching parkings")
@@ -169,7 +162,6 @@ class ParkingServiceTest {
         assertTrue(result.isEmpty());
     }
 
-    // ── findNearby ────────────────────────────────────────────────────────────
 
     @Test
     @DisplayName("findNearby - Should return nearby parkings within radius")

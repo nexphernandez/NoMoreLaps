@@ -14,17 +14,14 @@ class ParkingTest {
     @Test
     @DisplayName("Parking - Constructors and Getters/Setters should work")
     void testParkingConstructorsAndAccessors() {
-        // Empty constructor
         Parking p1 = new Parking();
         assertNotNull(p1.getParkingSpots());
         assertNotNull(p1.getDynamicPrice());
         assertEquals(2.0, p1.getPricePerHour()); // default value
 
-        // ID constructor
         Parking p2 = new Parking(1L);
         assertEquals(1L, p2.getId());
 
-        // Full parameters constructor
         LocalDateTime now = LocalDateTime.now();
         Company company = new Company(1L);
         Set<ParkingSpot> spots = new HashSet<>();

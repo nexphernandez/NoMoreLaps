@@ -40,13 +40,10 @@ class ParkingSpotServiceTest {
     @Test
     @DisplayName("Should create spot as available by default")
     void shouldCreateSpotAsAvailable() {
-        // Arrange
         when(persistencePort.save(any(ParkingSpot.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        // Act
         ParkingSpot created = parkingSpotService.create(validSpot);
 
-        // Assert
         assertNotNull(created);
         assertTrue(created.isState(), "New spots should be available by default");
         verify(persistencePort).save(validSpot);
@@ -55,13 +52,10 @@ class ParkingSpotServiceTest {
     @Test
     @DisplayName("Should find available spots in a parking")
     void shouldFindAvailableSpots() {
-        // Arrange
         when(persistencePort.findByParkingIdAndStateTrue(1L)).thenReturn(Collections.singletonList(validSpot));
 
-        // Act
         List<ParkingSpot> available = parkingSpotService.findAvailableSpots(1L);
 
-        // Assert
         assertFalse(available.isEmpty());
         assertEquals(1, available.size());
         assertTrue(available.get(0).isState());
@@ -70,10 +64,8 @@ class ParkingSpotServiceTest {
     @Test
     @DisplayName("Should throw exception when updating non-existent spot")
     void shouldThrowExceptionOnUpdateNonExistent() {
-        // Arrange
         when(persistencePort.findById(anyLong())).thenReturn(Optional.empty());
 
-        // Act & Assert
         assertThrows(RuntimeException.class, () -> {
             parkingSpotService.update(validSpot);
         });

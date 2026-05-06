@@ -173,8 +173,8 @@ public class ParkingController {
     @Operation(summary = "Find nearby parkings", description = "Retrieves parkings within a certain distance from a location.")
     @ApiResponse(responseCode = "200", description = "Nearby parkings retrieved")
     public ResponseEntity<List<ParkingResponse>> findNearby(
-            @RequestParam double lat, 
-            @RequestParam double lng, 
+            @RequestParam double lat,
+            @RequestParam double lng,
             @RequestParam(defaultValue = "10.0") double radius) {
         List<ParkingResponse> responses = parkingService.findNearby(lat, lng, radius).stream()
                 .map(parkingMapper::toResponse)

@@ -159,7 +159,7 @@ class ParkingControllerTest {
 
     @Test
     @DisplayName("GET /api/parkings/company/{id} - Should return company results")
-    @WithMockUser
+    @WithMockUser(roles = "COMPANY")
     void shouldFindParkingsByCompany() throws Exception {
         Parking p = new Parking(1L);
         when(parkingService.findAllByCompanyId(10L)).thenReturn(Collections.singletonList(p));

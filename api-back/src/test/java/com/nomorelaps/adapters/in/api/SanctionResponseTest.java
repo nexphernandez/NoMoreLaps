@@ -65,7 +65,6 @@ class SanctionResponseTest {
         dto2.setArrivalTime(LocalDateTime.of(2026, 1, 1, 0, 0).plusDays(1));
         dto3.setArrivalTime(LocalDateTime.of(2026, 1, 1, 0, 0).plusDays(2));
 
-        // Base checks
         assertEquals(dto1, dto1);
         assertEquals(dto1, dto2);
         assertNotEquals(dto1, dto3);
@@ -73,7 +72,6 @@ class SanctionResponseTest {
         assertNotEquals(dto1, new Object());
         assertEquals(dto1.hashCode(), dto2.hashCode());
 
-        // Branch coverage for each field
         SanctionResponse tempid = new SanctionResponse();
         tempid.setId(1L);
         tempid.setAmount(1.0);

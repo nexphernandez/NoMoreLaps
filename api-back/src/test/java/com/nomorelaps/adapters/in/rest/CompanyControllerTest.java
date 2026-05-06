@@ -51,11 +51,10 @@ class CompanyControllerTest {
         return req;
     }
 
-    // ── POST /api/companies - create ──────────────────────────────────────────
 
     @Test
     @DisplayName("POST /api/companies - Should create company and return 201")
-    @WithMockUser
+    @WithMockUser(roles = "ADMIN")
     void shouldCreateCompany() throws Exception {
         Company saved = new Company(1L);
         saved.setName("Parking Corp");
@@ -70,7 +69,7 @@ class CompanyControllerTest {
 
     @Test
     @DisplayName("POST /api/companies - Should return 400 when required fields missing")
-    @WithMockUser
+    @WithMockUser(roles = "ADMIN")
     void shouldReturn400WhenInvalidCompanyRequest() throws Exception {
         mockMvc.perform(post("/api/companies")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -78,11 +77,10 @@ class CompanyControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
-    // ── GET /api/companies/{id} - findById ────────────────────────────────────
 
     @Test
     @DisplayName("GET /api/companies/{id} - Should return company when found")
-    @WithMockUser
+    @WithMockUser(roles = "ADMIN")
     void shouldReturnCompanyById() throws Exception {
         Company company = new Company(1L);
         company.setName("Parking Corp");
@@ -95,7 +93,7 @@ class CompanyControllerTest {
 
     @Test
     @DisplayName("GET /api/companies/{id} - Should return 404 when not found")
-    @WithMockUser
+    @WithMockUser(roles = "ADMIN")
     void shouldReturn404WhenCompanyNotFound() throws Exception {
         when(companyService.findById(99L)).thenReturn(Optional.empty());
 
@@ -103,11 +101,10 @@ class CompanyControllerTest {
                 .andExpect(status().isNotFound());
     }
 
-    // ── GET /api/companies/email/{email} - findByEmail ────────────────────────
 
     @Test
     @DisplayName("GET /api/companies/email/{email} - Should return company")
-    @WithMockUser
+    @WithMockUser(roles = "ADMIN")
     void shouldReturnCompanyByEmail() throws Exception {
         Company company = new Company(1L);
         when(companyService.findByEmail("parking@corp.com")).thenReturn(Optional.of(company));
@@ -118,7 +115,7 @@ class CompanyControllerTest {
 
     @Test
     @DisplayName("GET /api/companies/email/{email} - Should return 404 when not found")
-    @WithMockUser
+    @WithMockUser(roles = "ADMIN")
     void shouldReturn404WhenEmailNotFound() throws Exception {
         when(companyService.findByEmail("unknown@corp.com")).thenReturn(Optional.empty());
 
@@ -126,11 +123,10 @@ class CompanyControllerTest {
                 .andExpect(status().isNotFound());
     }
 
-    // ── GET /api/companies/apikey/{apiKey} - findByApiKey ─────────────────────
 
     @Test
     @DisplayName("GET /api/companies/apikey/{apiKey} - Should return company")
-    @WithMockUser
+    @WithMockUser(roles = "ADMIN")
     void shouldReturnCompanyByApiKey() throws Exception {
         Company company = new Company(1L);
         when(companyService.findByApiKey("my-key")).thenReturn(Optional.of(company));
@@ -141,7 +137,7 @@ class CompanyControllerTest {
 
     @Test
     @DisplayName("GET /api/companies/apikey/{apiKey} - Should return 404 when not found")
-    @WithMockUser
+    @WithMockUser(roles = "ADMIN")
     void shouldReturn404WhenApiKeyNotFound() throws Exception {
         when(companyService.findByApiKey("bad-key")).thenReturn(Optional.empty());
 
@@ -149,11 +145,10 @@ class CompanyControllerTest {
                 .andExpect(status().isNotFound());
     }
 
-    // ── PUT /api/companies/{id} - update ──────────────────────────────────────
 
     @Test
     @DisplayName("PUT /api/companies/{id} - Should update company")
-    @WithMockUser
+    @WithMockUser(roles = "ADMIN")
     void shouldUpdateCompany() throws Exception {
         Company updated = new Company(1L);
         updated.setName("Updated Corp");
@@ -166,11 +161,10 @@ class CompanyControllerTest {
                 .andExpect(jsonPath("$.id").value(1));
     }
 
-    // ── DELETE /api/companies/{id} - delete ───────────────────────────────────
 
     @Test
     @DisplayName("DELETE /api/companies/{id} - Should return 204")
-    @WithMockUser
+    @WithMockUser(roles = "ADMIN")
     void shouldDeleteCompany() throws Exception {
         doNothing().when(companyService).deleteById(1L);
 

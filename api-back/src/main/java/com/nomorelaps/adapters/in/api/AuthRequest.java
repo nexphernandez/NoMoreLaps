@@ -12,11 +12,11 @@ import jakarta.validation.constraints.NotBlank;
  */
 public class AuthRequest {
     
-    @NotBlank(message = "El email es obligatorio")
-    @Email(message = "Formato de email inválido")
+    @NotBlank(message = "Email is mandatory")
+    @Email(message = "Invalid email format")
     private String email;
 
-    @NotBlank(message = "La contraseña es obligatoria")
+    @NotBlank(message = "Password is mandatory")
     private String password;
 
     public AuthRequest() {

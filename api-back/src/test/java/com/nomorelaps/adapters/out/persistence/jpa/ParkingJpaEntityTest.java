@@ -75,21 +75,16 @@ class ParkingJpaEntityTest {
         ParkingJpaEntity entity2 = new ParkingJpaEntity(1L);
         ParkingJpaEntity entity3 = new ParkingJpaEntity(2L);
 
-        // Same object
         assertEquals(entity1, entity1);
 
-        // Equal objects
         assertEquals(entity1, entity2);
         assertEquals(entity1.hashCode(), entity2.hashCode());
 
-        // Different objects
         assertNotEquals(entity1, entity3);
 
-        // Null and different class
         assertNotEquals(entity1, null);
         assertNotEquals(entity1, new Object());
 
-        // Null ID coverage
         ParkingJpaEntity entityNull1 = new ParkingJpaEntity(null);
         ParkingJpaEntity entityNull2 = new ParkingJpaEntity(null);
         assertEquals(entityNull1, entityNull2);
@@ -102,11 +97,11 @@ class ParkingJpaEntityTest {
         ParkingJpaEntity entity = new ParkingJpaEntity();
         assertNull(entity.getCreatedAt());
 
-        entity.onCreate(); // Directly call pre-persist
+        entity.onCreate(); 
         assertNotNull(entity.getCreatedAt());
 
         LocalDateTime originalTime = entity.getCreatedAt();
-        entity.onCreate(); // Should not overwrite existing time
+        entity.onCreate(); 
         assertEquals(originalTime, entity.getCreatedAt());
     }
 }

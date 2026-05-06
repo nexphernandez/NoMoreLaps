@@ -66,7 +66,7 @@ class DynamicPriceControllerTest {
 
     @Test
     @DisplayName("GET /api/dynamic-prices/{id} - Found")
-    @WithMockUser
+    @WithMockUser(roles = "COMPANY")
     void shouldReturnDynamicPriceById() throws Exception {
         DynamicPrice dp = new DynamicPrice(1L);
         when(dynamicPriceService.findById(1L)).thenReturn(Optional.of(dp));
@@ -78,7 +78,7 @@ class DynamicPriceControllerTest {
 
     @Test
     @DisplayName("GET /api/dynamic-prices/parking/{id} - List")
-    @WithMockUser
+    @WithMockUser(roles = "COMPANY")
     void shouldReturnParkingRules() throws Exception {
         when(dynamicPriceService.findByParkingId(1L)).thenReturn(Collections.emptyList());
 

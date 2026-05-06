@@ -85,7 +85,6 @@ class AuthCompanyControllerTest {
         request.setName("New Company");
         request.setEmail("new@company.com");
         request.setPassword("password123");
-        // missing CIF
 
         mockMvc.perform(post("/api/auth/company/register")
                 .contentType(MediaType.APPLICATION_JSON)

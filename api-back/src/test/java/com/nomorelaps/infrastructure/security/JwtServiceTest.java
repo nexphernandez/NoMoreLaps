@@ -65,7 +65,7 @@ class JwtServiceTest {
     @Test
     @DisplayName("isTokenValid - Should return false for expired token")
     void shouldReturnFalseForExpiredToken() {
-        ReflectionTestUtils.setField(jwtService, "jwtExpiration", -60L); // Expired 60 minutes ago
+        ReflectionTestUtils.setField(jwtService, "jwtExpiration", -60L); 
         when(userDetails.getUsername()).thenReturn("user@test.com");
         
         String token = jwtService.generateToken(userDetails);
@@ -98,24 +98,20 @@ class JwtServiceTest {
         when(userDetails.getUsername()).thenReturn("user@test.com");
         String token = jwtService.generateToken(userDetails);
         
-        // We mock extractUsername to succeed, but isTokenExpired to return true
         doReturn("user@test.com").when(spyService).extractUsername(anyString());
         doReturn(true).when(spyService).isTokenExpired(anyString());
         
-        // Act
         boolean isValid = spyService.isTokenValid(token, userDetails);
         
-        // Assert
         assertFalse(isValid, "Should be false because it is expired, even if username matches");
     }
 
     @Test
     @DisplayName("isTokenValid - Should return false on any exception")
     void shouldReturnFalseOnException() {
-        // Act
+        
         boolean isValid = jwtService.isTokenValid("invalid-token", userDetails);
         
-        // Assert
         assertFalse(isValid);
     }
 }

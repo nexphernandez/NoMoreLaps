@@ -33,6 +33,7 @@ public interface ParkingMapper {
      * @param domain The business domain object.
      * @return The response DTO for the API.
      */
+    @Mapping(target = "companyId", source = "company.id")
     ParkingResponse toResponse(Parking domain);
 
     /**

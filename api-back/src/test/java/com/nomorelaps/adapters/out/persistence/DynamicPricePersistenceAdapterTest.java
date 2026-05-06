@@ -56,7 +56,6 @@ class DynamicPricePersistenceAdapterTest {
     @Test
     @DisplayName("save - Should map parking in toEntity")
     void shouldSaveWithParking() {
-        // Arrange
         Parking parking = new Parking(10L);
         price.setParking(parking);
 
@@ -64,10 +63,8 @@ class DynamicPricePersistenceAdapterTest {
         when(repository.save(entity)).thenReturn(entity);
         when(mapper.toDomain(entity)).thenReturn(price);
 
-        // Act
         adapter.save(price);
 
-        // Assert
         assertNotNull(entity.getParking());
         assertEquals(10L, entity.getParking().getId());
     }
@@ -75,17 +72,14 @@ class DynamicPricePersistenceAdapterTest {
     @Test
     @DisplayName("toDomain - Should map parking from entity")
     void shouldMapParkingToDomain() {
-        // Arrange
         ParkingJpaEntity parkingEntity = new ParkingJpaEntity(10L);
         entity.setParking(parkingEntity);
 
         when(repository.findByParkingId(1L)).thenReturn(List.of(entity));
         when(mapper.toDomain(entity)).thenReturn(price);
 
-        // Act
         List<DynamicPrice> result = adapter.findByParkingId(1L);
 
-        // Assert
         assertFalse(result.isEmpty());
         assertNotNull(result.get(0).getParking());
         assertEquals(10L, result.get(0).getParking().getId());
@@ -94,7 +88,6 @@ class DynamicPricePersistenceAdapterTest {
     @Test
     @DisplayName("toEntity/toDomain - Should handle null parking or null parking ID")
     void shouldHandleNullParkingOrId() {
-        // Case 1: Parking is null (already tested, but grouping here)
         price.setParking(null);
         entity.setParking(null);
         when(mapper.toJpaEntity(price)).thenReturn(entity);
@@ -104,7 +97,6 @@ class DynamicPricePersistenceAdapterTest {
         adapter.save(price);
         assertNull(entity.getParking());
 
-        // Case 2: Parking is NOT null but ID IS null (The missing branch)
         Parking parkingNoId = new Parking();
         parkingNoId.setId(null);
         price.setParking(parkingNoId);

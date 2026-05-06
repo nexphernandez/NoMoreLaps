@@ -42,12 +42,10 @@ class ReservationControllerTest {
     @DisplayName("GET /api/reservations/{id} - Found")
     @WithMockUser
     void shouldReturnReservationById() throws Exception {
-        // Arrange
         Reservation reservation = new Reservation(1L);
         reservation.setState("ACTIVE");
         when(reservationService.findById(1L)).thenReturn(Optional.of(reservation));
 
-        // Act & Assert
         mockMvc.perform(get("/api/reservations/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
@@ -58,19 +56,17 @@ class ReservationControllerTest {
     @DisplayName("POST /api/reservations - Created")
     @WithMockUser
     void shouldCreateReservation() throws Exception {
-        // Arrange
         ReservationRequest request = new ReservationRequest();
         request.setStartTime(LocalDateTime.now().plusHours(1));
         request.setEndTime(LocalDateTime.now().plusHours(2));
-        request.setPrice(10.0);
-        request.setState("ACTIVE");
+        request.setTotalPrice(10.0);
+        request.setStatus("ACTIVE");
         request.setUserId(1L);
         request.setParkingSpotId(1L);
 
         Reservation saved = new Reservation(1L);
         when(reservationService.create(any(Reservation.class))).thenReturn(saved);
 
-        // Act & Assert
         mockMvc.perform(post("/api/reservations")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
@@ -81,10 +77,8 @@ class ReservationControllerTest {
     @DisplayName("GET /api/reservations/user/{id} - List")
     @WithMockUser
     void shouldReturnUserReservations() throws Exception {
-        // Arrange
         when(reservationService.findByUserId(1L)).thenReturn(Collections.emptyList());
 
-        // Act & Assert
         mockMvc.perform(get("/api/reservations/user/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray());
@@ -136,8 +130,8 @@ class ReservationControllerTest {
         ReservationRequest request = new ReservationRequest();
         request.setStartTime(LocalDateTime.now().plusHours(1));
         request.setEndTime(LocalDateTime.now().plusHours(2));
-        request.setPrice(10.0);
-        request.setState("ACTIVE");
+        request.setTotalPrice(10.0);
+        request.setStatus("ACTIVE");
         request.setUserId(1L);
         request.setParkingSpotId(1L);
 

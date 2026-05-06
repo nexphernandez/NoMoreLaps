@@ -37,7 +37,6 @@ class SmartGeocodeResponseTest {
         dto2.setLongitude(1.0);
         dto3.setLongitude(2.0);
 
-        // Base checks
         assertEquals(dto1, dto1);
         assertEquals(dto1, dto2);
         assertNotEquals(dto1, dto3);
@@ -45,7 +44,6 @@ class SmartGeocodeResponseTest {
         assertNotEquals(dto1, new Object());
         assertEquals(dto1.hashCode(), dto2.hashCode());
 
-        // Branch coverage for each field
         SmartGeocodeResponse tempformattedAddress = new SmartGeocodeResponse();
         tempformattedAddress.setFormattedAddress("dummy1");
         tempformattedAddress.setLatitude(1.0);

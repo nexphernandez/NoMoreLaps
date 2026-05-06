@@ -85,7 +85,6 @@ class ParkingPersistenceAdapterTest {
     void shouldMapToEntityWithCompany() {
         when(mapper.toJpaEntity(parking)).thenReturn(entity);
         
-        // This indirectly tests the protected toEntity via save
         when(repository.save(any())).thenReturn(entity);
         when(mapper.toDomain(entity)).thenReturn(parking);
         
@@ -99,7 +98,6 @@ class ParkingPersistenceAdapterTest {
         parking.setCompany(null);
         ParkingJpaEntity entityNoCompany = new ParkingJpaEntity();
         entityNoCompany.setId(1L);
-        // no company set
 
         when(mapper.toJpaEntity(parking)).thenReturn(entityNoCompany);
         when(repository.save(any())).thenReturn(entityNoCompany);
@@ -114,7 +112,6 @@ class ParkingPersistenceAdapterTest {
     void shouldMapToDomainWithNullCompany() {
         ParkingJpaEntity entityNoCompany = new ParkingJpaEntity();
         entityNoCompany.setId(2L);
-        // no company
 
         Parking parkingNoCompany = new Parking(2L);
         when(repository.findByCompanyId(99L)).thenReturn(List.of(entityNoCompany));
@@ -129,8 +126,7 @@ class ParkingPersistenceAdapterTest {
     @Test
     @DisplayName("toEntity - Should skip company when company ID is null")
     void shouldMapToEntityWithNullCompanyId() {
-        // Arrange
-        parking.setCompany(new Company()); // ID is null
+        parking.setCompany(new Company()); 
         ParkingJpaEntity entityNoCompany = new ParkingJpaEntity();
         entityNoCompany.setId(1L);
 
@@ -138,29 +134,24 @@ class ParkingPersistenceAdapterTest {
         when(repository.save(any())).thenReturn(entityNoCompany);
         when(mapper.toDomain(entityNoCompany)).thenReturn(parking);
 
-        // Act
         adapter.save(parking);
 
-        // Assert
         assertNull(entityNoCompany.getCompany());
     }
 
     @Test
     @DisplayName("toDomain - Should skip company when entity company ID is null")
     void shouldMapToDomainWithNullCompanyId() {
-        // Arrange
         ParkingJpaEntity entityNoId = new ParkingJpaEntity();
         entityNoId.setId(3L);
-        entityNoId.setCompany(new CompanyJpaEntity()); // ID is null
+        entityNoId.setCompany(new CompanyJpaEntity()); 
         
         Parking domainNoId = new Parking(3L);
         when(mapper.toDomain(entityNoId)).thenReturn(domainNoId);
         when(repository.findByCompanyId(50L)).thenReturn(List.of(entityNoId));
         
-        // Act
         List<Parking> result = adapter.findByCompanyId(50L);
 
-        // Assert
         assertNotNull(result);
         assertNull(result.get(0).getCompany());
     }

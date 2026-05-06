@@ -105,17 +105,22 @@ const HomeView: React.FC<HomeViewProps> = ({ parkings, onSelectParking, onGoToPr
               longitudeDelta: 0.1,
             }}
           >
-            {parkings.map(parking => (
-              <Marker
-                key={parking.id}
-                coordinate={{ latitude: parking.latitude, longitude: parking.longitude }}
-                pinColor={theme.primary}
-                onPress={(e) => {
-                  e.stopPropagation();
-                  setSelectedParking(parking);
-                }}
-              />
-            ))}
+            {parkings
+              .filter(p => p.latitude && p.longitude && Number(p.latitude) !== 0)
+              .map(parking => (
+                <Marker
+                  key={parking.id}
+                  coordinate={{ 
+                    latitude: Number(parking.latitude), 
+                    longitude: Number(parking.longitude) 
+                  }}
+                  pinColor={theme.primary}
+                  onPress={(e) => {
+                    e.stopPropagation();
+                    setSelectedParking(parking);
+                  }}
+                />
+              ))}
           </MapView>
         )}
       </View>

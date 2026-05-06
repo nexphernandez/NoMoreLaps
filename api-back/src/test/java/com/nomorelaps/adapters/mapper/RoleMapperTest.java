@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mapstruct.factory.Mappers;
 
 import com.nomorelaps.adapters.in.api.RoleRequest;
 import com.nomorelaps.adapters.in.api.RoleResponse;
@@ -12,7 +13,7 @@ import com.nomorelaps.domain.models.Role;
 
 class RoleMapperTest {
 
-    private final RoleMapper mapper = org.mapstruct.factory.Mappers.getMapper(RoleMapper.class);
+    private final RoleMapper mapper = Mappers.getMapper(RoleMapper.class);
 
 
     @Test
