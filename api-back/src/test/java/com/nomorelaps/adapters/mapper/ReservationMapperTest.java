@@ -26,8 +26,8 @@ class ReservationMapperTest {
         ReservationRequest request = new ReservationRequest();
         request.setUserId(10L);
         request.setParkingSpotId(20L);
-        request.setPrice(15.0);
-        request.setState("ACTIVE");
+        request.setTotalPrice(15.0);
+        request.setStatus("ACTIVE");
 
         Reservation domain = reservationMapper.toDomainFromRequest(request);
 
@@ -160,12 +160,13 @@ class ReservationMapperTest {
         ReservationRequest request = new ReservationRequest();
         request.setUserId(null);
         request.setParkingSpotId(null);
+        request.setTotalPrice(null);
+        request.setStatus(null);
 
         Reservation domain = reservationMapper.toDomainFromRequest(request);
         
         assertNotNull(domain);
-        // MapStruct might create the object even with null ID depending on version/config
-        // We verify that either the object is null or its ID is null
+
         if (domain.getUser() != null) {
             assertNull(domain.getUser().getId());
         }
@@ -193,30 +194,24 @@ class ReservationMapperTest {
     @Test
     @DisplayName("Internal methods null checks - Reflection to hit unreachable branches in generated code")
     void shouldHandleNullsInInternalMethods() throws Exception {
-        // Get the implementation class
         Object impl = reservationMapper;
         
-        // reservationRequestToUser(null)
         Method m1 = impl.getClass().getDeclaredMethod("reservationRequestToUser", ReservationRequest.class);
         m1.setAccessible(true);
         assertNull(m1.invoke(impl, (ReservationRequest) null));
 
-        // reservationRequestToParkingSpot(null)
         Method m2 = impl.getClass().getDeclaredMethod("reservationRequestToParkingSpot", ReservationRequest.class);
         m2.setAccessible(true);
         assertNull(m2.invoke(impl, (ReservationRequest) null));
 
-        // domainUserId(null)
         Method m3 = impl.getClass().getDeclaredMethod("domainUserId", Reservation.class);
         m3.setAccessible(true);
         assertNull(m3.invoke(impl, (Reservation) null));
 
-        // domainParkingSpotId(null)
         Method m4 = impl.getClass().getDeclaredMethod("domainParkingSpotId", Reservation.class);
         m4.setAccessible(true);
         assertNull(m4.invoke(impl, (Reservation) null));
 
-        // domainParkingSpotParkingName(null)
         Method m5 = impl.getClass().getDeclaredMethod("domainParkingSpotParkingName", Reservation.class);
         m5.setAccessible(true);
         assertNull(m5.invoke(impl, (Reservation) null));

@@ -77,7 +77,6 @@ class DynamicPriceResponseTest {
         dto2.setCreateAt(LocalDateTime.of(2026, 1, 1, 0, 0).plusDays(1));
         dto3.setCreateAt(LocalDateTime.of(2026, 1, 1, 0, 0).plusDays(2));
 
-        // Base checks
         assertEquals(dto1, dto1);
         assertEquals(dto1, dto2);
         assertNotEquals(dto1, dto3);
@@ -85,7 +84,6 @@ class DynamicPriceResponseTest {
         assertNotEquals(dto1, new Object());
         assertEquals(dto1.hashCode(), dto2.hashCode());
 
-        // Branch coverage for each field
         DynamicPriceResponse tempid = new DynamicPriceResponse();
         tempid.setId(1L);
         tempid.setDayOfWeek(1);

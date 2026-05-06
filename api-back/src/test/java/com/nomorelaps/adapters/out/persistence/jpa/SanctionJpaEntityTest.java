@@ -52,21 +52,16 @@ class SanctionJpaEntityTest {
         SanctionJpaEntity entity2 = new SanctionJpaEntity(1L);
         SanctionJpaEntity entity3 = new SanctionJpaEntity(2L);
 
-        // Same object
         assertEquals(entity1, entity1);
 
-        // Equal objects
         assertEquals(entity1, entity2);
         assertEquals(entity1.hashCode(), entity2.hashCode());
 
-        // Different objects
         assertNotEquals(entity1, entity3);
 
-        // Null and different class
         assertNotEquals(entity1, null);
         assertNotEquals(entity1, new Object());
 
-        // Null ID coverage
         SanctionJpaEntity entityNull1 = new SanctionJpaEntity(null);
         SanctionJpaEntity entityNull2 = new SanctionJpaEntity(null);
         assertEquals(entityNull1, entityNull2);
@@ -79,11 +74,11 @@ class SanctionJpaEntityTest {
         SanctionJpaEntity entity = new SanctionJpaEntity();
         assertNull(entity.getArrivalTime());
 
-        entity.onCreate(); // Directly call pre-persist
+        entity.onCreate(); 
         assertNotNull(entity.getArrivalTime());
 
         LocalDateTime originalTime = entity.getArrivalTime();
-        entity.onCreate(); // Should not overwrite existing time
+        entity.onCreate(); 
         assertEquals(originalTime, entity.getArrivalTime());
     }
 }

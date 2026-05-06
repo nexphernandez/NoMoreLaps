@@ -42,7 +42,6 @@ class SmartRecommendationResponseTest {
         dto2.setSuggestions(new java.util.ArrayList<>());
         dto3.setSuggestions(new java.util.ArrayList<>());
 
-        // Base checks
         assertEquals(dto1, dto1);
         assertEquals(dto1, dto2);
         assertNotEquals(dto1, dto3);
@@ -50,7 +49,6 @@ class SmartRecommendationResponseTest {
         assertNotEquals(dto1, new Object());
         assertEquals(dto1.hashCode(), dto2.hashCode());
 
-        // Branch coverage for each field
         SmartRecommendationResponse tempdestinationText = new SmartRecommendationResponse();
         tempdestinationText.setDestinationText("dummy1");
         tempdestinationText.setLatitude(1.0);

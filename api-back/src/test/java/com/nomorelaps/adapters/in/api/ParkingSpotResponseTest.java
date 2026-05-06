@@ -23,7 +23,7 @@ class ParkingSpotResponseTest {
         assertEquals(LocalDateTime.of(2026, 1, 1, 0, 0).plusDays(1), dto.getRegisterDate());
         
         dto.setState(true);
-        assertTrue(dto.getState()); // Tests getState() and isState() since we set it to true
+        assertTrue(dto.getState()); 
     }
 
     @Test
@@ -62,7 +62,6 @@ class ParkingSpotResponseTest {
         dto2.setRegisterDate(LocalDateTime.of(2026, 1, 1, 0, 0).plusDays(1));
         dto3.setRegisterDate(LocalDateTime.of(2026, 1, 1, 0, 0).plusDays(2));
 
-        // Base checks
         assertEquals(dto1, dto1);
         assertEquals(dto1, dto2);
         assertNotEquals(dto1, dto3);
@@ -70,7 +69,6 @@ class ParkingSpotResponseTest {
         assertNotEquals(dto1, new Object());
         assertEquals(dto1.hashCode(), dto2.hashCode());
 
-        // Branch coverage for each field
         ParkingSpotResponse tempid = new ParkingSpotResponse();
         tempid.setId(1L);
         tempid.setState(false);

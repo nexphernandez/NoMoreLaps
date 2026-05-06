@@ -65,7 +65,6 @@ class SmartRecommendationRequestTest {
         dto2.setRadiusKm(1.0);
         dto3.setRadiusKm(2.0);
 
-        // Base checks
         assertEquals(dto1, dto1);
         assertEquals(dto1, dto2);
         assertNotEquals(dto1, dto3);
@@ -73,7 +72,6 @@ class SmartRecommendationRequestTest {
         assertNotEquals(dto1, new Object());
         assertEquals(dto1.hashCode(), dto2.hashCode());
 
-        // Branch coverage for each field
         SmartRecommendationRequest tempdestinationText = new SmartRecommendationRequest();
         tempdestinationText.setDestinationText("dummy1");
         tempdestinationText.setLatitude(1.0);

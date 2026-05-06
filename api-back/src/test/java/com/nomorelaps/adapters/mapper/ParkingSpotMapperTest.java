@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mapstruct.factory.Mappers;
 
 import com.nomorelaps.adapters.in.api.ParkingSpotRequest;
 import com.nomorelaps.adapters.in.api.ParkingSpotResponse;
@@ -12,7 +13,7 @@ import com.nomorelaps.domain.models.ParkingSpot;
 
 class ParkingSpotMapperTest {
 
-    private final ParkingSpotMapper mapper = org.mapstruct.factory.Mappers.getMapper(ParkingSpotMapper.class);
+    private final ParkingSpotMapper mapper = Mappers.getMapper(ParkingSpotMapper.class);
 
     @Test
     @DisplayName("toDomainFromRequest - Should map request to domain")

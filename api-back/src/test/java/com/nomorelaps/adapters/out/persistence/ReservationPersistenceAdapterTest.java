@@ -46,19 +46,16 @@ class ReservationPersistenceAdapterTest {
 
     @BeforeEach
     void setUp() {
-        // Create user
         User user = new User();
         user.setEmail("integration@test.com");
         user.setName("Integration Test");
         testUser = userAdapter.save(user);
  
-        // Create parking
         Parking parking = new Parking();
         parking.setName("Test Parking");
         parking.setAddress("Test Address");
         testParking = parkingAdapter.save(parking);
  
-        // Create spot
         ParkingSpot spot = new ParkingSpot();
         spot.setNumber(999);
         spot.setParking(testParking);
@@ -68,7 +65,6 @@ class ReservationPersistenceAdapterTest {
     @Test
     @DisplayName("Should save and find reservation")
     void shouldSaveAndFindReservation() {
-        // Arrange
         Reservation reservation = new Reservation();
         reservation.setStartTime(LocalDateTime.now().plusDays(1));
         reservation.setEndTime(LocalDateTime.now().plusDays(1).plusHours(2));
@@ -76,13 +72,11 @@ class ReservationPersistenceAdapterTest {
         reservation.setParkingSpot(testSpot);
         reservation.setState("PENDING");
 
-        // Act
         Reservation saved = reservationAdapter.save(reservation);
         assertNotNull(saved.getId());
 
         Reservation found = reservationAdapter.findById(saved.getId()).orElse(null);
 
-        // Assert
         assertNotNull(found);
         assertEquals(testUser.getId(), found.getUser().getId());
         assertEquals(testSpot.getId(), found.getParkingSpot().getId());
@@ -91,7 +85,6 @@ class ReservationPersistenceAdapterTest {
     @Test
     @DisplayName("Should detect overlapping reservations")
     void shouldDetectOverlaps() {
-        // Arrange
         LocalDateTime start = LocalDateTime.of(2026, 6, 1, 10, 0);
         LocalDateTime end = start.plusHours(2);
 
@@ -103,22 +96,16 @@ class ReservationPersistenceAdapterTest {
         r1.setState("ACTIVE");
         reservationAdapter.save(r1);
 
-        // Verify it was saved correctly
         List<Reservation> all = reservationAdapter.findByParkingSpotId(testSpot.getId());
         assertFalse(all.isEmpty(), "Reservation should be in database");
         assertEquals("ACTIVE", all.get(0).getState(), "State should be ACTIVE");
 
-        // Act & Assert
-        // Case 1: Exact same time
         assertTrue(reservationAdapter.hasOverlappingReservations(testSpot.getId(), start, end), "Exact same time should overlap");
         
-        // Case 2: Starts during r1
         assertTrue(reservationAdapter.hasOverlappingReservations(testSpot.getId(), start.plusMinutes(30), end.plusHours(1)), "Partial start overlap should overlap");
 
-        // Case 3: Ends during r1
         assertTrue(reservationAdapter.hasOverlappingReservations(testSpot.getId(), start.minusHours(1), start.plusMinutes(30)), "Partial end overlap should overlap");
 
-        // Case 4: No overlap
         assertFalse(reservationAdapter.hasOverlappingReservations(testSpot.getId(), end.plusHours(1), end.plusHours(2)), "Non-overlapping times should not overlap");
     }
 
@@ -174,17 +161,14 @@ class ReservationPersistenceAdapterTest {
         r1.setState("ACTIVE");
         Reservation saved = reservationAdapter.save(r1);
 
-        // Should overlap with itself if not excluded
         assertTrue(reservationAdapter.hasOverlappingReservations(testSpot.getId(), start, end));
         
-        // Should NOT overlap if excluded
         assertFalse(reservationAdapter.hasOverlappingReservationsExcluding(testSpot.getId(), start, end, saved.getId()));
     }
 
     @Test
     @DisplayName("Should handle null parking in spot in toDomain")
     void shouldHandleNullParkingInSpotInToDomain() {
-        // Create a spot without parking
         ParkingSpot spot = new ParkingSpot();
         spot.setNumber(888);
         spot.setParking(null);
@@ -221,18 +205,15 @@ class ReservationPersistenceAdapterTest {
     @Test
     @DisplayName("findByParkingId - Should return list of reservations")
     void shouldFindByParkingId() {
-        // Create fresh parking
         Parking parking = new Parking();
         parking.setName("Search Parking");
         Parking savedParking = parkingAdapter.save(parking);
 
-        // Create fresh spot
         ParkingSpot spot = new ParkingSpot();
         spot.setNumber(777);
         spot.setParking(savedParking);
         ParkingSpot savedSpot = spotAdapter.save(spot);
 
-        // Create reservation
         Reservation r = new Reservation();
         r.setStartTime(LocalDateTime.now().plusDays(15));
         r.setEndTime(LocalDateTime.now().plusDays(15).plusHours(1));
@@ -250,9 +231,7 @@ class ReservationPersistenceAdapterTest {
     @Test
     @DisplayName("toDomain - Should map full parking data when available")
     void shouldMapFullParkingDataInToDomain() {
-        // This test explicitly hits the if (entity.getParkingSpot().getParking() != null) block
-        // by constructing the entities manually and calling toDomain.
-        
+
         ParkingJpaEntity pEntity = new ParkingJpaEntity();
         pEntity.setId(5L);
         pEntity.setName("Full Mapping Parking");
@@ -271,7 +250,6 @@ class ReservationPersistenceAdapterTest {
         rEntity.setId(1L);
         rEntity.setParkingSpot(sEntity);
 
-        // Access the implementation to test the mapping logic directly
         ReservationPersistenceAdapter impl = (ReservationPersistenceAdapter) reservationAdapter;
         Reservation domain = impl.toDomain(rEntity);
 
@@ -284,11 +262,9 @@ class ReservationPersistenceAdapterTest {
     @Test
     @DisplayName("hasOverlappingReservationsExcluding - Should return true if ANOTHER overlapping reservation exists")
     void shouldReturnTrueWhenAnotherOverlapExists() {
-        // Arrange
         LocalDateTime start = LocalDateTime.of(2026, 8, 1, 10, 0);
         LocalDateTime end = start.plusHours(2);
 
-        // Reservation 1 (the one we will exclude)
         Reservation r1 = new Reservation();
         r1.setStartTime(start);
         r1.setEndTime(end);
@@ -297,7 +273,6 @@ class ReservationPersistenceAdapterTest {
         r1.setState("ACTIVE");
         Reservation saved1 = reservationAdapter.save(r1);
 
-        // Reservation 2 (the one that causes the overlap even if r1 is excluded)
         Reservation r2 = new Reservation();
         r2.setStartTime(start.plusMinutes(30));
         r2.setEndTime(end.plusMinutes(30));
@@ -306,8 +281,7 @@ class ReservationPersistenceAdapterTest {
         r2.setState("ACTIVE");
         reservationAdapter.save(r2);
 
-        // Act & Assert
-        // If we exclude r1, it should still return true because of r2
+
         assertTrue(reservationAdapter.hasOverlappingReservationsExcluding(testSpot.getId(), start, end, saved1.getId()), 
             "Should return true because r2 still overlaps even if r1 is excluded");
     }

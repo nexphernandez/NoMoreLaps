@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mapstruct.factory.Mappers;
 
 import com.nomorelaps.adapters.in.api.CompanyRequest;
 import com.nomorelaps.adapters.in.api.CompanyResponse;
@@ -12,7 +13,7 @@ import com.nomorelaps.domain.models.Company;
 
 class CompanyMapperTest {
 
-    private final CompanyMapper companyMapper = org.mapstruct.factory.Mappers.getMapper(CompanyMapper.class);
+    private final CompanyMapper companyMapper = Mappers.getMapper(CompanyMapper.class);
 
 
     @Test

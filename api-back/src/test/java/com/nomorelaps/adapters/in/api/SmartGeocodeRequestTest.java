@@ -35,7 +35,6 @@ class SmartGeocodeRequestTest {
         dto2.setQuery("dummy1");
         dto3.setQuery("dummy2");
 
-        // Base checks
         assertEquals(dto1, dto1);
         assertEquals(dto1, dto2);
         assertNotEquals(dto1, dto3);
@@ -43,7 +42,6 @@ class SmartGeocodeRequestTest {
         assertNotEquals(dto1, new Object());
         assertEquals(dto1.hashCode(), dto2.hashCode());
 
-        // Branch coverage for each field
         SmartGeocodeRequest tempquery = new SmartGeocodeRequest();
         tempquery.setQuery("dummy1");
         tempquery.setQuery(null);

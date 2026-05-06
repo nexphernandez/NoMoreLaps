@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mapstruct.factory.Mappers;
 
 import com.nomorelaps.adapters.in.api.SanctionRequest;
 import com.nomorelaps.adapters.in.api.SanctionResponse;
@@ -12,7 +13,7 @@ import com.nomorelaps.domain.models.Sanction;
 
 class SanctionMapperTest {
 
-    private final SanctionMapper mapper = org.mapstruct.factory.Mappers.getMapper(SanctionMapper.class);
+    private final SanctionMapper mapper = Mappers.getMapper(SanctionMapper.class);
 
 
     @Test

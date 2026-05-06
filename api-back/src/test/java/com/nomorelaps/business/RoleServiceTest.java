@@ -43,7 +43,6 @@ class RoleServiceTest {
         testRole.setDescription("Administrator role");
     }
 
-    // ── create ──────────────────────────────────────────────────────────────
 
     @Test
     @DisplayName("create - Should delegate to persistence and return saved role")
@@ -57,7 +56,6 @@ class RoleServiceTest {
         verify(persistencePort).save(testRole);
     }
 
-    // ── findById ─────────────────────────────────────────────────────────────
 
     @Test
     @DisplayName("findById - Should return role when found")
@@ -80,7 +78,6 @@ class RoleServiceTest {
         assertFalse(result.isPresent());
     }
 
-    // ── findAll ───────────────────────────────────────────────────────────────
 
     @Test
     @DisplayName("findAll - Should return all roles")
@@ -106,7 +103,6 @@ class RoleServiceTest {
         assertTrue(result.isEmpty());
     }
 
-    // ── deleteById ────────────────────────────────────────────────────────────
 
     @Test
     @DisplayName("deleteById - Should call persistence deleteById")

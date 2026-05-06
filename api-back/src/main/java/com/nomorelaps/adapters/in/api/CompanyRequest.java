@@ -12,21 +12,21 @@ import jakarta.validation.constraints.NotBlank;
  */
 public class CompanyRequest {
 
-    @NotBlank(message = "El nombre no puede estar vacío")
+    @NotBlank(message = "Name cannot be empty")
     private String name;
 
     private String apiKey;
 
-    @NotBlank(message = "La contraseña no puede estar vacía")
+    @NotBlank(message = "Password cannot be empty")
     private String password;
 
     private String phone;
 
-    @NotBlank(message = "El email no puede estar vacío")
-    @Email(message = "Formato de email incorrecto")
+    @NotBlank(message = "Email cannot be empty")
+    @Email(message = "Invalid email format")
     private String email;
 
-    @NotBlank(message = "El CIF no puede estar vacío")
+    @NotBlank(message = "CIF cannot be empty")
     private String cif;
 
     /**

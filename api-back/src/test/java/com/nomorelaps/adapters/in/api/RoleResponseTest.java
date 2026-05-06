@@ -51,7 +51,6 @@ class RoleResponseTest {
         dto2.setDescription("dummy1");
         dto3.setDescription("dummy2");
 
-        // Base checks
         assertEquals(dto1, dto1);
         assertEquals(dto1, dto2);
         assertNotEquals(dto1, dto3);
@@ -59,7 +58,6 @@ class RoleResponseTest {
         assertNotEquals(dto1, new Object());
         assertEquals(dto1.hashCode(), dto2.hashCode());
 
-        // Branch coverage for each field
         RoleResponse tempid = new RoleResponse();
         tempid.setId(1L);
         tempid.setName("dummy1");

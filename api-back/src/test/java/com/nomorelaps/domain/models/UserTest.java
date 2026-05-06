@@ -14,15 +14,12 @@ class UserTest {
     @Test
     @DisplayName("User - Constructors and Getters/Setters should work")
     void testUserConstructorsAndAccessors() {
-        // Empty constructor
         User user1 = new User();
         assertNull(user1.getId());
 
-        // ID constructor
         User user2 = new User(1L);
         assertEquals(1L, user2.getId());
 
-        // Basic profile data constructor
         LocalDateTime now = LocalDateTime.now();
         User user3 = new User(1L, "Alice", "alice@test.com", "pass", true, "avatar.png", "+34600", now);
         assertEquals(1L, user3.getId());
@@ -34,7 +31,6 @@ class UserTest {
         assertEquals("+34600", user3.getPhone());
         assertEquals(now, user3.getCreateAt());
 
-        // Full parameters constructor
         Role role = new Role(1L);
         Set<Company> companies = new HashSet<>();
         Set<Reservation> reservations = new HashSet<>();
@@ -45,7 +41,6 @@ class UserTest {
         assertEquals(reservations, user4.getReservations());
         assertEquals(sanctions, user4.getSanctions());
 
-        // Setters
         user1.setId(2L);
         user1.setName("Bob");
         user1.setEmail("bob@test.com");

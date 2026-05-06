@@ -35,7 +35,7 @@ public class ReservationJpaEntity {
     private LocalDateTime endTime;
 
     @Column(name = "total_price")
-    private double price;
+    private Double price;
 
     @Column(name = "status")
     private String state;
@@ -82,7 +82,7 @@ public class ReservationJpaEntity {
      * @param user         reservation user
      * @param sanctions    reservation sanctions
      */
-    public ReservationJpaEntity(Long id, LocalDateTime startTime, LocalDateTime endTime, double price, String state,
+    public ReservationJpaEntity(Long id, LocalDateTime startTime, LocalDateTime endTime, Double price, String state,
             LocalDateTime creationTime, ParkingSpotJpaEntity parkingSpot, UserJpaEntity user,
             Set<SanctionJpaEntity> sanctions) {
         this.id = id;
@@ -120,11 +120,11 @@ public class ReservationJpaEntity {
         this.endTime = endTime;
     }
 
-    public double getPrice() {
+    public Double getPrice() {
         return this.price;
     }
 
-    public void setPrice(double price) {
+    public void setPrice(Double price) {
         this.price = price;
     }
 

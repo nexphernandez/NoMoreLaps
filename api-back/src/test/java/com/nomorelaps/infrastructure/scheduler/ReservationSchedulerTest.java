@@ -79,7 +79,7 @@ class ReservationSchedulerTest {
     @Test
     @DisplayName("Should apply sanction when reservation is expired and policy is defined")
     void shouldApplySanctionWhenExpired() {
-        reservation.setEndTime(LocalDateTime.now().minusMinutes(20)); // Overdue by 20 mins -> 2 intervals
+        reservation.setEndTime(LocalDateTime.now().minusMinutes(20)); 
         when(reservationService.findByState("ACTIVE")).thenReturn(List.of(reservation));
 
         scheduler.checkExpiredReservations();
@@ -97,8 +97,8 @@ class ReservationSchedulerTest {
 
         scheduler.checkExpiredReservations();
 
-        verify(reservationService, times(1)).update(reservation); // State changes to SANCTIONED
-        verify(sanctionService, never()).create(any()); // But no fine created
+        verify(reservationService, times(1)).update(reservation); 
+        verify(sanctionService, never()).create(any()); 
     }
 
     @Test
@@ -130,8 +130,8 @@ class ReservationSchedulerTest {
     @Test
     @DisplayName("Should use default interval of 15 min when sanctionInterval is null")
     void shouldUseDefaultIntervalWhenNull() {
-        reservation.setEndTime(LocalDateTime.now().minusMinutes(20)); // Overdue by 20 mins
-        parking.setSanctionIntervalInMinutes(null); // Defaults to 15
+        reservation.setEndTime(LocalDateTime.now().minusMinutes(20)); 
+        parking.setSanctionIntervalInMinutes(null); 
         when(reservationService.findByState("ACTIVE")).thenReturn(List.of(reservation));
 
         scheduler.checkExpiredReservations();

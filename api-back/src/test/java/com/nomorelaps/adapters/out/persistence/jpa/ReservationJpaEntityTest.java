@@ -61,21 +61,16 @@ class ReservationJpaEntityTest {
         ReservationJpaEntity entity2 = new ReservationJpaEntity(1L);
         ReservationJpaEntity entity3 = new ReservationJpaEntity(2L);
 
-        // Same object
         assertEquals(entity1, entity1);
 
-        // Equal objects
         assertEquals(entity1, entity2);
         assertEquals(entity1.hashCode(), entity2.hashCode());
 
-        // Different objects
         assertNotEquals(entity1, entity3);
 
-        // Null and different class
         assertNotEquals(entity1, null);
         assertNotEquals(entity1, new Object());
 
-        // Null ID coverage
         ReservationJpaEntity entityNull1 = new ReservationJpaEntity(null);
         ReservationJpaEntity entityNull2 = new ReservationJpaEntity(null);
         assertEquals(entityNull1, entityNull2);
@@ -88,11 +83,11 @@ class ReservationJpaEntityTest {
         ReservationJpaEntity entity = new ReservationJpaEntity();
         assertNull(entity.getCreationTime());
 
-        entity.onCreate(); // Directly call pre-persist
+        entity.onCreate(); 
         assertNotNull(entity.getCreationTime());
 
         LocalDateTime originalTime = entity.getCreationTime();
-        entity.onCreate(); // Should not overwrite existing time
+        entity.onCreate(); 
         assertEquals(originalTime, entity.getCreationTime());
     }
 }

@@ -72,7 +72,6 @@ class SmartRecommendationItemResponseTest {
         dto2.setPriceLabel("dummy1");
         dto3.setPriceLabel("dummy2");
 
-        // Base checks
         assertEquals(dto1, dto1);
         assertEquals(dto1, dto2);
         assertNotEquals(dto1, dto3);
@@ -80,7 +79,6 @@ class SmartRecommendationItemResponseTest {
         assertNotEquals(dto1, new Object());
         assertEquals(dto1.hashCode(), dto2.hashCode());
 
-        // Branch coverage for each field
         SmartRecommendationItemResponse tempparkingId = new SmartRecommendationItemResponse();
         tempparkingId.setParkingId(1L);
         tempparkingId.setParkingName("dummy1");

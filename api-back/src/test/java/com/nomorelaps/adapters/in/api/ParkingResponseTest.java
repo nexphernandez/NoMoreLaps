@@ -61,21 +61,16 @@ public class ParkingResponseTest {
         ParkingResponse response2 = new ParkingResponse(1L);
         ParkingResponse response3 = new ParkingResponse(2L);
 
-        // Same object
         assertEquals(response1, response1);
         
-        // Equal objects
         assertEquals(response1, response2);
         assertEquals(response1.hashCode(), response2.hashCode());
         
-        // Different objects
         assertNotEquals(response1, response3);
         
-        // Null and different class
         assertNotEquals(response1, null);
         assertNotEquals(response1, new Object());
         
-        // Null ID coverage
         ParkingResponse responseNull = new ParkingResponse(null);
         ParkingResponse responseNull2 = new ParkingResponse(null);
         assertEquals(responseNull, responseNull2);

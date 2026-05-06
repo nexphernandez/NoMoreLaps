@@ -72,7 +72,6 @@ class ParkingSpotPersistenceAdapterTest {
         spot.setParking(new Parking(10L));
         when(mapper.toJpaEntity(spot)).thenReturn(entity);
         
-        // Save calls toEntity
         when(repository.save(any())).thenReturn(entity);
         when(mapper.toDomain(entity)).thenReturn(spot);
         
@@ -84,7 +83,7 @@ class ParkingSpotPersistenceAdapterTest {
     @Test
     @DisplayName("toEntity - Should preserve parking reference from database if missing in domain")
     void shouldPreserveParkingFromDb() {
-        spot.setParking(null); // Explicitly null
+        spot.setParking(null); 
         when(mapper.toJpaEntity(spot)).thenReturn(entity);
         
         ParkingSpotJpaEntity existing = new ParkingSpotJpaEntity();
@@ -119,19 +118,12 @@ class ParkingSpotPersistenceAdapterTest {
     @Test
     @DisplayName("toEntity - Should skip parking when parking ID is null")
     void shouldHandleNullParkingId() {
-        // Arrange
-        spot.setParking(new Parking()); // ID is null
+        spot.setParking(new Parking());
         when(mapper.toJpaEntity(spot)).thenReturn(entity);
         when(repository.save(any())).thenReturn(entity);
         when(mapper.toDomain(entity)).thenReturn(spot);
 
-        // Act
         adapter.save(spot);
-
-        // Assert
-        // Since spot has an ID (1L from setUp), it will go to the 'else if' 
-        // and try to find existing parking in DB. In this test, findById(1L) 
-        // is not stubbed to return anything, so it won't set parking.
         assertNull(entity.getParking());
     }
 }

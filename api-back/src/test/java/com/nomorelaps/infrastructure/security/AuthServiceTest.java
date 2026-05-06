@@ -30,8 +30,12 @@ import com.nomorelaps.business.interfaces.ICompanyService;
 import com.nomorelaps.adapters.mapper.RoleMapper;
 import com.nomorelaps.adapters.mapper.CompanyMapper;
 import com.nomorelaps.adapters.out.persistence.jpa.CompanyJpaEntity;
+import com.nomorelaps.adapters.out.persistence.jpa.RoleJpaEntity;
 import com.nomorelaps.adapters.in.api.CompanyRequest;
 import com.nomorelaps.domain.models.Company;
+import com.nomorelaps.adapters.out.persistence.repository.RoleJpaRepository;
+import com.nomorelaps.adapters.out.persistence.repository.CompanyJpaRepository;
+import com.nomorelaps.infrastructure.security.JwtService;
 
 @ExtendWith(MockitoExtension.class)
 class AuthServiceTest {
@@ -52,6 +56,10 @@ class AuthServiceTest {
     private JwtService jwtService;
     @Mock
     private UserJpaRepository userRepository;
+    @Mock
+    private RoleJpaRepository roleRepository;
+    @Mock
+    private CompanyJpaRepository companyRepository;
 
     @InjectMocks
     private AuthService authService;
@@ -72,6 +80,7 @@ class AuthServiceTest {
         UserJpaEntity userEntity = new UserJpaEntity();
         userEntity.setEmail("comp@test.com");
 
+        when(roleRepository.findByName("COMPANY")).thenReturn(Optional.of(new RoleJpaEntity()));
         when(userService.create(any(User.class))).thenReturn(user);
         when(companyMapper.toDomainFromRequest(request)).thenReturn(company);
         when(userRepository.findByEmail("comp@test.com")).thenReturn(Optional.of(userEntity));
@@ -91,6 +100,7 @@ class AuthServiceTest {
         User domain = new User(1L);
         UserResponse response = new UserResponse(1L);
 
+        when(roleRepository.findByName("USER")).thenReturn(Optional.of(new RoleJpaEntity()));
         when(userMapper.toDomainFromRequest(request)).thenReturn(domain);
         when(userService.create(domain)).thenReturn(domain);
         when(userMapper.toResponse(domain)).thenReturn(response);
@@ -108,13 +118,14 @@ class AuthServiceTest {
         request.setPassword("pass");
 
         UserJpaEntity entity = new UserJpaEntity();
+        entity.setId(10L);
         entity.setEmail("admin@company.com");
         
         CompanyJpaEntity companyEntity = new CompanyJpaEntity();
         companyEntity.setId(500L);
-        entity.setCompanies(java.util.Set.of(companyEntity));
 
         when(userRepository.findByEmail("admin@company.com")).thenReturn(Optional.of(entity));
+        when(companyRepository.findByUserId(10L)).thenReturn(Optional.of(companyEntity));
         when(jwtService.generateToken(any(UserDetails.class))).thenReturn("token");
 
         AuthResponse response = authService.login(request);
@@ -131,10 +142,11 @@ class AuthServiceTest {
         request.setPassword("pass");
 
         UserJpaEntity entity = new UserJpaEntity();
+        entity.setId(10L);
         entity.setEmail("user@test.com");
-        entity.setCompanies(new java.util.HashSet<>()); // Empty set
 
         when(userRepository.findByEmail("user@test.com")).thenReturn(Optional.of(entity));
+        when(companyRepository.findByUserId(10L)).thenReturn(Optional.empty());
         when(jwtService.generateToken(any(UserDetails.class))).thenReturn("token");
 
         AuthResponse response = authService.login(request);
@@ -150,10 +162,11 @@ class AuthServiceTest {
         request.setPassword("pass");
 
         UserJpaEntity entity = new UserJpaEntity();
+        entity.setId(10L);
         entity.setEmail("user@test.com");
-        entity.setCompanies(null); // Null companies
 
         when(userRepository.findByEmail("user@test.com")).thenReturn(Optional.of(entity));
+        when(companyRepository.findByUserId(10L)).thenReturn(Optional.empty());
         when(jwtService.generateToken(any(UserDetails.class))).thenReturn("token");
 
         AuthResponse response = authService.login(request);

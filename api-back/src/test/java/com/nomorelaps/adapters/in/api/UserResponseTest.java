@@ -53,21 +53,16 @@ public class UserResponseTest {
         UserResponse response2 = new UserResponse(1L);
         UserResponse response3 = new UserResponse(2L);
 
-        // Same object
         assertEquals(response1, response1);
         
-        // Equal objects
         assertEquals(response1, response2);
         assertEquals(response1.hashCode(), response2.hashCode());
         
-        // Different objects
         assertNotEquals(response1, response3);
         
-        // Null and different class
         assertNotEquals(response1, null);
         assertNotEquals(response1, new Object());
         
-        // Null ID coverage
         UserResponse responseNull = new UserResponse(null);
         UserResponse responseNull2 = new UserResponse(null);
         assertEquals(responseNull, responseNull2);

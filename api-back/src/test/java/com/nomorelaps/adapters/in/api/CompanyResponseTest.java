@@ -49,21 +49,16 @@ public class CompanyResponseTest {
         CompanyResponse response2 = new CompanyResponse(1L);
         CompanyResponse response3 = new CompanyResponse(2L);
 
-        // Same object
         assertEquals(response1, response1);
         
-        // Equal objects
         assertEquals(response1, response2);
         assertEquals(response1.hashCode(), response2.hashCode());
         
-        // Different objects
         assertNotEquals(response1, response3);
         
-        // Null and different class
         assertNotEquals(response1, null);
         assertNotEquals(response1, new Object());
         
-        // Null ID coverage
         CompanyResponse responseNull = new CompanyResponse(null);
         CompanyResponse responseNull2 = new CompanyResponse(null);
         assertEquals(responseNull, responseNull2);

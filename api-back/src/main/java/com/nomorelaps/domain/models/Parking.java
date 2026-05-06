@@ -165,6 +165,10 @@ public class Parking {
         return dynamicPrice;
     }
 
+    public void setDynamicPrice(Set<DynamicPrice> dynamicPrice) {
+        this.dynamicPrice = dynamicPrice;
+    }
+
     public Double getPricePerHour() {
         return pricePerHour;
     }

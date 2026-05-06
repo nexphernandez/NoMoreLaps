@@ -53,21 +53,16 @@ class DynamicPriceJpaEntityTest {
         DynamicPriceJpaEntity entity2 = new DynamicPriceJpaEntity(1L);
         DynamicPriceJpaEntity entity3 = new DynamicPriceJpaEntity(2L);
 
-        // Same object
         assertEquals(entity1, entity1);
 
-        // Equal objects
         assertEquals(entity1, entity2);
         assertEquals(entity1.hashCode(), entity2.hashCode());
 
-        // Different objects
         assertNotEquals(entity1, entity3);
 
-        // Null and different class
         assertNotEquals(entity1, null);
         assertNotEquals(entity1, new Object());
 
-        // Null ID coverage
         DynamicPriceJpaEntity entityNull1 = new DynamicPriceJpaEntity(null);
         DynamicPriceJpaEntity entityNull2 = new DynamicPriceJpaEntity(null);
         assertEquals(entityNull1, entityNull2);
@@ -80,11 +75,11 @@ class DynamicPriceJpaEntityTest {
         DynamicPriceJpaEntity entity = new DynamicPriceJpaEntity();
         assertNull(entity.getCreateAt());
 
-        entity.onCreate(); // Directly call pre-persist
+        entity.onCreate(); 
         assertNotNull(entity.getCreateAt());
 
         LocalDateTime originalTime = entity.getCreateAt();
-        entity.onCreate(); // Should not overwrite existing time
+        entity.onCreate(); 
         assertEquals(originalTime, entity.getCreateAt());
     }
 }

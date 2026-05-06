@@ -14,9 +14,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.nomorelaps.adapters.mapper.SanctionMapper;
+import com.nomorelaps.adapters.out.persistence.jpa.ReservationJpaEntity;
 import com.nomorelaps.adapters.out.persistence.jpa.SanctionJpaEntity;
+import com.nomorelaps.adapters.out.persistence.jpa.UserJpaEntity;
 import com.nomorelaps.adapters.out.persistence.repository.SanctionJpaRepository;
+import com.nomorelaps.domain.models.Reservation;
 import com.nomorelaps.domain.models.Sanction;
+import com.nomorelaps.domain.models.User;
 
 @ExtendWith(MockitoExtension.class)
 class SanctionPersistenceAdapterTest {
@@ -65,9 +69,8 @@ class SanctionPersistenceAdapterTest {
     @Test
     @DisplayName("save - Should map associations in toEntity")
     void shouldSaveWithAssociations() {
-        // Arrange
-        com.nomorelaps.domain.models.User user = new com.nomorelaps.domain.models.User(10L);
-        com.nomorelaps.domain.models.Reservation res = new com.nomorelaps.domain.models.Reservation(20L);
+        User user = new User(10L);
+        Reservation res = new Reservation(20L);
         sanction.setUser(user);
         sanction.setReservation(res);
 
@@ -75,10 +78,8 @@ class SanctionPersistenceAdapterTest {
         when(repository.save(entity)).thenReturn(entity);
         when(mapper.toDomain(entity)).thenReturn(sanction);
 
-        // Act
         adapter.save(sanction);
 
-        // Assert
         assertNotNull(entity.getUser());
         assertEquals(10L, entity.getUser().getId());
         assertNotNull(entity.getReservation());
@@ -88,11 +89,8 @@ class SanctionPersistenceAdapterTest {
     @Test
     @DisplayName("toDomain - Should map associations from entity")
     void shouldMapAssociationsToDomain() {
-        // Arrange
-        com.nomorelaps.adapters.out.persistence.jpa.UserJpaEntity userEntity = 
-            new com.nomorelaps.adapters.out.persistence.jpa.UserJpaEntity(10L);
-        com.nomorelaps.adapters.out.persistence.jpa.ReservationJpaEntity resEntity = 
-            new com.nomorelaps.adapters.out.persistence.jpa.ReservationJpaEntity(20L);
+        UserJpaEntity userEntity = new UserJpaEntity(10L);
+        ReservationJpaEntity resEntity = new ReservationJpaEntity(20L);
         
         entity.setUser(userEntity);
         entity.setReservation(resEntity);
@@ -100,10 +98,8 @@ class SanctionPersistenceAdapterTest {
         when(repository.findByUserId(1L)).thenReturn(List.of(entity));
         when(mapper.toDomain(entity)).thenReturn(sanction);
 
-        // Act
         List<Sanction> result = adapter.findByUserId(1L);
 
-        // Assert
         assertFalse(result.isEmpty());
         Sanction resultSanction = result.get(0);
         assertNotNull(resultSanction.getUser());
@@ -115,7 +111,6 @@ class SanctionPersistenceAdapterTest {
     @Test
     @DisplayName("toEntity/toDomain - Should handle null associations")
     void shouldHandleNullAssociations() {
-        // Arrange
         sanction.setUser(null);
         sanction.setReservation(null);
         entity.setUser(null);
@@ -125,10 +120,8 @@ class SanctionPersistenceAdapterTest {
         when(repository.save(entity)).thenReturn(entity);
         when(mapper.toDomain(entity)).thenReturn(sanction);
 
-        // Act
         Sanction saved = adapter.save(sanction);
 
-        // Assert
         assertNotNull(saved);
         assertNull(entity.getUser());
         assertNull(entity.getReservation());
@@ -137,9 +130,8 @@ class SanctionPersistenceAdapterTest {
     @Test
     @DisplayName("toEntity - Should handle null association IDs")
     void shouldHandleNullAssociationIds() {
-        // Arrange
-        com.nomorelaps.domain.models.User userNoId = new com.nomorelaps.domain.models.User();
-        com.nomorelaps.domain.models.Reservation resNoId = new com.nomorelaps.domain.models.Reservation();
+        User userNoId = new User();
+        Reservation resNoId = new Reservation();
         sanction.setUser(userNoId);
         sanction.setReservation(resNoId);
 
@@ -147,10 +139,8 @@ class SanctionPersistenceAdapterTest {
         when(repository.save(entity)).thenReturn(entity);
         when(mapper.toDomain(entity)).thenReturn(sanction);
 
-        // Act
         adapter.save(sanction);
 
-        // Assert
         assertNull(entity.getUser());
         assertNull(entity.getReservation());
     }

@@ -55,7 +55,6 @@ class SmartCalendarServiceTest {
     @Test
     @DisplayName("Should recommend parking when nearby spots are available")
     void shouldRecommendParking() {
-        // Arrange
         Parking parking = new Parking(1L);
         parking.setName("Sol Parking");
         parking.setLatitude(40.417);
@@ -72,10 +71,8 @@ class SmartCalendarServiceTest {
         when(reservationService.hasOverlappingReservations(anyLong(), any(), any()))
                 .thenReturn(false);
 
-        // Act
         SmartRecommendationResponse response = smartCalendarService.recommend(request);
 
-        // Assert
         assertNotNull(response);
         assertFalse(response.getSuggestions().isEmpty());
         assertEquals("Sol Parking", response.getSuggestions().get(0).getParkingName());
@@ -84,7 +81,6 @@ class SmartCalendarServiceTest {
     @Test
     @DisplayName("Should resolve coordinates from destination text if missing")
     void shouldGeocodeWhenCoordsMissing() {
-        // Arrange
         request.setLatitude(null);
         request.setLongitude(null);
         request.setDestinationText("Puerta del Sol");
@@ -93,10 +89,8 @@ class SmartCalendarServiceTest {
         when(geocodingProvider.geocode("Puerta del Sol")).thenReturn(geocodeResponse);
         when(parkingService.findNearby(anyDouble(), anyDouble(), anyDouble())).thenReturn(Collections.emptyList());
 
-        // Act
         smartCalendarService.recommend(request);
 
-        // Assert
         verify(geocodingProvider).geocode("Puerta del Sol");
     }
 
@@ -154,7 +148,6 @@ class SmartCalendarServiceTest {
     @DisplayName("Should skip geocode when only longitude is null but latitude provided")
     void shouldThrowWhenOnlyLongitudeNull() {
         request.setLongitude(null);
-        // latitude is present, destinationText null → first if is false, second if throws
         assertThrows(IllegalArgumentException.class, () -> smartCalendarService.recommend(request));
     }
 

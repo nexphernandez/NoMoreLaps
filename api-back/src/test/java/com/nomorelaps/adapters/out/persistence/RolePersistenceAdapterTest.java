@@ -1,6 +1,8 @@
 package com.nomorelaps.adapters.out.persistence;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Collections;
@@ -58,7 +60,7 @@ class RolePersistenceAdapterTest {
     @DisplayName("deleteById - Should call repository deleteById")
     void shouldDeleteById() {
         adapter.deleteById(1L);
-        org.mockito.Mockito.verify(repository, org.mockito.Mockito.times(1)).deleteById(1L);
+        verify(repository, times(1)).deleteById(1L);
     }
 
     @Test
