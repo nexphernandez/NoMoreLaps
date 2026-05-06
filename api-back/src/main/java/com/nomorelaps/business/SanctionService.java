@@ -58,6 +58,11 @@ public class SanctionService implements ISanctionService {
     }
 
     @Override
+    public List<Sanction> findByCompanyId(Long companyId) {
+        return persistencePort.findByCompanyId(companyId);
+    }
+
+    @Override
     public Sanction paySanction(Long id) {
         return persistencePort.findById(id).map(sanction -> {
             sanction.setPaid(true);

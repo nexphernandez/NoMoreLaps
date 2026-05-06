@@ -63,6 +63,9 @@ public class ParkingJpaEntity {
     @Column(name = "sanction_interval")
     private Integer sanctionIntervalInMinutes = 15;
 
+    @Column(name = "total_spots")
+    private Integer totalSpots;
+
     @OneToMany(mappedBy = "parking")
     private Set<ParkingSpotJpaEntity> parkingSpots;
 
@@ -230,6 +233,14 @@ public class ParkingJpaEntity {
 
     public void setSanctionIntervalInMinutes(Integer sanctionIntervalInMinutes) {
         this.sanctionIntervalInMinutes = sanctionIntervalInMinutes;
+    }
+
+    public Integer getTotalSpots() {
+        return totalSpots;
+    }
+
+    public void setTotalSpots(Integer totalSpots) {
+        this.totalSpots = totalSpots;
     }
 
     @Override

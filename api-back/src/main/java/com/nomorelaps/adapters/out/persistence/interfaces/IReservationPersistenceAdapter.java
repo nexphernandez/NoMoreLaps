@@ -68,4 +68,12 @@ public interface IReservationPersistenceAdapter extends IBasePersistenceAdapter<
      * @return true if there is a conflict, false otherwise.
      */
     boolean hasOverlappingReservationsExcluding(Long spotId, LocalDateTime start, LocalDateTime end, Long excludeId);
+
+    /**
+     * Retrieves all reservations associated with a specific company's parkings.
+     * 
+     * @param companyId The company ID.
+     * @return A list of matching reservations.
+     */
+    List<Reservation> findByCompanyId(Long companyId);
 }

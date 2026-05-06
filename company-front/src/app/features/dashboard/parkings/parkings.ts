@@ -1,6 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { ParkingCard } from '../../../shared/components/parking-card/parking-card';
 import { ParkingService } from '../../../core/services/parking';
 import { AuthService } from '../../../core/services/auth';
@@ -9,13 +10,15 @@ import { Parking } from '../../../core/models/parking.model';
 @Component({
   selector: 'app-parkings',
   standalone: true,
-  imports: [CommonModule, ParkingCard],
+  imports: [CommonModule, FormsModule, ParkingCard],
   templateUrl: './parkings.html',
   styleUrls: ['./parkings.css'],
 })
 export class Parkings implements OnInit {
   parkings: Parking[] = [];
   loading = true;
+  searchTerm = '';
+  statusFilter = 'all';
 
   constructor(
     private router: Router,
@@ -35,19 +38,34 @@ export class Parkings implements OnInit {
           console.log('DEBUG: Parkings received from backend:', data);
           this.parkings = data;
           this.loading = false;
-          this.cdr.detectChanges(); // Force UI update
+          this.cdr.detectChanges(); 
         },
         error: (err) => {
           console.error('DEBUG: Error fetching parkings:', err);
           this.loading = false;
-          this.cdr.detectChanges(); // Force UI update
+          this.cdr.detectChanges(); 
         }
       });
     } else {
       console.warn('DEBUG: No user or companyId found, stopping loading.');
       this.loading = false;
-      this.cdr.detectChanges(); // Force UI update
+      this.cdr.detectChanges();
     }
+  }
+
+  get filteredParkings(): Parking[] {
+    return this.parkings.filter(parking => {
+      const matchesSearch = 
+        parking.name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+        parking.address.toLowerCase().includes(this.searchTerm.toLowerCase());
+      
+      const matchesStatus = 
+        this.statusFilter === 'all' || 
+        (this.statusFilter === 'active' && parking.status === 'Abierto') ||
+        (this.statusFilter === 'inactive' && parking.status === 'Cerrado');
+
+      return matchesSearch && matchesStatus;
+    });
   }
 
   onAddParking() {

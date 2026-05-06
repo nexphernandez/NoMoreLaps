@@ -95,6 +95,22 @@ public class ReservationController {
     }
 
     /**
+     * Retrieves all reservations for a specific company.
+     *
+     * @param companyId The company ID.
+     * @return A list of reservations for the company.
+     */
+    @GetMapping("/company/{companyId}")
+    @Operation(summary = "Find reservations by Company", description = "Lists all bookings for all parkings owned by a company.")
+    @ApiResponse(responseCode = "200", description = "List retrieved")
+    public ResponseEntity<List<ReservationResponse>> findByCompanyId(@PathVariable Long companyId) {
+        List<ReservationResponse> responses = reservationService.findByCompanyId(companyId).stream()
+                .map(reservationMapper::toResponse)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(responses);
+    }
+
+    /**
      * Retrieves all reservations for a specific parking spot.
      *
      * @param spotId The parking spot ID.

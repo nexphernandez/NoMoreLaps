@@ -10,10 +10,13 @@
   <div class="filters-bar glass-card">
     <div class="search-box">
       <span class="search-icon">🔍</span>
-      <input type="text" placeholder="Filtrar por nombre o dirección..." class="filter-input">
+      <input type="text" 
+             placeholder="Filtrar por nombre o dirección..." 
+             class="filter-input"
+             [(ngModel)]="searchTerm">
     </div>
     <div class="filter-actions">
-      <select class="filter-select">
+      <select class="filter-select" [(ngModel)]="statusFilter">
         <option value="all">Todos los estados</option>
         <option value="active">Abierto</option>
         <option value="inactive">Cerrado</option>
@@ -23,10 +26,10 @@
 
   <div class="parkings-grid" *ngIf="!loading">
     <app-parking-card 
-      *ngFor="let parking of parkings"
+      *ngFor="let parking of filteredParkings"
       [name]="parking.name"
       [address]="parking.address"
-      [capacity]="100" 
+      [capacity]="parking.totalSpots || 0" 
       [status]="parking.status"
     ></app-parking-card>
   </div>

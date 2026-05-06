@@ -84,7 +84,7 @@ const ParkingDetailView: React.FC<ParkingDetailViewProps> = ({
         {address && <Typography variant="body" color={theme.textSecondary}>{address}</Typography>}
       </View>
 
-      <View style={{ maxHeight: '100%' }}>
+      <View style={{ flex: 1 }}>
         <FlatList
           data={spots}
           numColumns={3}

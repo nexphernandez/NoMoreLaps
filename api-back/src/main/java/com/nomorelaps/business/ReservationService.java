@@ -116,6 +116,11 @@ public class ReservationService implements IReservationService {
     }
 
     @Override
+    public List<Reservation> findByCompanyId(Long companyId) {
+        return persistencePort.findByCompanyId(companyId);
+    }
+
+    @Override
     public void deleteById(Long id) {
         persistencePort.deleteById(id);
     }

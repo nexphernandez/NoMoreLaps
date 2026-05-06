@@ -23,6 +23,13 @@ class SanctionResponseTest {
         assertEquals(false, dto.isPaid());
         dto.setArrivalTime(LocalDateTime.of(2026, 1, 1, 0, 0).plusDays(1));
         assertEquals(LocalDateTime.of(2026, 1, 1, 0, 0).plusDays(1), dto.getArrivalTime());
+        
+        dto.setUserId(2L);
+        assertEquals(2L, dto.getUserId());
+        dto.setUserName("Juan");
+        assertEquals("Juan", dto.getUserName());
+        dto.setParkingName("Parking");
+        assertEquals("Parking", dto.getParkingName());
     }
 
     @Test
@@ -33,12 +40,15 @@ class SanctionResponseTest {
         assertFalse(dto1.isPaid());
 
         LocalDateTime now = LocalDateTime.now();
-        SanctionResponse dto2 = new SanctionResponse(2L, 50.0, "Late", true, now);
+        SanctionResponse dto2 = new SanctionResponse(2L, 50.0, "Late", true, now, 3L, "Juan", "Parking");
         assertEquals(2L, dto2.getId());
         assertEquals(50.0, dto2.getAmount());
         assertEquals("Late", dto2.getReason());
         assertTrue(dto2.isPaid());
         assertEquals(now, dto2.getArrivalTime());
+        assertEquals(3L, dto2.getUserId());
+        assertEquals("Juan", dto2.getUserName());
+        assertEquals("Parking", dto2.getParkingName());
     }
 
 
