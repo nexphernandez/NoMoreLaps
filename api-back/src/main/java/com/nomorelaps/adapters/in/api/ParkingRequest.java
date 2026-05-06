@@ -29,6 +29,7 @@ public class ParkingRequest {
     private Long companyId;
     private Double sanctionAmount;
     private Integer sanctionIntervalInMinutes;
+    private Integer totalSpots;
 
     /**
      * Empty constructor
@@ -142,6 +143,14 @@ public class ParkingRequest {
 
     public void setSanctionIntervalInMinutes(Integer sanctionIntervalInMinutes) {
         this.sanctionIntervalInMinutes = sanctionIntervalInMinutes;
+    }
+
+    public Integer getTotalSpots() {
+        return totalSpots;
+    }
+
+    public void setTotalSpots(Integer totalSpots) {
+        this.totalSpots = totalSpots;
     }
 
 }

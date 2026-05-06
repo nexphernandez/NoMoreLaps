@@ -152,6 +152,10 @@ class ParkingMapperTest {
         cNullId.setId(null);
         pNullId.setCompany(cNullId);
         assertNull(methodId.invoke(parkingMapper, pNullId));
+
+        Parking pNullCompany = new Parking();
+        pNullCompany.setCompany(null);
+        assertNull(methodId.invoke(parkingMapper, pNullCompany));
         
         Parking pValid = new Parking();
         pValid.setCompany(new Company(777L));

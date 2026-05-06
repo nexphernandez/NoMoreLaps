@@ -30,7 +30,8 @@ export class ParkingCreate {
       latitude: [40.4168, [Validators.required]],
       longitude: [-3.7038, [Validators.required]],
       sanctionAmount: [15.00, [Validators.required, Validators.min(0)]],
-      sanctionIntervalInMinutes: [30, [Validators.required, Validators.min(1)]]
+      sanctionIntervalInMinutes: [30, [Validators.required, Validators.min(1)]],
+      totalSpots: [10, [Validators.required, Validators.min(1)]]
     });
   }
 
