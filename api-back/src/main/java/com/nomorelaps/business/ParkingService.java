@@ -8,7 +8,9 @@ import org.springframework.stereotype.Service;
 
 import com.nomorelaps.adapters.out.persistence.interfaces.IParkingPersistenceAdapter;
 import com.nomorelaps.business.interfaces.IParkingService;
+import com.nomorelaps.business.interfaces.IParkingSpotService;
 import com.nomorelaps.domain.models.Parking;
+import com.nomorelaps.domain.models.ParkingSpot;
 
 /**
  * Use Case implementation for Parking operations.
@@ -21,15 +23,29 @@ import com.nomorelaps.domain.models.Parking;
 public class ParkingService implements IParkingService {
 
     private final IParkingPersistenceAdapter persistencePort;
+    private final IParkingSpotService parkingSpotService;
 
     @Autowired
-    public ParkingService(IParkingPersistenceAdapter persistencePort) {
+    public ParkingService(IParkingPersistenceAdapter persistencePort, IParkingSpotService parkingSpotService) {
         this.persistencePort = persistencePort;
+        this.parkingSpotService = parkingSpotService;
     }
 
     @Override
     public Parking create(Parking parking) {
-        return persistencePort.save(parking);
+        Parking savedParking = persistencePort.save(parking);
+        
+        if (parking.getTotalSpots() != null && parking.getTotalSpots() > 0) {
+            for (int i = 1; i <= parking.getTotalSpots(); i++) {
+                ParkingSpot spot = new ParkingSpot();
+                spot.setNumber(i);
+                spot.setParking(savedParking);
+                spot.setState(true);
+                parkingSpotService.create(spot);
+            }
+        }
+        
+        return savedParking;
     }
 
     @Override

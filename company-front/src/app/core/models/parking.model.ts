@@ -8,6 +8,7 @@ export interface Parking {
   sanctionAmount: number;
   sanctionIntervalInMinutes: number;
   status: 'Abierto' | 'Cerrado';
+  totalSpots?: number;
 }
 
 export interface ParkingRequest {
@@ -18,4 +19,5 @@ export interface ParkingRequest {
   companyId: string;
   sanctionAmount: number;
   sanctionIntervalInMinutes: number;
+  totalSpots: number;
 }

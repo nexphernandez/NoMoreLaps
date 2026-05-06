@@ -18,7 +18,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.nomorelaps.adapters.out.persistence.interfaces.IParkingPersistenceAdapter;
+import com.nomorelaps.business.interfaces.IParkingSpotService;
 import com.nomorelaps.domain.models.Parking;
+import com.nomorelaps.domain.models.ParkingSpot;
 
 /**
  * Unit tests for ParkingService covering all business methods.
@@ -31,6 +33,9 @@ class ParkingServiceTest {
 
     @Mock
     private IParkingPersistenceAdapter persistencePort;
+
+    @Mock
+    private IParkingSpotService parkingSpotService;
 
     @InjectMocks
     private ParkingService parkingService;
@@ -57,6 +62,44 @@ class ParkingServiceTest {
         assertNotNull(result);
         assertEquals("Test Parking", result.getName());
         verify(persistencePort).save(testParking);
+    }
+
+    @Test
+    @DisplayName("create - Should create spots when totalSpots is specified")
+    void shouldCreateSpotsWhenTotalSpotsSpecified() {
+        testParking.setTotalSpots(3);
+        when(persistencePort.save(any(Parking.class))).thenReturn(testParking);
+        when(parkingSpotService.create(any(ParkingSpot.class))).thenReturn(new ParkingSpot());
+
+        Parking result = parkingService.create(testParking);
+
+        assertNotNull(result);
+        verify(persistencePort).save(testParking);
+        verify(parkingSpotService, times(3)).create(any(ParkingSpot.class));
+    }
+
+    @Test
+    @DisplayName("create - Should not create spots when totalSpots is null")
+    void shouldNotCreateSpotsWhenTotalSpotsIsNull() {
+        testParking.setTotalSpots(null);
+        when(persistencePort.save(any(Parking.class))).thenReturn(testParking);
+
+        Parking result = parkingService.create(testParking);
+
+        assertNotNull(result);
+        verify(parkingSpotService, never()).create(any());
+    }
+
+    @Test
+    @DisplayName("create - Should not create spots when totalSpots is zero or negative")
+    void shouldNotCreateSpotsWhenTotalSpotsIsZeroOrNegative() {
+        testParking.setTotalSpots(0);
+        when(persistencePort.save(any(Parking.class))).thenReturn(testParking);
+
+        Parking result = parkingService.create(testParking);
+
+        assertNotNull(result);
+        verify(parkingSpotService, never()).create(any());
     }
 
 
