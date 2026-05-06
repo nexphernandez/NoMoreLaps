@@ -9,9 +9,15 @@ import org.springframework.stereotype.Component;
 import com.nomorelaps.adapters.mapper.SanctionMapper;
 import com.nomorelaps.adapters.out.persistence.abstracta.BasePersistenceAdapter;
 import com.nomorelaps.adapters.out.persistence.interfaces.ISanctionPersistenceAdapter;
+import com.nomorelaps.adapters.out.persistence.jpa.ReservationJpaEntity;
 import com.nomorelaps.adapters.out.persistence.jpa.SanctionJpaEntity;
+import com.nomorelaps.adapters.out.persistence.jpa.UserJpaEntity;
 import com.nomorelaps.adapters.out.persistence.repository.SanctionJpaRepository;
+import com.nomorelaps.domain.models.Parking;
+import com.nomorelaps.domain.models.ParkingSpot;
+import com.nomorelaps.domain.models.Reservation;
 import com.nomorelaps.domain.models.Sanction;
+import com.nomorelaps.domain.models.User;
 
 /**
  * Persistence implementation for Sanction via Spring Data repositories.
@@ -40,37 +46,40 @@ public class SanctionPersistenceAdapter
     protected SanctionJpaEntity toEntity(Sanction domain) {
         SanctionJpaEntity entity = mapper.toJpaEntity(domain);
         if (domain.getUser() != null && domain.getUser().getId() != null) {
-            com.nomorelaps.adapters.out.persistence.jpa.UserJpaEntity userEntity = new com.nomorelaps.adapters.out.persistence.jpa.UserJpaEntity();
+            UserJpaEntity userEntity = new UserJpaEntity();
             userEntity.setId(domain.getUser().getId());
             entity.setUser(userEntity);
         }
         if (domain.getReservation() != null && domain.getReservation().getId() != null) {
-            com.nomorelaps.adapters.out.persistence.jpa.ReservationJpaEntity resEntity = new com.nomorelaps.adapters.out.persistence.jpa.ReservationJpaEntity();
+            ReservationJpaEntity resEntity = new ReservationJpaEntity();
             resEntity.setId(domain.getReservation().getId());
             entity.setReservation(resEntity);
         }
         return entity;
     }
 
+    /**
+     * Converts a Sanction JPA Entity to its domain model equivalent.
+     */
     @Override
     protected Sanction toDomain(SanctionJpaEntity entity) {
         Sanction domain = mapper.toDomain(entity);
         if (entity.getUser() != null) {
-            com.nomorelaps.domain.models.User user = new com.nomorelaps.domain.models.User();
+            User user = new User();
             user.setId(entity.getUser().getId());
             user.setName(entity.getUser().getName());
             domain.setUser(user);
         }
         if (entity.getReservation() != null) {
-            com.nomorelaps.domain.models.Reservation res = new com.nomorelaps.domain.models.Reservation();
+            Reservation res = new Reservation();
             res.setId(entity.getReservation().getId());
             
             if (entity.getReservation().getParkingSpot() != null && 
                 entity.getReservation().getParkingSpot().getParking() != null) {
-                com.nomorelaps.domain.models.ParkingSpot spot = new com.nomorelaps.domain.models.ParkingSpot();
+                ParkingSpot spot = new ParkingSpot();
                 spot.setId(entity.getReservation().getParkingSpot().getId());
                 
-                com.nomorelaps.domain.models.Parking parking = new com.nomorelaps.domain.models.Parking();
+                Parking parking = new Parking();
                 parking.setId(entity.getReservation().getParkingSpot().getParking().getId());
                 parking.setName(entity.getReservation().getParkingSpot().getParking().getName());
                 spot.setParking(parking);
