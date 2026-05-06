@@ -60,6 +60,14 @@ public interface ISanctionService {
     void deleteById(Long id);
 
     /**
+     * Lists all sanctions for a specific company.
+     * 
+     * @param companyId The company ID.
+     * @return List of sanctions.
+     */
+    List<Sanction> findByCompanyId(Long companyId);
+
+    /**
      * Marks a specific sanction as paid in the system.
      * 
      * @param id The unique identifier of the sanction.

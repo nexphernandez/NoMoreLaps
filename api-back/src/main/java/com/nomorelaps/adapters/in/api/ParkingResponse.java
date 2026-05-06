@@ -25,6 +25,7 @@ public class ParkingResponse {
     private Double pricePerHour;
     private Long companyId;
     private String status = "Abierto";
+    private Integer totalSpots;
     
     /**
      * Empty constructor
@@ -53,7 +54,8 @@ public class ParkingResponse {
      */
     public ParkingResponse(Long id, String address, String name, Double latitude, Double longitude, 
                            LocalDateTime openingTime, LocalDateTime closingTime, LocalDateTime createdAt, 
-                           Double pricePerHour) {
+                           Double pricePerHour, Double sanctionAmount, Integer sanctionIntervalInMinutes,
+                           Integer totalSpots) {
         this.id = id;
         this.address = address;
         this.name = name;
@@ -63,6 +65,9 @@ public class ParkingResponse {
         this.closingTime = closingTime;
         this.createdAt = createdAt;
         this.pricePerHour = pricePerHour;
+        this.sanctionAmount = sanctionAmount;
+        this.sanctionIntervalInMinutes = sanctionIntervalInMinutes;
+        this.totalSpots = totalSpots;
     }
 
     public Long getId() {
@@ -167,6 +172,14 @@ public class ParkingResponse {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public Integer getTotalSpots() {
+        return totalSpots;
+    }
+
+    public void setTotalSpots(Integer totalSpots) {
+        this.totalSpots = totalSpots;
     }
 
     @Override

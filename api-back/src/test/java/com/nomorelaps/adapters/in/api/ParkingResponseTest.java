@@ -46,11 +46,14 @@ public class ParkingResponseTest {
 
         response.setPricePerHour(2.5);
         assertEquals(2.5, response.getPricePerHour());
+
+        response.setTotalSpots(100);
+        assertEquals(100, response.getTotalSpots());
         
         ParkingResponse r2 = new ParkingResponse(1L);
         assertEquals(1L, r2.getId());
         
-        ParkingResponse r3 = new ParkingResponse(1L, "Addr", "Name", 1.0, 2.0, now, now, now, 2.5);
+        ParkingResponse r3 = new ParkingResponse(1L, "Addr", "Name", 1.0, 2.0, now, now, now, 2.5, 10.0, 15, 100);
         assertEquals(1L, r3.getId());
         assertEquals("Name", r3.getName());
     }

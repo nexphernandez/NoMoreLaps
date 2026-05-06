@@ -92,6 +92,14 @@ public interface IReservationService {
     boolean hasOverlappingReservationsExcluding(Long spotId, LocalDateTime start, LocalDateTime end, Long excludeId);
 
     /**
+     * Lists all reservations for a specific company.
+     * 
+     * @param companyId The company ID.
+     * @return List of reservations.
+     */
+    List<Reservation> findByCompanyId(Long companyId);
+
+    /**
      * Deletes a reservation.
      * 
      * @param id The reservation ID.

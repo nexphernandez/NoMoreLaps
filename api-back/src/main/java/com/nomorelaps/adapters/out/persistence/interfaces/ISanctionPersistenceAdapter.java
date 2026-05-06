@@ -24,4 +24,11 @@ public interface ISanctionPersistenceAdapter extends IBasePersistenceAdapter<San
      * @return List of possible sanctions for that reservation.
      */
     List<Sanction> findByReservationId(Long reservationId);
+    
+    /**
+     * Retrieves all sanctions associated with a specific company's parkings.
+     * @param companyId The company ID.
+     * @return A list of matching sanctions.
+     */
+    List<Sanction> findByCompanyId(Long companyId);
 }

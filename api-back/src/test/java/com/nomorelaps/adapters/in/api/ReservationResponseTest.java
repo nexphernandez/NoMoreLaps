@@ -41,12 +41,16 @@ public class ReservationResponseTest {
         response.setParkingName("Name");
         assertEquals("Name", response.getParkingName());
 
+        response.setUserName("Juan Perez");
+        assertEquals("Juan Perez", response.getUserName());
+
         ReservationResponse r2 = new ReservationResponse(1L);
         assertEquals(1L, r2.getId());
         
-        ReservationResponse r3 = new ReservationResponse(1L, now, now, 10.5, "ACTIVE", now, 2L, 3L, "Name");
+        ReservationResponse r3 = new ReservationResponse(1L, now, now, 10.5, "ACTIVE", now, 2L, 3L, "Name", "Juan Perez");
         assertEquals(1L, r3.getId());
         assertEquals("ACTIVE", r3.getState());
+        assertEquals("Juan Perez", r3.getUserName());
     }
 
     @Test

@@ -9,17 +9,20 @@
   <div class="filters-bar glass-card">
     <div class="search-box">
       <span class="search-icon">🔍</span>
-      <input type="text" placeholder="Buscar por usuario..." class="filter-input">
+      <input type="text" 
+             placeholder="Buscar por usuario..." 
+             class="filter-input"
+             [(ngModel)]="searchTerm">
     </div>
     <div class="filter-actions">
-      <select class="filter-select">
+      <select class="filter-select" [(ngModel)]="parkingFilter">
         <option value="all">Todos los parkings</option>
-        <option *ngFor="let p of mockParkings">{{ p }}</option>
+        <option *ngFor="let p of parkings" [value]="p.name">{{ p.name }}</option>
       </select>
       
-      <select class="filter-select">
+      <select class="filter-select" [(ngModel)]="statusFilter">
         <option value="all">Todos los estados</option>
-        <option value="pending">Pendiente</option>
+        <option value="active">Activa</option>
         <option value="finished">Finalizada</option>
         <option value="canceled">Cancelada</option>
       </select>
@@ -35,12 +38,20 @@
     </div>
 
     <app-reservation-row 
-      *ngFor="let res of mockReservations"
-      [userName]="res.user"
-      [parkingName]="res.parking"
-      [date]="res.date"
-      [time]="res.time"
-      [status]="res.status"
+      *ngFor="let res of filteredReservations"
+      [userName]="res.userName"
+      [parkingName]="res.parkingName"
+      [date]="formatDate(res.startTime)"
+      [time]="formatTime(res.startTime, res.endTime)"
+      [status]="res.state === 'ACTIVE' ? 'Activa' : res.state === 'COMPLETED' ? 'Finalizada' : 'Cancelada'"
     ></app-reservation-row>
+  </div>
+
+  <div class="loading-container" *ngIf="loading">
+    <p>Cargando reservas...</p>
+  </div>
+
+  <div class="empty-container" *ngIf="!loading && filteredReservations.length === 0">
+    <p>No se encontraron reservas.</p>
   </div>
 </div>

@@ -37,6 +37,7 @@ public interface ReservationMapper {
      * @return The response DTO for the API.
      */
     @Mapping(target = "userId", source = "user.id")
+    @Mapping(target = "userName", source = "user.name")
     @Mapping(target = "parkingSpotId", source = "parkingSpot.id")
     @Mapping(target = "parkingName", source = "parkingSpot.parking.name")
     ReservationResponse toResponse(Reservation domain);

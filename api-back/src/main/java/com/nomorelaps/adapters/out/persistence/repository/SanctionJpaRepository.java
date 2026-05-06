@@ -28,4 +28,13 @@ public interface SanctionJpaRepository extends JpaRepository<SanctionJpaEntity,L
      * @return A list of matching sanctions.
      */
     List<SanctionJpaEntity> findByReservationId(Long reservationId);
+
+    /**
+     * Retrieves all sanctions associated with a specific company's parkings.
+     * 
+     * @param companyId The company ID.
+     * @return A list of matching sanctions.
+     */
+    @org.springframework.data.jpa.repository.EntityGraph(attributePaths = { "reservation", "reservation.parkingSpot", "reservation.parkingSpot.parking", "user" })
+    List<SanctionJpaEntity> findByReservationParkingSpotParkingCompanyId(Long companyId);
 }

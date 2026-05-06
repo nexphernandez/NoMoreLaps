@@ -94,6 +94,22 @@ public class SanctionController {
     }
 
     /**
+     * Retrieves all sanctions for a specific company.
+     *
+     * @param companyId The company ID.
+     * @return A list of sanctions for the company.
+     */
+    @GetMapping("/company/{companyId}")
+    @Operation(summary = "Find sanctions by Company", description = "Lists all penalties for all parkings owned by a company.")
+    @ApiResponse(responseCode = "200", description = "List retrieved")
+    public ResponseEntity<List<SanctionResponse>> findByCompanyId(@PathVariable Long companyId) {
+        List<SanctionResponse> responses = sanctionService.findByCompanyId(companyId).stream()
+                .map(sanctionMapper::toResponse)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(responses);
+    }
+
+    /**
      * Retrieves all sanctions for a specific reservation.
      *
      * @param reservationId The reservation ID.

@@ -21,6 +21,7 @@ public class ReservationResponse {
     private Long parkingSpotId;
     private Long userId;
     private String parkingName;
+    private String userName;
 
     /**
      * Empty constructor
@@ -39,7 +40,7 @@ public class ReservationResponse {
     /**
      * Constructor with all the reservation attributes
      */
-    public ReservationResponse(Long id, LocalDateTime startTime, LocalDateTime endTime, double price, String state, LocalDateTime creationTime, Long parkingSpotId, Long userId, String parkingName) {
+    public ReservationResponse(Long id, LocalDateTime startTime, LocalDateTime endTime, double price, String state, LocalDateTime creationTime, Long parkingSpotId, Long userId, String parkingName, String userName) {
         this.id = id;
         this.startTime = startTime;
         this.endTime = endTime;
@@ -49,6 +50,7 @@ public class ReservationResponse {
         this.parkingSpotId = parkingSpotId;
         this.userId = userId;
         this.parkingName = parkingName;
+        this.userName = userName;
     }
 
     public Long getId() {
@@ -113,6 +115,14 @@ public class ReservationResponse {
 
     public void setParkingName(String parkingName) {
         this.parkingName = parkingName;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public LocalDateTime getCreationTime() {

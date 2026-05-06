@@ -76,6 +76,7 @@ public class ReservationPersistenceAdapter
         if (entity.getUser() != null) {
             User user = new User();
             user.setId(entity.getUser().getId());
+            user.setName(entity.getUser().getName());
             domain.setUser(user);
         }
         if (entity.getParkingSpot() != null) {
@@ -143,5 +144,12 @@ public class ReservationPersistenceAdapter
                 .findByParkingSpotIdAndStateAndStartTimeBeforeAndEndTimeAfterAndIdNot(spotId, "ACTIVE", end, start,
                         excludeId)
                 .isEmpty();
+    }
+
+    @Override
+    public List<Reservation> findByCompanyId(Long companyId) {
+        return repository.findByParkingSpotParkingCompanyId(companyId).stream()
+                .map(this::toDomain)
+                .collect(Collectors.toList());
     }
 }

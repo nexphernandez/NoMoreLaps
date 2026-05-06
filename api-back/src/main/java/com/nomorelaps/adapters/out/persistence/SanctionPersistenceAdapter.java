@@ -52,20 +52,31 @@ public class SanctionPersistenceAdapter
         return entity;
     }
 
-    /**
-     * Converts a Sanction JPA Entity to its domain model equivalent.
-     */
     @Override
     protected Sanction toDomain(SanctionJpaEntity entity) {
         Sanction domain = mapper.toDomain(entity);
         if (entity.getUser() != null) {
             com.nomorelaps.domain.models.User user = new com.nomorelaps.domain.models.User();
             user.setId(entity.getUser().getId());
+            user.setName(entity.getUser().getName());
             domain.setUser(user);
         }
         if (entity.getReservation() != null) {
             com.nomorelaps.domain.models.Reservation res = new com.nomorelaps.domain.models.Reservation();
             res.setId(entity.getReservation().getId());
+            
+            if (entity.getReservation().getParkingSpot() != null && 
+                entity.getReservation().getParkingSpot().getParking() != null) {
+                com.nomorelaps.domain.models.ParkingSpot spot = new com.nomorelaps.domain.models.ParkingSpot();
+                spot.setId(entity.getReservation().getParkingSpot().getId());
+                
+                com.nomorelaps.domain.models.Parking parking = new com.nomorelaps.domain.models.Parking();
+                parking.setId(entity.getReservation().getParkingSpot().getParking().getId());
+                parking.setName(entity.getReservation().getParkingSpot().getParking().getName());
+                spot.setParking(parking);
+                res.setParkingSpot(spot);
+            }
+            
             domain.setReservation(res);
         }
         return domain;
@@ -81,6 +92,13 @@ public class SanctionPersistenceAdapter
     @Override
     public List<Sanction> findByReservationId(Long reservationId) {
         return repository.findByReservationId(reservationId).stream()
+                .map(this::toDomain)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Sanction> findByCompanyId(Long companyId) {
+        return repository.findByReservationParkingSpotParkingCompanyId(companyId).stream()
                 .map(this::toDomain)
                 .collect(Collectors.toList());
     }

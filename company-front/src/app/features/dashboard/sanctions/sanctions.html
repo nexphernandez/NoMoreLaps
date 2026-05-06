@@ -9,21 +9,29 @@
   <div class="stats-row">
     <div class="mini-stat glass-card">
       <span class="label">Total Recaudado</span>
-      <span class="value">450.00€</span>
+      <span class="value">{{ totalCollected | currency:'EUR' }}</span>
     </div>
     <div class="mini-stat glass-card">
       <span class="label">Pendientes de Pago</span>
-      <span class="value highlight">12</span>
+      <span class="value highlight">{{ pendingCount }}</span>
     </div>
   </div>
 
   <div class="filters-bar glass-card">
     <div class="search-box">
       <span class="search-icon">🔍</span>
-      <input type="text" placeholder="Buscar por usuario o matrícula..." class="filter-input">
+      <input type="text" 
+             placeholder="Buscar por usuario..." 
+             class="filter-input"
+             [(ngModel)]="searchTerm">
     </div>
     <div class="filter-actions">
-      <select class="filter-select">
+      <select class="filter-select" [(ngModel)]="parkingFilter">
+        <option value="all">Todos los parkings</option>
+        <option *ngFor="let p of parkings" [value]="p.name">{{ p.name }}</option>
+      </select>
+
+      <select class="filter-select" [(ngModel)]="statusFilter">
         <option value="all">Todos los estados</option>
         <option value="pending">Pendiente</option>
         <option value="paid">Pagada</option>
@@ -40,12 +48,20 @@
     </div>
 
     <app-sanction-row 
-      *ngFor="let sanc of mockSanctions"
-      [userName]="sanc.user"
-      [parkingName]="sanc.parking"
-      [date]="sanc.date"
+      *ngFor="let sanc of filteredSanctions"
+      [userName]="sanc.userName"
+      [parkingName]="sanc.parkingName"
+      [date]="formatDate(sanc.arrivalTime)"
       [amount]="sanc.amount"
-      [status]="sanc.status"
+      [status]="sanc.paid ? 'Pagada' : 'Pendiente'"
     ></app-sanction-row>
+  </div>
+
+  <div class="loading-container" *ngIf="loading">
+    <p>Cargando sanciones...</p>
+  </div>
+
+  <div class="empty-container" *ngIf="!loading && filteredSanctions.length === 0">
+    <p>No se encontraron sanciones.</p>
   </div>
 </div>
