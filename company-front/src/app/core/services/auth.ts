@@ -10,24 +10,38 @@ export class AuthService {
   private readonly apiUrl = 'http://localhost:8080/api';
   
   // Signal to store current user state
-  currentUser = signal<AuthResponse | null>(null);
+  currentUser = signal<AuthResponse | null>(this.getStoredUser());
 
   constructor(private http: HttpClient) {}
 
+  private getStoredUser(): AuthResponse | null {
+    const userJson = localStorage.getItem('user');
+    return userJson ? JSON.parse(userJson) : null;
+  }
+
   login(credentials: LoginRequest): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.apiUrl}/auth/company/login`, credentials).pipe(
-      tap(response => this.currentUser.set(response))
+      tap(response => {
+        this.currentUser.set(response);
+        localStorage.setItem('user', JSON.stringify(response));
+        localStorage.setItem('token', response.token);
+      })
     );
   }
 
   register(data: RegisterRequest): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.apiUrl}/auth/company/register`, data).pipe(
-      tap(response => this.currentUser.set(response))
+      tap(response => {
+        this.currentUser.set(response);
+        localStorage.setItem('user', JSON.stringify(response));
+        localStorage.setItem('token', response.token);
+      })
     );
   }
 
   logout() {
     this.currentUser.set(null);
+    localStorage.removeItem('user');
     localStorage.removeItem('token');
   }
 
