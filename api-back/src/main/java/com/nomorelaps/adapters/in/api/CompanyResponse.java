@@ -15,7 +15,7 @@ public class CompanyResponse {
 
     private String name;
 
-    private String password;
+    private String apiKey;
 
     private String phone;
 
@@ -43,18 +43,17 @@ public class CompanyResponse {
      * Constructor with all the attributes of the Company
      * @param id          identifier of the company
      * @param name        name of the company
-     * @param password    api key of the company
+     * @param apiKey      api key of the company
      * @param phone       phone number of the company
      * @param email       corporate email of the company
      * @param cif         cif of the company
      * @param registerDay date of the company registration
-     * @return
      */
-    public CompanyResponse(Long id, String name, String password, String phone,
+    public CompanyResponse(Long id, String name, String apiKey, String phone,
             String email, String cif, LocalDateTime registerDay) {
         this.id = id;
         this.name = name;
-        this.password = password;
+        this.apiKey = apiKey;
         this.phone = phone;
         this.email = email;
         this.cif = cif;
@@ -77,12 +76,12 @@ public class CompanyResponse {
         this.name = name;
     }
 
-    public String getPassword() {
-        return password;
+    public String getApiKey() {
+        return apiKey;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setApiKey(String apiKey) {
+        this.apiKey = apiKey;
     }
 
     public String getPhone() {

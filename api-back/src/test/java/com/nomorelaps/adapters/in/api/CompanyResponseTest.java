@@ -19,8 +19,8 @@ public class CompanyResponseTest {
         response.setName("Test");
         assertEquals("Test", response.getName());
 
-        response.setPassword("pass");
-        assertEquals("pass", response.getPassword());
+        response.setApiKey("nml_live_123");
+        assertEquals("nml_live_123", response.getApiKey());
 
         response.setPhone("123");
         assertEquals("123", response.getPhone());
@@ -38,7 +38,7 @@ public class CompanyResponseTest {
         CompanyResponse r2 = new CompanyResponse(1L);
         assertEquals(1L, r2.getId());
         
-        CompanyResponse r3 = new CompanyResponse(1L, "Test", "pass", "123", "email", "cif", now);
+        CompanyResponse r3 = new CompanyResponse(1L, "Test", "nml_live_123", "123", "email", "cif", now);
         assertEquals(1L, r3.getId());
         assertEquals("Test", r3.getName());
     }

@@ -7,24 +7,30 @@
   </header>
 
   <div class="api-key-section glass-card">
-    <div class="section-header">
-      <h3>Tu Clave de API</h3>
-      <span class="badge-status">Activa</span>
+    <div *ngIf="loading" class="loading-state">
+      <p>Cargando configuración de API...</p>
     </div>
     
-    <p class="section-desc">Utiliza esta clave para autenticar tus peticiones desde sistemas de terceros. Mantén esta clave en secreto.</p>
-    
-    <div class="key-container">
-      <code class="api-key">{{ showKey ? apiKey : '••••••••••••••••••••••••••••••••' }}</code>
-      <div class="key-actions">
-        <button class="icon-btn" (click)="toggleKey()">{{ showKey ? '👁️‍🗨️' : '👁️' }}</button>
-        <button class="icon-btn" (click)="copyKey()">📋</button>
+    <div *ngIf="!loading">
+      <div class="section-header">
+        <h3>Tu Clave de API</h3>
+        <span class="badge-status">Activa</span>
       </div>
-    </div>
+      
+      <p class="section-desc">Utiliza esta clave para autenticar tus peticiones desde sistemas de terceros. Mantén esta clave en secreto.</p>
+      
+      <div class="key-container">
+        <code class="api-key">{{ showKey ? apiKey : '••••••••••••••••••••••••••••••••' }}</code>
+        <div class="key-actions">
+          <button class="icon-btn" (click)="toggleKey()">{{ showKey ? '👁️‍🗨️' : '👁️' }}</button>
+          <button class="icon-btn" (click)="copyKey()">📋</button>
+        </div>
+      </div>
 
-    <div class="danger-zone">
-      <button class="btn-danger" (click)="onRegenerate()">Regenerar Clave</button>
-      <span class="warning-text">Esto invalidará tu clave actual inmediatamente.</span>
+      <div class="danger-zone">
+        <button class="btn-danger" (click)="onRegenerate()">Regenerar Clave</button>
+        <span class="warning-text">Esto invalidará tu clave actual inmediatamente.</span>
+      </div>
     </div>
   </div>
 

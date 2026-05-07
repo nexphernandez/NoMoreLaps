@@ -171,4 +171,17 @@ class CompanyControllerTest {
         mockMvc.perform(delete("/api/companies/1"))
                 .andExpect(status().isNoContent());
     }
+
+    @Test
+    @DisplayName("POST /api/companies/{id}/regenerate-api-key - Should return 200 with new key")
+    @WithMockUser(roles = "COMPANY")
+    void shouldRegenerateApiKey() throws Exception {
+        Company company = new Company(1L);
+        company.setApiKey("new-secret-key");
+        when(companyService.regenerateApiKey(1L)).thenReturn(company);
+
+        mockMvc.perform(post("/api/companies/1/regenerate-api-key"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.apiKey").value("new-secret-key"));
+    }
 }

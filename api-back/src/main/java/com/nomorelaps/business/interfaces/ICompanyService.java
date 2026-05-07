@@ -66,4 +66,11 @@ public interface ICompanyService {
      * @param id Company ID.
      */
     void deleteById(Long id);
+    /**
+     * Regenerates the API key for a company.
+     * 
+     * @param id Company ID.
+     * @return Updated company.
+     */
+    Company regenerateApiKey(Long id);
 }

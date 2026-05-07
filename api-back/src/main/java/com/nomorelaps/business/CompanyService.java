@@ -2,6 +2,7 @@ package com.nomorelaps.business;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,6 +32,9 @@ public class CompanyService implements ICompanyService {
     public Company create(Company company) {
         if (persistencePort.findByEmail(company.getEmail()).isPresent()) {
             throw new IllegalArgumentException("BusinessRuleException: El email de la empresa ya está registrado.");
+        }
+        if (company.getApiKey() == null || company.getApiKey().isEmpty()) {
+            company.setApiKey("nml_live_" + UUID.randomUUID().toString().replace("-", ""));
         }
         return persistencePort.save(company);
     }
@@ -63,5 +67,14 @@ public class CompanyService implements ICompanyService {
     @Override
     public void deleteById(Long id) {
         persistencePort.deleteById(id);
+    }
+
+    @Override
+    public Company regenerateApiKey(Long id) {
+        Company company = persistencePort.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Company not found"));
+        
+        company.setApiKey("nml_live_" + UUID.randomUUID().toString().replace("-", ""));
+        return persistencePort.save(company);
     }
 }
