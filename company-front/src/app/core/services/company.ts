@@ -10,6 +10,7 @@ export interface Company {
   email: string;
   cif: string;
   registerDay: string;
+  apiKey: string;
 }
 
 @Injectable({
@@ -26,5 +27,9 @@ export class CompanyService {
 
   updateCompany(id: number, company: Partial<Company>): Observable<Company> {
     return this.http.put<Company>(`${this.apiUrl}/${id}`, company);
+  }
+
+  regenerateApiKey(id: number): Observable<Company> {
+    return this.http.post<Company>(`${this.apiUrl}/${id}/regenerate-api-key`, {});
   }
 }

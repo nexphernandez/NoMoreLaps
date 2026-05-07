@@ -148,4 +148,21 @@ public class CompanyController {
         companyService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
+
+    /**
+     * Regenerates the API key for a company.
+     *
+     * @param id The company ID.
+     * @return The updated company with the new API key.
+     */
+    @PostMapping("/{id}/regenerate-api-key")
+    @Operation(summary = "Regenerate API Key", description = "Generates a new API key for the company, invalidating the previous one.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "API Key regenerated successfully"),
+            @ApiResponse(responseCode = "404", description = "Company not found")
+    })
+    public ResponseEntity<CompanyResponse> regenerateApiKey(@PathVariable Long id) {
+        Company updated = companyService.regenerateApiKey(id);
+        return ResponseEntity.ok(companyMapper.toResponse(updated));
+    }
 }
