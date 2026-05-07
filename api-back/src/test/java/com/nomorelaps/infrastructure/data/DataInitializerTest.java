@@ -80,6 +80,12 @@ class DataInitializerTest {
             .thenReturn(Optional.empty()) 
             .thenReturn(Optional.of(testUser)); 
 
+        User compUser = new User();
+        compUser.setEmail("company@test.com");
+        when(userService.findByEmail("company@test.com"))
+            .thenReturn(Optional.empty())
+            .thenReturn(Optional.of(compUser));
+
         when(companyService.findAll()).thenReturn(Collections.emptyList());
         when(companyService.create(any())).thenAnswer(i -> i.getArgument(0));
 

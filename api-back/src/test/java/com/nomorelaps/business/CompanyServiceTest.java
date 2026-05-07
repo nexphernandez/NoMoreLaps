@@ -149,6 +149,7 @@ class CompanyServiceTest {
     @DisplayName("update - Should delegate to persistence save")
     void shouldUpdateCompany() {
         testCompany.setName("Updated Corp");
+        when(persistencePort.findById(1L)).thenReturn(Optional.of(testCompany));
         when(persistencePort.save(testCompany)).thenReturn(testCompany);
 
         Company result = companyService.update(testCompany);
