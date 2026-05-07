@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule, Router } from '@angular/router';
+import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { InputComponent } from '../../../../shared/components/input/input';
 import { ButtonComponent } from '../../../../shared/components/button/button';
@@ -14,15 +14,18 @@ import { AuthService } from '../../../../core/services/auth';
   templateUrl: './parking-create.html',
   styleUrls: ['./parking-create.css'],
 })
-export class ParkingCreate {
+export class ParkingCreate implements OnInit {
   parkingForm: FormGroup;
   loading = false;
+  isEditMode = false;
+  parkingId: number | null = null;
 
   constructor(
     private fb: FormBuilder,
     private parkingService: ParkingService,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) {
     this.parkingForm = this.fb.group({
       name: ['', [Validators.required]],
@@ -32,6 +35,41 @@ export class ParkingCreate {
       sanctionAmount: [15.00, [Validators.required, Validators.min(0)]],
       sanctionIntervalInMinutes: [30, [Validators.required, Validators.min(1)]],
       totalSpots: [10, [Validators.required, Validators.min(1)]]
+    });
+  }
+
+  ngOnInit() {
+    const idParam = this.route.snapshot.paramMap.get('id');
+    if (idParam) {
+      this.isEditMode = true;
+      this.parkingId = Number(idParam);
+      this.loadParking(this.parkingId);
+    }
+  }
+
+  loadParking(id: number) {
+    this.loading = true;
+
+    this.parkingService.getParkingsByCompany(this.authService.currentUser()!.companyId).subscribe({
+      next: (parkings) => {
+        const parking = parkings.find(p => p.id === id);
+        if (parking) {
+          this.parkingForm.patchValue({
+            name: parking.name,
+            address: parking.address,
+            latitude: parking.latitude,
+            longitude: parking.longitude,
+            sanctionAmount: parking.sanctionAmount,
+            sanctionIntervalInMinutes: parking.sanctionIntervalInMinutes,
+            totalSpots: parking.totalSpots
+          });
+        }
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('Error loading parking:', err);
+        this.loading = false;
+      }
     });
   }
 
@@ -47,14 +85,26 @@ export class ParkingCreate {
       companyId: user.companyId
     };
 
-    this.parkingService.createParking(parkingData).subscribe({
-      next: () => {
-        this.router.navigate(['/dashboard/parkings']);
-      },
-      error: (err) => {
-        this.loading = false;
-        console.error('Error creating parking:', err);
-      }
-    });
+    if (this.isEditMode && this.parkingId) {
+      this.parkingService.updateParking(this.parkingId, parkingData).subscribe({
+        next: () => {
+          this.router.navigate(['/dashboard/parkings']);
+        },
+        error: (err) => {
+          this.loading = false;
+          console.error('Error updating parking:', err);
+        }
+      });
+    } else {
+      this.parkingService.createParking(parkingData).subscribe({
+        next: () => {
+          this.router.navigate(['/dashboard/parkings']);
+        },
+        error: (err) => {
+          this.loading = false;
+          console.error('Error creating parking:', err);
+        }
+      });
+    }
   }
 }

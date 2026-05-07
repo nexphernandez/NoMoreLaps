@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Set;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -42,7 +43,7 @@ public class ParkingSpotJpaEntity {
     @JoinColumn(name = "parking_id")
     private ParkingJpaEntity parking;
 
-    @OneToMany(mappedBy = "parkingSpot")
+    @OneToMany(mappedBy = "parkingSpot", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ReservationJpaEntity> reservations;
 
     /**

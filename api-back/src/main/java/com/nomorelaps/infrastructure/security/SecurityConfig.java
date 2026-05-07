@@ -1,5 +1,7 @@
 package com.nomorelaps.infrastructure.security;
 
+import java.util.List;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -18,6 +20,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
@@ -41,21 +46,25 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
 
                         .requestMatchers(HttpMethod.GET, "/api/parkings").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/parkings/{id}").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/parkings/search").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/parkings/nearby").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/parkings/{id}").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/parking-spots/parking/**").permitAll()
 
-                        .requestMatchers("/api/parkings/company/**").hasAnyRole("COMPANY", "ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/parkings/**").hasAnyRole("COMPANY", "ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/parkings/**").hasAnyRole("COMPANY", "ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/parkings/**").hasAnyRole("COMPANY", "ADMIN")
-
+                        .requestMatchers(HttpMethod.PATCH, "/api/parkings/**").hasAnyRole("COMPANY", "ADMIN")
+                        
+                        .requestMatchers("/api/parkings/company/**").hasAnyRole("COMPANY", "ADMIN")
+                        .requestMatchers("/api/parkings/**").hasAnyRole("COMPANY", "ADMIN")
+                        
                         .requestMatchers("/api/parking-spots/**").hasAnyRole("COMPANY", "ADMIN")
                         .requestMatchers("/api/dynamic-prices/**").hasAnyRole("COMPANY", "ADMIN")
 
@@ -80,13 +89,13 @@ public class SecurityConfig {
     }
 
     @Bean
-    public org.springframework.web.cors.CorsConfigurationSource corsConfigurationSource() {
-        org.springframework.web.cors.CorsConfiguration configuration = new org.springframework.web.cors.CorsConfiguration();
-        configuration.setAllowedOrigins(java.util.List.of("http://localhost:4200"));
-        configuration.setAllowedMethods(java.util.List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(java.util.List.of("Authorization", "Content-Type", "X-API-KEY"));
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(List.of("http://localhost:4200"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-API-KEY"));
         configuration.setAllowCredentials(true);
-        org.springframework.web.cors.UrlBasedCorsConfigurationSource source = new org.springframework.web.cors.UrlBasedCorsConfigurationSource();
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }

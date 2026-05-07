@@ -3,6 +3,7 @@ package com.nomorelaps.adapters.out.persistence.jpa;
 import java.time.LocalDateTime;
 import java.util.Set;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -66,10 +67,10 @@ public class ParkingJpaEntity {
     @Column(name = "total_spots")
     private Integer totalSpots;
 
-    @OneToMany(mappedBy = "parking")
+    @OneToMany(mappedBy = "parking", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ParkingSpotJpaEntity> parkingSpots;
 
-    @OneToMany(mappedBy = "parking")
+    @OneToMany(mappedBy = "parking", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<DynamicPriceJpaEntity> dynamicPrice;
 
     /**
