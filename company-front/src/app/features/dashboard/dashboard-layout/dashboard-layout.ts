@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { Sidebar } from '../../../shared/components/sidebar/sidebar';
+import { AuthService } from '../../../core/services/auth';
 
 @Component({
   selector: 'app-dashboard-layout',
@@ -10,4 +11,7 @@ import { Sidebar } from '../../../shared/components/sidebar/sidebar';
   templateUrl: './dashboard-layout.html',
   styleUrls: ['./dashboard-layout.css'],
 })
-export class DashboardLayout {}
+export class DashboardLayout {
+  authService = inject(AuthService);
+  user = this.authService.currentUser;
+}
