@@ -46,6 +46,13 @@ export class AuthService {
     localStorage.removeItem('token');
   }
 
+  changePassword(userId: number, currentPassword: string, newPassword: string): Observable<void> {
+    return this.http.patch<void>(`${this.apiUrl}/users/${userId}/change-password`, {
+      currentPassword,
+      newPassword
+    });
+  }
+
   isAuthenticated(): boolean {
     return this.currentUser() !== null;
   }

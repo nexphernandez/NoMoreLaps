@@ -14,12 +14,21 @@ import { AuthService } from '../../../core/services/auth';
   styleUrls: ['./profile.css'],
 })
 export class Profile implements OnInit {
+  activeTab: 'general' | 'security' | 'billing' | 'notifications' = 'general';
+  
   company: Partial<Company> = {
     name: '',
     cif: '',
     email: '',
     phone: ''
   };
+
+  passwordData = {
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: ''
+  };
+
   loading = true;
 
   constructor(
@@ -29,31 +38,29 @@ export class Profile implements OnInit {
   ) {}
 
   ngOnInit() {
-    console.log('Profile component initialized');
     const user = this.authService.currentUser();
-    console.log('Current user:', user);
     if (user && user.companyId) {
       this.loadCompany(user.companyId);
     } else {
-      console.warn('No companyId found for user');
       this.loading = false;
       this.cdr.detectChanges();
     }
   }
 
+  setTab(tab: any) {
+    this.activeTab = tab;
+    this.cdr.detectChanges();
+  }
+
   loadCompany(id: number) {
-    console.log('Loading company data for ID:', id);
     this.loading = true;
     this.companyService.getCompanyById(id).subscribe({
       next: (data) => {
-        console.log('Company data received:', data);
         this.company = data;
         this.loading = false;
         this.cdr.detectChanges();
-        console.log('Loading set to false, UI should update');
       },
       error: (err) => {
-        console.error('Error loading company:', err);
         this.loading = false;
         this.cdr.detectChanges();
       }
@@ -65,14 +72,35 @@ export class Profile implements OnInit {
       this.companyService.updateCompany(this.company.id, this.company).subscribe({
         next: (updated) => {
           this.company = updated;
-          this.cdr.detectChanges();
           alert('Perfil actualizado con éxito');
         },
         error: (err) => {
-          console.error('Error updating profile:', err);
           alert('Error al actualizar el perfil');
         }
       });
+    }
+  }
+
+  onChangePassword(event: any) {
+    if (this.passwordData.newPassword !== this.passwordData.confirmPassword) {
+      alert('Las contraseñas nuevas no coinciden');
+      return;
+    }
+
+    const user = this.authService.currentUser();
+    if (user && user.companyId) {
+
+      this.authService.changePassword(user.userId || 0, this.passwordData.currentPassword, this.passwordData.newPassword)
+        .subscribe({
+          next: () => {
+            alert('Contraseña actualizada con éxito');
+            this.passwordData = { currentPassword: '', newPassword: '', confirmPassword: '' };
+            this.cdr.detectChanges();
+          },
+          error: (err) => {
+            alert('Error al cambiar la contraseña: ' + (err.error?.message || 'Verifica tu contraseña actual'));
+          }
+        });
     }
   }
 }
