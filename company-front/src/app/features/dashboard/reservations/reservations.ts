@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ReservationRow } from '../../../shared/components/reservation-row/reservation-row';
@@ -7,6 +7,7 @@ import { ParkingService } from '../../../core/services/parking';
 import { AuthService } from '../../../core/services/auth';
 import { Reservation } from '../../../core/models/reservation.model';
 import { Parking } from '../../../core/models/parking.model';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-reservations',
@@ -15,7 +16,7 @@ import { Parking } from '../../../core/models/parking.model';
   templateUrl: './reservations.html',
   styleUrls: ['./reservations.css'],
 })
-export class Reservations {
+export class Reservations implements OnInit {
   reservations: Reservation[] = [];
   parkings: Parking[] = [];
   loading = true;
@@ -27,30 +28,36 @@ export class Reservations {
   constructor(
     private reservationService: ReservationService,
     private parkingService: ParkingService,
-    private authService: AuthService
+    private authService: AuthService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
     const user = this.authService.currentUser();
     if (user && user.companyId) {
       this.loadData(user.companyId);
+    } else {
+      this.loading = false;
+      this.cdr.detectChanges();
     }
   }
 
   loadData(companyId: number) {
     this.loading = true;
-    this.parkingService.getParkingsByCompany(companyId).subscribe(data => {
-      this.parkings = data;
-    });
-
-    this.reservationService.getReservationsByCompany(companyId).subscribe({
+    forkJoin({
+      parkings: this.parkingService.getParkingsByCompany(companyId),
+      reservations: this.reservationService.getReservationsByCompany(companyId)
+    }).subscribe({
       next: (data) => {
-        this.reservations = data;
+        this.parkings = data.parkings;
+        this.reservations = data.reservations;
         this.loading = false;
+        this.cdr.detectChanges();
       },
       error: (err) => {
-        console.error('Error fetching reservations:', err);
+        console.error('Error fetching dashboard data:', err);
         this.loading = false;
+        this.cdr.detectChanges();
       }
     });
   }

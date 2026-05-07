@@ -59,7 +59,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/parking-spots/**").hasAnyRole("COMPANY", "ADMIN")
                         .requestMatchers("/api/dynamic-prices/**").hasAnyRole("COMPANY", "ADMIN")
 
-                        .requestMatchers("/api/companies/**").hasRole("ADMIN")
+                        .requestMatchers("/api/companies/**").hasAnyRole("COMPANY", "ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/users").hasRole("ADMIN")
 
                         .requestMatchers("/api/reservations/**").authenticated()

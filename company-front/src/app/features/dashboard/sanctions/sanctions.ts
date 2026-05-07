@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SanctionRow } from '../../../shared/components/sanction-row/sanction-row';
@@ -7,6 +7,7 @@ import { ParkingService } from '../../../core/services/parking';
 import { AuthService } from '../../../core/services/auth';
 import { Sanction } from '../../../core/models/sanction.model';
 import { Parking } from '../../../core/models/parking.model';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-sanctions',
@@ -27,30 +28,36 @@ export class Sanctions implements OnInit {
   constructor(
     private sanctionService: SanctionService,
     private parkingService: ParkingService,
-    private authService: AuthService
+    private authService: AuthService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
     const user = this.authService.currentUser();
     if (user && user.companyId) {
       this.loadData(user.companyId);
+    } else {
+      this.loading = false;
+      this.cdr.detectChanges();
     }
   }
 
   loadData(companyId: number) {
     this.loading = true;
-    this.parkingService.getParkingsByCompany(companyId).subscribe(data => {
-      this.parkings = data;
-    });
-
-    this.sanctionService.getSanctionsByCompany(companyId).subscribe({
+    forkJoin({
+      parkings: this.parkingService.getParkingsByCompany(companyId),
+      sanctions: this.sanctionService.getSanctionsByCompany(companyId)
+    }).subscribe({
       next: (data) => {
-        this.sanctions = data;
+        this.parkings = data.parkings;
+        this.sanctions = data.sanctions;
         this.loading = false;
+        this.cdr.detectChanges();
       },
       error: (err) => {
-        console.error('Error fetching sanctions:', err);
+        console.error('Error fetching sanctions data:', err);
         this.loading = false;
+        this.cdr.detectChanges();
       }
     });
   }
