@@ -17,7 +17,6 @@ public class CompanyRequest {
 
     private String apiKey;
 
-    @NotBlank(message = "Password cannot be empty")
     private String password;
 
     private String phone;
