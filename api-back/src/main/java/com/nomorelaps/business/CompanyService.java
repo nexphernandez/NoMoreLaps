@@ -61,7 +61,18 @@ public class CompanyService implements ICompanyService {
 
     @Override
     public Company update(Company company) {
-        return persistencePort.save(company);
+        Company existing = persistencePort.findById(company.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Company not found"));
+        
+        if (company.getName() != null) existing.setName(company.getName());
+        if (company.getPhone() != null) existing.setPhone(company.getPhone());
+        if (company.getEmail() != null) existing.setEmail(company.getEmail());
+        if (company.getCif() != null) existing.setCif(company.getCif());
+        if (company.getPassword() != null && !company.getPassword().isBlank()) {
+            existing.setPassword(company.getPassword());
+        }
+        
+        return persistencePort.save(existing);
     }
 
     @Override

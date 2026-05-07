@@ -76,6 +76,9 @@ public class AuthService {
      * @return UserResponse.
      */
     public UserResponse register(UserRequest request) {
+        if (request.getPassword() == null || request.getPassword().isBlank()) {
+            throw new IllegalArgumentException("Password is required for registration");
+        }
         User domain = userMapper.toDomainFromRequest(request);
 
         roleRepository.findByName("USER")
@@ -92,6 +95,9 @@ public class AuthService {
      * @return AuthResponse with JWT.
      */
     public AuthResponse registerCompany(CompanyRequest request) {
+        if (request.getPassword() == null || request.getPassword().isBlank()) {
+            throw new IllegalArgumentException("Password is required for registration");
+        }
         // 1. Create the user associated with the company
         User userDomain = new User();
         userDomain.setName(request.getName());
