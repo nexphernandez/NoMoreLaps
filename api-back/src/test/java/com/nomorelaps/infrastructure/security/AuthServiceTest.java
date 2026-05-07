@@ -97,6 +97,7 @@ class AuthServiceTest {
     @DisplayName("register - Should save user and return response")
     void shouldRegisterUser() {
         UserRequest request = new UserRequest();
+        request.setPassword("password123");
         User domain = new User(1L);
         UserResponse response = new UserResponse(1L);
 
