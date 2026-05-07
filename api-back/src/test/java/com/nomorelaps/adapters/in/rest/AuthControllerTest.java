@@ -47,7 +47,7 @@ class AuthControllerTest {
         request.setEmail("user@test.com");
         request.setPassword("password123");
 
-        AuthResponse response = new AuthResponse("mock-jwt-token", "Login successful", null, "user@test.com", "Test User");
+        AuthResponse response = new AuthResponse("mock-jwt-token", "Login successful", null, "user@test.com", "Test User", 1L);
         when(authService.login(any(AuthRequest.class))).thenReturn(response);
 
         mockMvc.perform(post("/api/auth/login")

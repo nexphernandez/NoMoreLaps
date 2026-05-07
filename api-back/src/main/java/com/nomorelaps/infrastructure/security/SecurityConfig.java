@@ -74,7 +74,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/reservations/**").authenticated()
                         .requestMatchers("/api/sanctions/**").authenticated()
                         .requestMatchers("/api/smart-calendar/**").authenticated()
-                        .requestMatchers("/api/users/{id}").authenticated()
+                        .requestMatchers("/api/users/{id}/**").authenticated()
 
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session

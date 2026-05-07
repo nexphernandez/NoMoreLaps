@@ -13,6 +13,7 @@ export interface RegisterRequest {
 export interface AuthResponse {
   token: string;
   companyId: number;
+  userId: number;
   email: string;
   name: string;
 }

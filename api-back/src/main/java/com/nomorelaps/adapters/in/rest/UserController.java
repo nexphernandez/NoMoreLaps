@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.nomorelaps.adapters.in.api.ChangePasswordRequest;
 import com.nomorelaps.adapters.in.api.UserRequest;
 import com.nomorelaps.adapters.in.api.UserResponse;
 import com.nomorelaps.adapters.mapper.UserMapper;
@@ -147,5 +148,26 @@ public class UserController {
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         userService.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * Changes the user's password.
+     *
+     * @param id      The user ID.
+     * @param request The password change data.
+     * @return 200 OK or error.
+     */
+    @PatchMapping("/{id}/change-password")
+    @Operation(summary = "Change user password", description = "Updates the user's password after validating the current one.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Password changed successfully"),
+            @ApiResponse(responseCode = "400", description = "Incorrect current password or invalid data"),
+            @ApiResponse(responseCode = "404", description = "User not found")
+    })
+    public ResponseEntity<Void> changePassword(
+            @PathVariable Long id,
+            @Valid @RequestBody ChangePasswordRequest request) {
+        userService.changePassword(id, request.getCurrentPassword(), request.getNewPassword());
+        return ResponseEntity.ok().build();
     }
 }

@@ -14,8 +14,8 @@
       </div>
       
       <nav class="profile-nav">
-        <button class="nav-btn active">Información General</button>
-        <button class="nav-btn" disabled title="Próximamente">Seguridad</button>
+        <button class="nav-btn" [class.active]="activeTab === 'general'" (click)="setTab('general')">Información General</button>
+        <button class="nav-btn" [class.active]="activeTab === 'security'" (click)="setTab('security')">Seguridad</button>
         <button class="nav-btn" disabled title="Próximamente">Facturación</button>
         <button class="nav-btn" disabled title="Próximamente">Notificaciones</button>
       </nav>
@@ -26,31 +26,52 @@
         <p>Cargando datos de empresa...</p>
       </div>
 
-      <form class="profile-form" *ngIf="!loading">
-        <div class="form-section">
-          <h3>Detalles de la Organización</h3>
-          <div class="input-row">
-            <app-input label="Nombre Comercial" [(ngModel)]="company.name" name="name" type="text"></app-input>
-            <app-input label="CIF / NIF" [(ngModel)]="company.cif" name="cif" type="text"></app-input>
+      <ng-container *ngIf="!loading">
+        <!-- Pestaña Información General -->
+        <form class="profile-form" *ngIf="activeTab === 'general'" (submit)="onSave($event)">
+          <div class="form-section">
+            <h3>Detalles de la Organización</h3>
+            <div class="input-row">
+              <app-input label="Nombre Comercial" [(ngModel)]="company.name" name="name" type="text"></app-input>
+              <app-input label="CIF / NIF" [(ngModel)]="company.cif" name="cif" type="text"></app-input>
+            </div>
+            
+            <app-input label="Correo Electrónico de Contacto" [(ngModel)]="company.email" name="email" type="email"></app-input>
+            
+            <div class="input-row">
+              <app-input label="Teléfono" [(ngModel)]="company.phone" name="phone" type="tel"></app-input>
+              <app-input label="Sitio Web (Solo lectura)" value="https://nomorelaps.com" [disabled]="true" name="web" type="url"></app-input>
+            </div>
           </div>
-          
-          <app-input label="Correo Electrónico de Contacto" [(ngModel)]="company.email" name="email" type="email"></app-input>
-          
-          <div class="input-row">
-            <app-input label="Teléfono" [(ngModel)]="company.phone" name="phone" type="tel"></app-input>
-            <app-input label="Sitio Web (Solo lectura)" value="https://nomorelaps.com" [disabled]="true" name="web" type="url"></app-input>
+
+          <div class="form-section">
+            <h3>Dirección Fiscal (Solo lectura)</h3>
+            <app-input label="Dirección Completa" [disabled]="true" value="Calle Ejemplo, 123, Madrid" type="text"></app-input>
+          </div>
+
+          <div class="form-actions">
+            <app-button text="Guardar Perfil" (onClick)="onSave($event)"></app-button>
+          </div>
+        </form>
+
+        <!-- Pestaña Seguridad -->
+        <div class="security-section" *ngIf="activeTab === 'security'">
+          <div class="form-section">
+            <h3>Cambiar Contraseña</h3>
+            <p class="section-desc">Actualiza tu contraseña para mantener tu cuenta segura.</p>
+            
+            <div class="password-form">
+              <app-input label="Contraseña Actual" [(ngModel)]="passwordData.currentPassword" name="currentPassword" type="password"></app-input>
+              <app-input label="Nueva Contraseña" [(ngModel)]="passwordData.newPassword" name="newPassword" type="password"></app-input>
+              <app-input label="Confirmar Nueva Contraseña" [(ngModel)]="passwordData.confirmPassword" name="confirmPassword" type="password"></app-input>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <app-button text="Actualizar Contraseña" (onClick)="onChangePassword($event)"></app-button>
           </div>
         </div>
-
-        <div class="form-section">
-          <h3>Dirección Fiscal (Solo lectura)</h3>
-          <app-input label="Dirección Completa" [disabled]="true" value="Calle Ejemplo, 123, Madrid" type="text"></app-input>
-        </div>
-
-        <div class="form-actions">
-          <app-button text="Guardar Perfil" (onClick)="onSave($event)"></app-button>
-        </div>
-      </form>
+      </ng-container>
     </main>
   </div>
 </div>

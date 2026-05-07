@@ -81,4 +81,19 @@ public class UserService implements IUserService {
     public void deleteById(Long id) {
         persistencePort.deleteById(id);
     }
+
+    @Override
+    public void changePassword(Long userId, String currentPassword, String newPassword) {
+        User user = persistencePort.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+
+        // Validate that current password matches the one in DB
+        if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
+            throw new IllegalArgumentException("La contraseña actual es incorrecta");
+        }
+
+        // Encode and save the new password
+        user.setPassword(passwordEncoder.encode(newPassword));
+        persistencePort.save(user);
+    }
 }

@@ -46,7 +46,7 @@ class AuthCompanyControllerTest {
         request.setEmail("company@test.com");
         request.setPassword("password123");
 
-        AuthResponse response = new AuthResponse("mock-jwt-token", "Login successful", 1L, "company@test.com", "Test Company");
+        AuthResponse response = new AuthResponse("mock-jwt-token", "Login successful", 1L, "company@test.com", "Test Company", 1L);
         when(authService.login(any(AuthRequest.class))).thenReturn(response);
 
         mockMvc.perform(post("/api/auth/company/login")
@@ -67,7 +67,7 @@ class AuthCompanyControllerTest {
         request.setPassword("password123");
         request.setCif("B12345678");
 
-        AuthResponse response = new AuthResponse("new-jwt-token", "Login successful", 2L, "new@company.com", "New Company");
+        AuthResponse response = new AuthResponse("new-jwt-token", "Login successful", 2L, "new@company.com", "New Company", 2L);
         when(authService.registerCompany(any(CompanyRequest.class))).thenReturn(response);
 
         mockMvc.perform(post("/api/auth/company/register")

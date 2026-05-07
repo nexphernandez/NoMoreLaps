@@ -15,15 +15,31 @@ public class AuthResponse {
     private String email;
     private String name;
 
+    private Long userId;
+
+    /**
+     * Empty constructor
+     */
     public AuthResponse() {
     }
 
-    public AuthResponse(String token, String message, Long companyId, String email, String name) {
+    /**
+     * Constructor with attributes.
+     * 
+     * @param token     The authorization token.
+     * @param message   Response message.
+     * @param companyId The ID of the company if applicable.
+     * @param email     The user email.
+     * @param name      The user name.
+     * @param userId    The user ID.
+     */
+    public AuthResponse(String token, String message, Long companyId, String email, String name, Long userId) {
         this.token = token;
         this.message = message;
         this.companyId = companyId;
         this.email = email;
         this.name = name;
+        this.userId = userId;
     }
 
     public String getToken() {
@@ -64,5 +80,13 @@ public class AuthResponse {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 }

@@ -98,7 +98,6 @@ public class AuthService {
         if (request.getPassword() == null || request.getPassword().isBlank()) {
             throw new IllegalArgumentException("Password is required for registration");
         }
-        // 1. Create the user associated with the company
         User userDomain = new User();
         userDomain.setName(request.getName());
         userDomain.setEmail(request.getEmail());
@@ -109,13 +108,11 @@ public class AuthService {
 
         User savedUser = userService.create(userDomain);
 
-        // 2. Create the company linked to the user
         Company companyDomain = companyMapper.toDomainFromRequest(request);
         companyDomain.setUser(savedUser);
-        companyDomain.setEmail(savedUser.getEmail()); // Ensure email consistency
+        companyDomain.setEmail(savedUser.getEmail()); 
         companyService.create(companyDomain);
 
-        // 3. Perform login
         AuthRequest authRequest = new AuthRequest();
         authRequest.setEmail(request.getEmail());
         authRequest.setPassword(request.getPassword());
@@ -138,11 +135,10 @@ public class AuthService {
         UserDetails userDetails = new SecurityUser(userEntity);
         String jwtToken = jwtService.generateToken(userDetails);
 
-        // Fallback search by userId if companies collection is empty
         Long companyId = companyRepository.findByUserId(userEntity.getId())
                 .map(CompanyJpaEntity::getId)
                 .orElse(null);
 
-        return new AuthResponse(jwtToken, "Login successful", companyId, userEntity.getEmail(), userEntity.getName());
+        return new AuthResponse(jwtToken, "Login successful", companyId, userEntity.getEmail(), userEntity.getName(), userEntity.getId());
     }
 }
