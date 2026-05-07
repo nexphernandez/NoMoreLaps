@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -19,7 +19,12 @@ import { CommonModule } from '@angular/common';
           <span class="label">Capacidad</span>
           <span class="value">{{ capacity }} plazas</span>
         </div>
-        <button class="manage-btn">Gestionar</button>
+        
+        <div class="actions">
+          <button class="icon-btn edit" (click)="onEditClick($event)" title="Editar">✏️</button>
+          <button class="icon-btn delete" (click)="onDeleteClick($event)" title="Eliminar">🗑️</button>
+          <button class="manage-btn" (click)="onManageClick($event)">Gestionar</button>
+        </div>
       </div>
     </div>
   `,
@@ -79,6 +84,36 @@ import { CommonModule } from '@angular/common';
       font-weight: 600;
       color: var(--text-primary);
     }
+    .actions {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+    .icon-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--glass-border);
+      color: var(--text-primary);
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      transition: var(--transition);
+      font-size: 0.9rem;
+    }
+    .icon-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+    .icon-btn.edit:hover {
+      border-color: var(--accent-primary);
+      color: var(--accent-primary);
+    }
+    .icon-btn.delete:hover {
+      border-color: var(--danger);
+      color: var(--danger);
+    }
     .manage-btn {
       background: transparent;
       border: 1px solid var(--accent-primary);
@@ -96,8 +131,28 @@ import { CommonModule } from '@angular/common';
   `],
 })
 export class ParkingCard {
+  @Input() id!: number;
   @Input() name = '';
   @Input() address = '';
   @Input() capacity = 0;
   @Input() status = 'Abierto';
+
+  @Output() edit = new EventEmitter<number>();
+  @Output() delete = new EventEmitter<number>();
+  @Output() manage = new EventEmitter<number>();
+
+  onEditClick(event: Event) {
+    event.stopPropagation();
+    this.edit.emit(this.id);
+  }
+
+  onDeleteClick(event: Event) {
+    event.stopPropagation();
+    this.delete.emit(this.id);
+  }
+
+  onManageClick(event: Event) {
+    event.stopPropagation();
+    this.manage.emit(this.id);
+  }
 }

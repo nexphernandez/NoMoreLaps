@@ -1,10 +1,10 @@
 export interface Parking {
-  id: string;
+  id: number;
   name: string;
   address: string;
   latitude: number;
   longitude: number;
-  companyId: string;
+  companyId: number;
   sanctionAmount: number;
   sanctionIntervalInMinutes: number;
   status: 'Abierto' | 'Cerrado';
@@ -16,7 +16,7 @@ export interface ParkingRequest {
   address: string;
   latitude: number;
   longitude: number;
-  companyId: string;
+  companyId: number;
   sanctionAmount: number;
   sanctionIntervalInMinutes: number;
   totalSpots: number;

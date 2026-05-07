@@ -20,11 +20,11 @@ export class ParkingService {
     return this.http.post<Parking>(this.apiUrl, parking);
   }
 
-  updateParking(id: string, parking: Partial<ParkingRequest>): Observable<Parking> {
-    return this.http.patch<Parking>(`${this.apiUrl}/${id}`, parking);
+  updateParking(id: number, parking: Partial<ParkingRequest>): Observable<Parking> {
+    return this.http.put<Parking>(`${this.apiUrl}/${id}`, parking);
   }
 
-  deleteParking(id: string): Observable<void> {
+  deleteParking(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 }

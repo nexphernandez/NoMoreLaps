@@ -20,6 +20,7 @@ export const routes: Routes = [
       { path: '', component: Home },
       { path: 'parkings', component: Parkings },
       { path: 'parkings/new', component: ParkingCreate },
+      { path: 'parkings/edit/:id', component: ParkingCreate },
       { path: 'reservations', component: Reservations },
       { path: 'sanctions', component: Sanctions },
       { path: 'profile', component: Profile },

@@ -60,8 +60,8 @@ public class DataInitializer implements CommandLineRunner {
 
         // 3. Create a Company (needed for parkings)
         Company company;
-        Optional<User> testUser = userService.findByEmail("test@test.com");
-        if (companyService.findAll().isEmpty() && testUser.isPresent()) {
+        Optional<User> companyUser = userService.findByEmail("company@test.com");
+        if (companyService.findAll().isEmpty() && companyUser.isPresent()) {
             company = new Company();
             company.setName("NoMoreLaps Global");
             company.setApiKey("NML-TEST-KEY-2024");
@@ -70,7 +70,7 @@ public class DataInitializer implements CommandLineRunner {
             company.setPhone("912345678");
             company.setCif("B12345678");
             company.setRegisterDay(LocalDateTime.now());
-            company.setUser(testUser.get());
+            company.setUser(companyUser.get());
             company = companyService.create(company);
             System.out.println("DataInitializer: Default company created");
         } else {

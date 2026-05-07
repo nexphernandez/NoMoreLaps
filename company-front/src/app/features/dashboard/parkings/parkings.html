@@ -27,10 +27,14 @@
   <div class="parkings-grid" *ngIf="!loading">
     <app-parking-card 
       *ngFor="let parking of filteredParkings"
+      [id]="parking.id!"
       [name]="parking.name"
       [address]="parking.address"
       [capacity]="parking.totalSpots || 0" 
       [status]="parking.status"
+      (edit)="onEdit($event)"
+      (delete)="onDelete($event)"
+      (manage)="onManage($event)"
     ></app-parking-card>
   </div>
 

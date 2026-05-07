@@ -71,4 +71,28 @@ export class Parkings implements OnInit {
   onAddParking() {
     this.router.navigate(['/dashboard/parkings/new']);
   }
+
+  onEdit(id: number) {
+    this.router.navigate(['/dashboard/parkings/edit', id]);
+  }
+
+  onDelete(id: number) {
+    if (confirm('¿Estás seguro de que deseas eliminar este parking? Esta acción no se puede deshacer.')) {
+      this.parkingService.deleteParking(id).subscribe({
+        next: () => {
+          this.parkings = this.parkings.filter(p => p.id !== id);
+          this.cdr.detectChanges();
+          alert('Parking eliminado con éxito');
+        },
+        error: (err) => {
+          console.error('Error deleting parking:', err);
+          alert('Error al eliminar el parking');
+        }
+      });
+    }
+  }
+
+  onManage(id: number) {
+    this.router.navigate(['/dashboard/parkings/edit', id]);
+  }
 }
