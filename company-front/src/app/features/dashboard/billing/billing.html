@@ -73,8 +73,8 @@
           </span>
           {{ r.paid ? 'Paid' : 'Pending' }}
         </span>
-        <button class="toggle-btn" (click)="togglePayment(r)">
-          {{ r.paid ? 'Revert' : 'Mark Paid' }}
+        <button class="toggle-btn" *ngIf="!r.paid" (click)="togglePayment(r)">
+          Mark Paid
         </button>
       </div>
     </div>

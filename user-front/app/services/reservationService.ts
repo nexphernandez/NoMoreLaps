@@ -15,6 +15,7 @@ export interface Reservation {
   parkingId?: number;
   userId?: number;
   parkingName?: string;
+  paid?: boolean;
 }
 
 const reservationService = {
