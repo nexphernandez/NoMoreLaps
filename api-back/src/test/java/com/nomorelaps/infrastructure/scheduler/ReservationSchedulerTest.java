@@ -17,6 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.nomorelaps.business.interfaces.IReservationService;
 import com.nomorelaps.business.interfaces.ISanctionService;
+import com.nomorelaps.business.interfaces.INotificationService;
 import com.nomorelaps.domain.models.Parking;
 import com.nomorelaps.domain.models.ParkingSpot;
 import com.nomorelaps.domain.models.Reservation;
@@ -30,6 +31,9 @@ class ReservationSchedulerTest {
 
     @Mock
     private ISanctionService sanctionService;
+
+    @Mock
+    private INotificationService notificationService;
 
     @InjectMocks
     private ReservationScheduler scheduler;

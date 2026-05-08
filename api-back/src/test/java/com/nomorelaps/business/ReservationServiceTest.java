@@ -17,6 +17,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.nomorelaps.adapters.out.persistence.interfaces.IReservationPersistenceAdapter;
+import com.nomorelaps.adapters.out.persistence.interfaces.IParkingSpotPersistenceAdapter;
+import com.nomorelaps.business.interfaces.INotificationService;
 import com.nomorelaps.domain.models.ParkingSpot;
 import com.nomorelaps.domain.models.Reservation;
 
@@ -25,6 +27,12 @@ class ReservationServiceTest {
 
     @Mock
     private IReservationPersistenceAdapter persistencePort;
+
+    @Mock
+    private INotificationService notificationService;
+
+    @Mock
+    private IParkingSpotPersistenceAdapter spotPersistencePort;
 
     @InjectMocks
     private ReservationService reservationService;

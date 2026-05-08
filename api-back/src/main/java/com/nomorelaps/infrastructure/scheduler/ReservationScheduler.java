@@ -11,8 +11,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.nomorelaps.business.interfaces.IReservationService;
 import com.nomorelaps.business.interfaces.ISanctionService;
+import com.nomorelaps.business.interfaces.INotificationService;
 import com.nomorelaps.domain.models.Reservation;
 import com.nomorelaps.domain.models.Sanction;
+import com.nomorelaps.domain.models.Notification;
 
 /**
  * Background task to monitor and manage reservation lifecycles.
@@ -23,11 +25,22 @@ public class ReservationScheduler {
 
     private final IReservationService reservationService;
     private final ISanctionService sanctionService;
+    private final INotificationService notificationService;
 
+    /**
+     * Constructor for ReservationScheduler.
+     * 
+     * @param reservationService service for managing reservations
+     * @param sanctionService service for applying sanctions
+     * @param notificationService service for sending automated alerts
+     */
     @Autowired
-    public ReservationScheduler(IReservationService reservationService, ISanctionService sanctionService) {
+    public ReservationScheduler(IReservationService reservationService, 
+                                ISanctionService sanctionService,
+                                INotificationService notificationService) {
         this.reservationService = reservationService;
         this.sanctionService = sanctionService;
+        this.notificationService = notificationService;
     }
 
     /**
@@ -78,5 +91,16 @@ public class ReservationScheduler {
 
         sanctionService.create(sanction);
         System.out.println("Applied dynamic sanction of " + totalAmount + "€ to user for reservation " + reservation.getId());
+
+        if (parking != null && parking.getCompany() != null && parking.getCompany().getId() != null) {
+            Notification notification = new Notification();
+            notification.setCompanyId(parking.getCompany().getId());
+            notification.setType("SANCTION");
+            notification.setMessage(String.format("Nueva sanción para %s: %.2f€ por exceso de tiempo.", 
+                                    reservation.getUser() != null ? reservation.getUser().getName() : "Usuario",
+                                    totalAmount));
+            notification.setRead(false);
+            notificationService.create(notification);
+        }
     }
 }
