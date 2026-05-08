@@ -67,10 +67,10 @@ public class ParkingJpaEntity {
     @Column(name = "total_spots")
     private Integer totalSpots;
 
-    @OneToMany(mappedBy = "parking", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "parking", cascade = CascadeType.ALL)
     private Set<ParkingSpotJpaEntity> parkingSpots;
 
-    @OneToMany(mappedBy = "parking", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "parking", cascade = CascadeType.ALL)
     private Set<DynamicPriceJpaEntity> dynamicPrice;
 
     /**

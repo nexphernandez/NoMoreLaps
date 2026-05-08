@@ -59,8 +59,8 @@ class ReservationControllerTest {
         ReservationRequest request = new ReservationRequest();
         request.setStartTime(LocalDateTime.now().plusHours(1));
         request.setEndTime(LocalDateTime.now().plusHours(2));
-        request.setTotalPrice(10.0);
-        request.setStatus("ACTIVE");
+        request.setPrice(10.0);
+        request.setState("ACTIVE");
         request.setUserId(1L);
         request.setParkingSpotId(1L);
 
@@ -130,8 +130,8 @@ class ReservationControllerTest {
         ReservationRequest request = new ReservationRequest();
         request.setStartTime(LocalDateTime.now().plusHours(1));
         request.setEndTime(LocalDateTime.now().plusHours(2));
-        request.setTotalPrice(10.0);
-        request.setStatus("ACTIVE");
+        request.setPrice(10.0);
+        request.setState("ACTIVE");
         request.setUserId(1L);
         request.setParkingSpotId(1L);
 

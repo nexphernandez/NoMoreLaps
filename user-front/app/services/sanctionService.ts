@@ -29,18 +29,6 @@ const sanctionService = {
       }
       throw new Error(error.response?.data?.message || 'Failed to fetch sanctions');
     }
-  },
-
-  /**
-   * Marks a sanction as paid.
-   */
-  pay: async (id: number): Promise<Sanction> => {
-    try {
-      const response = await api.patch<Sanction>(`sanctions/${id}/pay`);
-      return response.data;
-    } catch (error: any) {
-      throw new Error(error.response?.data?.message || 'Payment failed');
-    }
   }
 };
 

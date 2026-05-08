@@ -7,6 +7,8 @@ import { useTheme } from '../../context/ThemeContext';
 import CustomButton from '../../components/CustomButton';
 import InputField from '../../components/InputField';
 
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+
 export interface CalendarSuggestion {
   parkingId: number;
   parkingName: string;
@@ -117,7 +119,14 @@ const CalendarSyncView: React.FC<CalendarSyncViewProps> = ({
                   onPress={() => onSelectEvent(item)}
                 >
                   <Typography variant="label">{item.title}</Typography>
-                  {item.location ? <Typography variant="caption" color={theme.textSecondary}>📍 {item.location.slice(0, 15)}...</Typography> : null}
+                  {item.location ? (
+                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                      <MaterialCommunityIcons name="map-marker" size={12} color={theme.textSecondary} style={{ marginRight: 2 }} />
+                      <Typography variant="caption" color={theme.textSecondary}>
+                        {item.location.slice(0, 15)}...
+                      </Typography>
+                    </View>
+                  ) : null}
                 </TouchableOpacity>
               )}
             />
@@ -166,7 +175,10 @@ const CalendarSyncView: React.FC<CalendarSyncViewProps> = ({
               </View>
               <View style={{ flex: 1, marginLeft: 16 }}>
                 <Typography variant="h3">{item.parkingName}</Typography>
-                <Typography variant="caption">📍 {item.address}</Typography>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <MaterialCommunityIcons name="map-marker" size={12} color={theme.textSecondary} style={{ marginRight: 4 }} />
+                  <Typography variant="caption">{item.address}</Typography>
+                </View>
                 <Typography variant="caption">{item.distanceKm.toFixed(2)} km • {item.priceLabel}</Typography>
               </View>
             </View>

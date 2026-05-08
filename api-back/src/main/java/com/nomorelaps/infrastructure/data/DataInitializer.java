@@ -91,13 +91,13 @@ public class DataInitializer implements CommandLineRunner {
         // 4. Create Parkings if map is empty
         if (parkingService.findAll().isEmpty() && company != null) {
             // Parking 1: Puerta del Sol, Madrid
-            createParking(company, "Sol Central Parking", "Plaza de la Puerta del Sol, Madrid", 40.4168, -3.7038);
+            createParking(company, "Sol Central Parking", "Plaza de la Puerta del Sol, Madrid", 40.4168, -3.7038, 5);
 
             // Parking 2: Retiro, Madrid
-            createParking(company, "Retiro Park & Go", "Calle de Alfonso XII, Madrid", 40.4153, -3.6844);
+            createParking(company, "Retiro Park & Go", "Calle de Alfonso XII, Madrid", 40.4153, -3.6844, 5);
 
             // Parking 3: Plaza de España, Madrid
-            createParking(company, "Gran Vía West", "Plaza de España, Madrid", 40.4234, -3.7122);
+            createParking(company, "Gran Vía West", "Plaza de España, Madrid", 40.4234, -3.7122, 5);
 
             System.out.println("DataInitializer: 3 sample parkings created in Madrid");
         }
@@ -170,7 +170,7 @@ public class DataInitializer implements CommandLineRunner {
                 s.setReservation(savedR3);
                 s.setUser(user);
                 s.setAmount(10.0);
-                s.setReason("Exceso de tiempo (30 min)");
+                s.setReason("Overtime (30 min)");
                 s.setArrivalTime(LocalDateTime.now().minusDays(1).withHour(15).withMinute(30));
                 s.setPaid(false);
                 sanctionService.create(s);
@@ -182,7 +182,7 @@ public class DataInitializer implements CommandLineRunner {
     private void seedSampleNotifications(Long companyId) {
         // Create 3 types of notifications
         Notification n1 = new Notification();
-        n1.setMessage("Nueva reserva realizada en Sol Central Parking.");
+        n1.setMessage("New reservation made at Sol Central Parking.");
         n1.setType("RESERVATION");
         n1.setCompanyId(companyId);
         n1.setRead(false);
@@ -190,7 +190,7 @@ public class DataInitializer implements CommandLineRunner {
         notificationService.create(n1);
 
         Notification n2 = new Notification();
-        n2.setMessage("Sanción aplicada por exceso de tiempo en Plaza de España.");
+        n2.setMessage("Sanction applied for overtime at Plaza de España.");
         n2.setType("SANCTION");
         n2.setCompanyId(companyId);
         n2.setRead(false);
@@ -198,7 +198,7 @@ public class DataInitializer implements CommandLineRunner {
         notificationService.create(n2);
 
         Notification n3 = new Notification();
-        n3.setMessage("Mantenimiento programado para el sistema de sensores.");
+        n3.setMessage("Scheduled maintenance for the sensor system.");
         n3.setType("CANCEL");
         n3.setCompanyId(companyId);
         n3.setRead(true);
@@ -219,20 +219,21 @@ public class DataInitializer implements CommandLineRunner {
                 });
     }
 
-    private void createParking(Company company, String name, String address, double lat, double lon) {
+    private void createParking(Company company, String name, String address, double lat, double lon, int totalSpots) {
         Parking p = new Parking();
         p.setName(name);
         p.setAddress(address);
         p.setLatitude(lat);
         p.setLongitude(lon);
         p.setCompany(company);
+        p.setTotalSpots(totalSpots);
         p.setOpeningTime(LocalDateTime.now().withHour(7).withMinute(0));
         p.setClosingTime(LocalDateTime.now().withHour(23).withMinute(30));
         p.setCreatedAt(LocalDateTime.now());
         final Parking savedParking = parkingService.create(p);
 
-        // Create 5 spots for each parking
-        for (int i = 1; i <= 5; i++) {
+        // Create spots for each parking
+        for (int i = 1; i <= totalSpots; i++) {
             ParkingSpot spot = new ParkingSpot();
             spot.setNumber(i);
             spot.setState(true); 
@@ -240,6 +241,6 @@ public class DataInitializer implements CommandLineRunner {
             spot.setParking(savedParking);
             parkingSpotService.create(spot);
         }
-        System.out.println("DataInitializer: 5 spots created for parking: " + name);
+        System.out.println("DataInitializer: " + totalSpots + " spots created for parking: " + name);
     }
 }

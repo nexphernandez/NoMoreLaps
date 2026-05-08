@@ -72,10 +72,10 @@ export class Profile implements OnInit {
       this.companyService.updateCompany(this.company.id, this.company).subscribe({
         next: (updated) => {
           this.company = updated;
-          alert('Perfil actualizado con éxito');
+          alert('Profile updated successfully');
         },
         error: (err) => {
-          alert('Error al actualizar el perfil');
+          alert('Error updating profile');
         }
       });
     }
@@ -83,7 +83,7 @@ export class Profile implements OnInit {
 
   onChangePassword(event: any) {
     if (this.passwordData.newPassword !== this.passwordData.confirmPassword) {
-      alert('Las contraseñas nuevas no coinciden');
+      alert('New passwords do not match');
       return;
     }
 
@@ -93,12 +93,12 @@ export class Profile implements OnInit {
       this.authService.changePassword(user.userId || 0, this.passwordData.currentPassword, this.passwordData.newPassword)
         .subscribe({
           next: () => {
-            alert('Contraseña actualizada con éxito');
+            alert('Password updated successfully');
             this.passwordData = { currentPassword: '', newPassword: '', confirmPassword: '' };
             this.cdr.detectChanges();
           },
           error: (err) => {
-            alert('Error al cambiar la contraseña: ' + (err.error?.message || 'Verifica tu contraseña actual'));
+            alert('Error changing password: ' + (err.error?.message || 'Check your current password'));
           }
         });
     }

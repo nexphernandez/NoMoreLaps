@@ -1,34 +1,34 @@
 <div class="reservations-container">
   <header class="page-header">
     <div class="header-text">
-      <h1 class="page-title">Listado de Reservas</h1>
-      <p class="page-subtitle">Monitorea la actividad en tiempo real de tus parkings.</p>
+      <h1 class="page-title">Reservations List</h1>
+      <p class="page-subtitle">Monitor real-time activity of your parkings.</p>
     </div>
   </header>
 
   <div class="filters-bar glass-card">
     <div class="filter-actions">
       <select class="filter-select" [(ngModel)]="parkingFilter">
-        <option value="all">Todos los parkings</option>
+        <option value="all">All parkings</option>
         <option *ngFor="let p of parkings" [value]="p.name">{{ p.name }}</option>
       </select>
       
       <select class="filter-select" [(ngModel)]="statusFilter">
-        <option value="all">Todos los estados</option>
-        <option value="active">Activa</option>
-        <option value="finished">Finalizada</option>
-        <option value="canceled">Cancelada</option>
+        <option value="all">All statuses</option>
+        <option value="active">Active</option>
+        <option value="finished">Finished</option>
+        <option value="canceled">Cancelled</option>
       </select>
     </div>
   </div>
 
   <div class="reservations-list">
     <div class="list-header">
-      <span>USUARIO Y UBICACIÓN</span>
-      <span>FECHA Y HORA</span>
-      <span>ESTADO</span>
-      <span>PAGO</span>
-      <span>ACCIONES</span>
+      <span>USER & LOCATION</span>
+      <span>DATE & TIME</span>
+      <span>STATUS</span>
+      <span>PAYMENT</span>
+      <span>ACTIONS</span>
     </div>
 
     <app-reservation-row 
@@ -38,10 +38,10 @@
   </div>
 
   <div class="loading-container" *ngIf="loading">
-    <p>Cargando reservas...</p>
+    <p>Loading reservations...</p>
   </div>
 
   <div class="empty-container" *ngIf="!loading && filteredReservations.length === 0">
-    <p>No se encontraron reservas.</p>
+    <p>No reservations found.</p>
   </div>
 </div>

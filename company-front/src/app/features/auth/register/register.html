@@ -2,41 +2,41 @@
   <div class="register-card glass-card">
     <div class="register-header">
       <h1 class="gradient-text">NoMoreLaps</h1>
-      <p class="subtitle">Crear Cuenta de Empresa</p>
+      <p class="subtitle">Create Company Account</p>
     </div>
 
     <form class="register-form" [formGroup]="registerForm" (ngSubmit)="onRegister()">
       <app-input 
-        label="Nombre de la Empresa" 
-        placeholder="Mi Parking S.L."
+        label="Company Name" 
+        placeholder="My Parking Ltd."
         type="text"
         formControlName="name"
       ></app-input>
 
       <app-input 
-        label="CIF de la Empresa" 
+        label="Company Tax ID (CIF)" 
         placeholder="A12345678"
         type="text"
         formControlName="cif"
       ></app-input>
 
       <app-input 
-        label="Correo Corporativo" 
-        placeholder="contacto@empresa.com"
+        label="Corporate Email" 
+        placeholder="contact@company.com"
         type="email"
         formControlName="email"
       ></app-input>
 
       <div class="password-row">
         <app-input 
-          label="Contraseña" 
+          label="Password" 
           placeholder="••••••••"
           type="password"
           formControlName="password"
         ></app-input>
         
         <app-input 
-          label="Confirmar Contraseña" 
+          label="Confirm Password" 
           placeholder="••••••••"
           type="password"
           formControlName="confirmPassword"
@@ -45,27 +45,22 @@
 
       <div class="error-container" *ngIf="errorMessage || registerForm.get('email')?.invalid && registerForm.get('email')?.touched || registerForm.hasError('mismatch')">
         <p class="error-text" *ngIf="errorMessage">{{ errorMessage }}</p>
-        <p class="error-text" *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched">Email inválido</p>
-        <p class="error-text" *ngIf="registerForm.hasError('mismatch') && registerForm.get('confirmPassword')?.touched">Las contraseñas no coinciden</p>
+        <p class="error-text" *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched">Invalid email</p>
+        <p class="error-text" *ngIf="registerForm.hasError('mismatch') && registerForm.get('confirmPassword')?.touched">Passwords do not match</p>
       </div>
 
-      <div class="terms-container">
-        <label class="checkbox-label">
-          <input type="checkbox">
-          <span>Acepto los <a href="#">términos y condiciones</a> de servicio</span>
-        </label>
-      </div>
+
 
       <app-button 
-        text="Crear Cuenta" 
+        text="Create Account" 
         customClass="w-full"
         [loading]="loading"
         type="submit"
       ></app-button>
 
       <div class="login-prompt">
-        <span>¿Ya tienes una cuenta?</span>
-        <a routerLink="/login" class="login-link">Inicia sesión</a>
+        <span>Already have an account?</span>
+        <a routerLink="/login" class="login-link">Sign in</a>
       </div>
     </form>
   </div>

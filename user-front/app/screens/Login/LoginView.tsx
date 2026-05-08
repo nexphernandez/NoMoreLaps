@@ -38,8 +38,8 @@ const LoginView: React.FC<LoginViewProps> = ({
         <Typography variant="body" color={theme.textSecondary} style={styles.subtitle}>Welcome back</Typography>
 
         <InputField
-          label="Correo Electrónico"
-          placeholder="ejemplo@test.com"
+          label="Email Address"
+          placeholder="example@test.com"
           autoCapitalize="none"
           autoCorrect={false}
           value={email}
@@ -49,7 +49,7 @@ const LoginView: React.FC<LoginViewProps> = ({
         />
 
         <InputField
-          label="Contraseña"
+          label="Password"
           placeholder="••••••••"
           secureTextEntry
           value={password}

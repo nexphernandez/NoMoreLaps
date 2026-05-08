@@ -1,18 +1,18 @@
 <div class="parkings-container">
   <header class="page-header">
     <div class="header-text">
-      <h1 class="page-title">Gestión de Parkings</h1>
-      <p class="page-subtitle">Administra tus ubicaciones y configuraciones de sanción.</p>
+      <h1 class="page-title">Parking Management</h1>
+      <p class="page-subtitle">Manage your locations and sanction settings.</p>
     </div>
-    <button class="btn-primary" (click)="onAddParking()">+ Añadir Parking</button>
+    <button class="btn-primary" (click)="onAddParking()">+ Add Parking</button>
   </header>
 
   <div class="filters-bar glass-card">
     <div class="filter-actions">
       <select class="filter-select" [(ngModel)]="statusFilter">
-        <option value="all">Todos los estados</option>
-        <option value="active">Abierto</option>
-        <option value="inactive">Cerrado</option>
+        <option value="all">All statuses</option>
+        <option value="active">Open</option>
+        <option value="inactive">Closed</option>
       </select>
     </div>
   </div>
@@ -32,10 +32,10 @@
   </div>
 
   <div class="loading-container" *ngIf="loading">
-    <p>Cargando tus parkings...</p>
+    <p>Loading your parkings...</p>
   </div>
 
   <div class="empty-container" *ngIf="!loading && parkings.length === 0">
-    <p>No tienes parkings registrados. ¡Empieza añadiendo uno!</p>
+    <p>No parkings registered. Start by adding one!</p>
   </div>
 </div>

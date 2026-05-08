@@ -33,14 +33,14 @@ public class ReservationService implements IReservationService {
     /**
      * Constructor for ReservationService.
      * 
-     * @param persistencePort the persistence adapter for reservation operations
+     * @param persistencePort     the persistence adapter for reservation operations
      * @param notificationService domain service for automated notifications
      * @param spotPersistencePort the persistence adapter for parking spot lookup
      */
     @Autowired
-    public ReservationService(IReservationPersistenceAdapter persistencePort, 
-                              INotificationService notificationService,
-                              IParkingSpotPersistenceAdapter spotPersistencePort) {
+    public ReservationService(IReservationPersistenceAdapter persistencePort,
+            INotificationService notificationService,
+            IParkingSpotPersistenceAdapter spotPersistencePort) {
         this.persistencePort = persistencePort;
         this.notificationService = notificationService;
         this.spotPersistencePort = spotPersistencePort;
@@ -50,20 +50,19 @@ public class ReservationService implements IReservationService {
     @Transactional
     public Reservation create(Reservation reservation) {
         if (reservation.getEndTime().isBefore(reservation.getStartTime())) {
-            throw new IllegalArgumentException("BusinessRuleException: La hora de finalización no puede ser previa a la de inicio.");
+            throw new IllegalArgumentException("BusinessRuleException: End time cannot be before start time.");
         }
 
         if (reservation.getParkingSpot() != null && reservation.getParkingSpot().getId() != null) {
             boolean isOccupied = persistencePort.hasOverlappingReservations(
-                reservation.getParkingSpot().getId(), 
-                reservation.getStartTime(), 
-                reservation.getEndTime()
-            );
+                    reservation.getParkingSpot().getId(),
+                    reservation.getStartTime(),
+                    reservation.getEndTime());
 
             if (isOccupied) {
-                throw new IllegalStateException("Conflict: La plaza ya está reservada en el horario seleccionado.");
+                throw new IllegalStateException("Conflict: The spot is already reserved for the selected time slot.");
             }
-            
+
         }
 
         reservation.setState("ACTIVE");
@@ -75,15 +74,16 @@ public class ReservationService implements IReservationService {
         try {
             if (saved.getParkingSpot() != null && saved.getParkingSpot().getId() != null) {
                 Optional<ParkingSpot> spotOpt = spotPersistencePort.findById(saved.getParkingSpot().getId());
-                if (spotOpt.isPresent() && spotOpt.get().getParking() != null && spotOpt.get().getParking().getCompany() != null) {
+                if (spotOpt.isPresent() && spotOpt.get().getParking() != null
+                        && spotOpt.get().getParking().getCompany() != null) {
                     Long companyId = spotOpt.get().getParking().getCompany().getId();
                     if (companyId != null) {
                         Notification notification = new Notification();
                         notification.setCompanyId(companyId);
                         notification.setType("RESERVATION");
-                        notification.setMessage("Nueva reserva recibida de " + 
-                            (saved.getUser() != null ? saved.getUser().getName() : "un usuario") + 
-                            " en " + spotOpt.get().getParking().getName());
+                        notification.setMessage("New reservation received from " +
+                                (saved.getUser() != null ? saved.getUser().getName() : "a user") +
+                                " at " + spotOpt.get().getParking().getName());
                         notification.setRead(false);
                         notificationService.create(notification);
                     }
@@ -129,19 +129,19 @@ public class ReservationService implements IReservationService {
         }
 
         if (reservation.getEndTime().isBefore(reservation.getStartTime())) {
-            throw new IllegalArgumentException("BusinessRuleException: La hora de finalización no puede ser previa a la de inicio.");
+            throw new IllegalArgumentException("BusinessRuleException: End time cannot be before start time.");
         }
 
         if (reservation.getParkingSpot() != null && reservation.getParkingSpot().getId() != null) {
             boolean isOccupied = persistencePort.hasOverlappingReservationsExcluding(
-                reservation.getParkingSpot().getId(), 
-                reservation.getStartTime(), 
-                reservation.getEndTime(),
-                reservation.getId()
-            );
+                    reservation.getParkingSpot().getId(),
+                    reservation.getStartTime(),
+                    reservation.getEndTime(),
+                    reservation.getId());
 
             if (isOccupied) {
-                throw new IllegalStateException("Conflict: El nuevo horario se solapa con otra reserva existente.");
+                throw new IllegalStateException(
+                        "Conflict: The new time slot overlaps with another existing reservation.");
             }
         }
 
@@ -154,7 +154,8 @@ public class ReservationService implements IReservationService {
     }
 
     @Override
-    public boolean hasOverlappingReservationsExcluding(Long spotId, LocalDateTime start, LocalDateTime end, Long excludeId) {
+    public boolean hasOverlappingReservationsExcluding(Long spotId, LocalDateTime start, LocalDateTime end,
+            Long excludeId) {
         return persistencePort.hasOverlappingReservationsExcluding(spotId, start, end, excludeId);
     }
 

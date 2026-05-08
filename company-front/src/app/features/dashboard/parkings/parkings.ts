@@ -68,8 +68,8 @@ export class Parkings implements OnInit {
       
       const matchesStatus = 
         this.statusFilter === 'all' || 
-        (this.statusFilter === 'active' && parking.status === 'Abierto') ||
-        (this.statusFilter === 'inactive' && parking.status === 'Cerrado');
+        (this.statusFilter === 'active' && parking.status === 'Open') ||
+        (this.statusFilter === 'inactive' && parking.status === 'Closed');
 
       return matchesSearch && matchesStatus;
     });
@@ -84,16 +84,16 @@ export class Parkings implements OnInit {
   }
 
   onDelete(id: number) {
-    if (confirm('¿Estás seguro de que deseas eliminar este parking? Esta acción no se puede deshacer.')) {
+    if (confirm('Are you sure you want to delete this parking? This action cannot be undone.')) {
       this.parkingService.deleteParking(id).subscribe({
         next: () => {
           this.parkings = this.parkings.filter(p => p.id !== id);
           this.cdr.detectChanges();
-          alert('Parking eliminado con éxito');
+          alert('Parking deleted successfully');
         },
         error: (err) => {
           console.error('Error deleting parking:', err);
-          alert('Error al eliminar el parking');
+          alert('Error deleting parking');
         }
       });
     }

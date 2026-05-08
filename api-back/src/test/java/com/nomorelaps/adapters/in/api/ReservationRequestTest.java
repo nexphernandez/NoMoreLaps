@@ -20,11 +20,11 @@ public class ReservationRequestTest {
         req.setEndTime(now);
         assertEquals(now, req.getEndTime());
         
-        req.setTotalPrice(10.5);
-        assertEquals(10.5, req.getTotalPrice());
+        req.setPrice(10.5);
+        assertEquals(10.5, req.getPrice());
         
-        req.setStatus("ACTIVE");
-        assertEquals("ACTIVE", req.getStatus());
+        req.setState("ACTIVE");
+        assertEquals("ACTIVE", req.getState());
         
         req.setParkingSpotId(2L);
         assertEquals(2L, req.getParkingSpotId());

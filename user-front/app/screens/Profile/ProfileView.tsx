@@ -2,10 +2,12 @@ import React from 'react';
 import { View, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import Typography from '../../components/Typography';
 import CustomButton from '../../components/CustomButton';
+import Divider from '../../components/Divider';
 import Card from '../../components/Card';
 import ScreenContainer from '../../components/ScreenContainer';
-import Divider from '../../components/Divider';
 import { useTheme } from '../../context/ThemeContext';
+
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 interface ProfileViewProps {
   userName: string;
@@ -30,30 +32,39 @@ const ProfileView: React.FC<ProfileViewProps> = ({
     <ScreenContainer>
       {/* CABECERA DE USUARIO */}
       <View style={styles.header}>
-        <View style={[
-          styles.avatar, 
-          { 
-            backgroundColor: theme.lightBackground,
-            borderWidth: 1,
-            borderColor: theme.border 
-          }
-        ]}>
-          {userAvatar ? (
-            <Image 
-              source={{ uri: userAvatar }} 
-              style={styles.avatarImg} 
-              resizeMode="cover"
-            />
-          ) : (
-            <Typography variant="h1" color={theme.primary}>
-              {userName.charAt(0).toUpperCase()}
-            </Typography>
-          )}
+        <View style={styles.avatarWrapper}>
+          <View style={[
+            styles.avatar, 
+            { 
+              backgroundColor: theme.lightBackground,
+              borderWidth: 1,
+              borderColor: theme.border 
+            }
+          ]}>
+            {userAvatar ? (
+              <Image 
+                source={{ uri: userAvatar }} 
+                style={styles.avatarImg} 
+                resizeMode="cover"
+              />
+            ) : (
+              <Typography variant="h1" color={theme.primary}>
+                {userName.charAt(0).toUpperCase()}
+              </Typography>
+            )}
+          </View>
+          <TouchableOpacity 
+            style={[styles.cameraBadge, { backgroundColor: theme.primary }]} 
+            onPress={onEditProfile}
+          >
+            <MaterialCommunityIcons name="camera" size={18} color="#FFF" />
+          </TouchableOpacity>
         </View>
+        
         <Typography variant="h2" style={{marginTop: 12}}>{userName}</Typography>
         <Typography variant="caption">{userEmail}</Typography>
 
-        <TouchableOpacity style={styles.editMainBtn} onPress={onEditProfile}>
+        <TouchableOpacity style={[styles.editBtn, { borderColor: theme.primary, marginTop: 16 }]} onPress={onEditProfile}>
           <Typography variant="label" color={theme.primary}>Edit Profile</Typography>
         </TouchableOpacity>
       </View>
@@ -112,35 +123,35 @@ const ProfileView: React.FC<ProfileViewProps> = ({
       <View style={styles.section}>
         <TouchableOpacity style={[styles.menuItem, { backgroundColor: theme.background, borderColor: theme.border }]} onPress={onViewHistory}>
           <View style={[styles.menuIcon, { backgroundColor: theme.lightBackground }]}>
-            <Typography style={{ fontSize: 20 }}>🕒</Typography>
+            <MaterialCommunityIcons name="history" size={24} color={theme.primary} />
           </View>
           <View style={{ flex: 1 }}>
             <Typography variant="h3">Reservation History</Typography>
             <Typography variant="caption">Check your past activity and receipts</Typography>
           </View>
-          <Typography variant="h3" color={theme.border}>❯</Typography>
+          <MaterialCommunityIcons name="chevron-right" size={24} color={theme.border} />
         </TouchableOpacity>
 
         <TouchableOpacity style={[styles.menuItem, { marginTop: 12, backgroundColor: theme.background, borderColor: theme.border }]} onPress={onGoToSanctions}>
           <View style={[styles.menuIcon, { backgroundColor: '#FFF1F2' }]}>
-            <Typography style={{ fontSize: 20 }}>🚔</Typography>
+            <MaterialCommunityIcons name="alert-octagon" size={24} color={theme.danger} />
           </View>
           <View style={{ flex: 1 }}>
             <Typography variant="h3" color={theme.danger}>My Sanctions</Typography>
             <Typography variant="caption">View pending fines and violations</Typography>
           </View>
-          <Typography variant="h3" color={theme.border}>❯</Typography>
+          <MaterialCommunityIcons name="chevron-right" size={24} color={theme.border} />
         </TouchableOpacity>
 
         <TouchableOpacity style={[styles.menuItem, { marginTop: 12, backgroundColor: theme.background, borderColor: theme.border }]} onPress={onCalendarSync}>
           <View style={[styles.menuIcon, { backgroundColor: '#E0F2FE' }]}>
-            <Typography style={{ fontSize: 20 }}>📅</Typography>
+            <MaterialCommunityIcons name="calendar-sync" size={24} color={theme.primary} />
           </View>
           <View style={{ flex: 1 }}>
             <Typography variant="h3" color={theme.primary}>Calendar Sync</Typography>
             <Typography variant="caption">Link your calendar for smart suggestions</Typography>
           </View>
-          <Typography variant="h3" color={theme.border}>❯</Typography>
+          <MaterialCommunityIcons name="chevron-right" size={24} color={theme.border} />
         </TouchableOpacity>
       </View>
 
@@ -158,6 +169,11 @@ const ProfileView: React.FC<ProfileViewProps> = ({
 
 const styles = StyleSheet.create({
   header: { alignItems: 'center', marginBottom: 20, position: 'relative' },
+  avatarWrapper: {
+    position: 'relative',
+    width: 80,
+    height: 80,
+  },
   avatar: {
     width: 80,
     height: 80,
@@ -170,12 +186,25 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
     shadowOffset: { width: 0, height: 2 },
   },
-  avatarImg: { width: 80, height: 80, borderRadius: 40 },
-  editMainBtn: {
+  cameraBadge: {
     position: 'absolute',
-    top: 0,
+    bottom: 0,
     right: 0,
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: '#FFF',
+    elevation: 3,
+  },
+  avatarImg: { width: 80, height: 80, borderRadius: 40 },
+  editBtn: {
+    paddingHorizontal: 20,
     paddingVertical: 8,
+    borderRadius: 20,
+    borderWidth: 1.5,
   },
   section: { marginBottom: 32 },
   resCard: {

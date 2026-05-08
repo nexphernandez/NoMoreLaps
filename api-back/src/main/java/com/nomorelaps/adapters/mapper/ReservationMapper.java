@@ -27,8 +27,6 @@ public interface ReservationMapper {
      */
     @Mapping(target = "user.id", source = "userId")
     @Mapping(target = "parkingSpot.id", source = "parkingSpotId")
-    @Mapping(target = "price", source = "totalPrice")
-    @Mapping(target = "state", source = "status")
     Reservation toDomainFromRequest(ReservationRequest request);
 
     /**

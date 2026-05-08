@@ -16,7 +16,7 @@ class DatabaseService {
     this.initPromise = (async () => {
       try {
         this.db = await SQLite.openDatabaseAsync('nomorelaps_v2.db');
-        
+
         await this.db.execAsync(`
           PRAGMA journal_mode = WAL;
           

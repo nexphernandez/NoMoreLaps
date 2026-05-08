@@ -1,8 +1,8 @@
 <div class="profile-container">
   <header class="page-header">
     <div class="header-text">
-      <h1 class="page-title">Perfil de Empresa</h1>
-      <p class="page-subtitle">Gestiona la información pública y de contacto de tu organización.</p>
+      <h1 class="page-title">Company Profile</h1>
+      <p class="page-subtitle">Manage your organization's public and contact information.</p>
     </div>
   </header>
 
@@ -16,59 +16,59 @@
       </div>
       
       <nav class="profile-nav">
-        <button class="nav-btn" [class.active]="activeTab === 'general'" (click)="setTab('general')">Información General</button>
-        <button class="nav-btn" [class.active]="activeTab === 'security'" (click)="setTab('security')">Seguridad</button>
+        <button class="nav-btn" [class.active]="activeTab === 'general'" (click)="setTab('general')">General Information</button>
+        <button class="nav-btn" [class.active]="activeTab === 'security'" (click)="setTab('security')">Security</button>
       </nav>
     </aside>
 
     <main class="profile-content glass-card">
       <div *ngIf="loading" class="loading-overlay">
-        <p>Cargando datos de empresa...</p>
+        <p>Loading company data...</p>
       </div>
 
       <ng-container *ngIf="!loading">
         <!-- Pestaña Información General -->
         <form class="profile-form" *ngIf="activeTab === 'general'" (submit)="onSave($event)">
           <div class="form-section">
-            <h3>Detalles de la Organización</h3>
+            <h3>Organization Details</h3>
             <div class="input-row">
-              <app-input label="Nombre Comercial" [(ngModel)]="company.name" name="name" type="text"></app-input>
-              <app-input label="CIF / NIF" [(ngModel)]="company.cif" name="cif" type="text"></app-input>
+              <app-input label="Business Name" [(ngModel)]="company.name" name="name" type="text"></app-input>
+              <app-input label="Tax ID / CIF" [(ngModel)]="company.cif" name="cif" type="text"></app-input>
             </div>
             
-            <app-input label="Correo Electrónico de Contacto" [(ngModel)]="company.email" name="email" type="email"></app-input>
+            <app-input label="Contact Email" [(ngModel)]="company.email" name="email" type="email"></app-input>
             
             <div class="input-row">
-              <app-input label="Teléfono" [(ngModel)]="company.phone" name="phone" type="tel"></app-input>
-              <app-input label="Sitio Web (Solo lectura)" value="https://nomorelaps.com" [disabled]="true" name="web" type="url"></app-input>
+              <app-input label="Phone" [(ngModel)]="company.phone" name="phone" type="tel"></app-input>
+              <app-input label="Website (Read-only)" value="https://nomorelaps.com" [disabled]="true" name="web" type="url"></app-input>
             </div>
           </div>
 
           <div class="form-section">
-            <h3>Dirección Fiscal (Solo lectura)</h3>
-            <app-input label="Dirección Completa" [disabled]="true" value="Calle Ejemplo, 123, Madrid" type="text"></app-input>
+            <h3>Fiscal Address (Read-only)</h3>
+            <app-input label="Full Address" [disabled]="true" value="Example St, 123, Madrid" type="text"></app-input>
           </div>
 
           <div class="form-actions">
-            <app-button text="Guardar Perfil" (onClick)="onSave($event)"></app-button>
+            <app-button text="Save Profile" (onClick)="onSave($event)"></app-button>
           </div>
         </form>
 
         <!-- Pestaña Seguridad -->
         <div class="security-section" *ngIf="activeTab === 'security'">
           <div class="form-section">
-            <h3>Cambiar Contraseña</h3>
-            <p class="section-desc">Actualiza tu contraseña para mantener tu cuenta segura.</p>
+            <h3>Change Password</h3>
+            <p class="section-desc">Update your password to keep your account secure.</p>
             
             <div class="password-form">
-              <app-input label="Contraseña Actual" [(ngModel)]="passwordData.currentPassword" name="currentPassword" type="password"></app-input>
-              <app-input label="Nueva Contraseña" [(ngModel)]="passwordData.newPassword" name="newPassword" type="password"></app-input>
-              <app-input label="Confirmar Nueva Contraseña" [(ngModel)]="passwordData.confirmPassword" name="confirmPassword" type="password"></app-input>
+              <app-input label="Current Password" [(ngModel)]="passwordData.currentPassword" name="currentPassword" type="password"></app-input>
+              <app-input label="New Password" [(ngModel)]="passwordData.newPassword" name="newPassword" type="password"></app-input>
+              <app-input label="Confirm New Password" [(ngModel)]="passwordData.confirmPassword" name="confirmPassword" type="password"></app-input>
             </div>
           </div>
 
           <div class="form-actions">
-            <app-button text="Actualizar Contraseña" (onClick)="onChangePassword($event)"></app-button>
+            <app-button text="Update Password" (onClick)="onChangePassword($event)"></app-button>
           </div>
         </div>
       </ng-container>

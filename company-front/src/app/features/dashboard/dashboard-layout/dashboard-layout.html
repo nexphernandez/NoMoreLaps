@@ -4,7 +4,7 @@
   <main class="main-content">
     <header class="content-header">
       <div class="header-search">
-        <input type="text" placeholder="Buscar en el sistema..." class="search-input" (input)="onSearch($event)">
+        <input type="text" placeholder="Search in the system..." class="search-input" (input)="onSearch($event)">
       </div>
 
       <div class="header-actions">
@@ -16,8 +16,8 @@
 
           <div class="notification-dropdown" *ngIf="showNotifications">
             <div class="dropdown-header">
-              <h3>Notificaciones</h3>
-              <a routerLink="/dashboard/notifications" (click)="showNotifications = false">Ver todas</a>
+              <h3>Notifications</h3>
+              <a routerLink="/dashboard/notifications" (click)="showNotifications = false">View all</a>
             </div>
             <div class="dropdown-body">
               <div *ngFor="let note of (recentNotifications$ | async)?.slice(0, 5)" class="notification-item"
@@ -31,7 +31,7 @@
                 </div>
               </div>
               <div class="empty-notifications" *ngIf="((recentNotifications$ | async)?.length ?? 0) === 0">
-                No tienes notificaciones
+                No notifications
               </div>
             </div>
           </div>

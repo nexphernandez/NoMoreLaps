@@ -1,9 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ParkingService } from '../../../core/services/parking';
 import { ReservationService } from '../../../core/services/reservation';
 import { AuthService } from '../../../core/services/auth';
 import { forkJoin } from 'rxjs';
+import { Router, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-home',
@@ -11,46 +13,46 @@ import { forkJoin } from 'rxjs';
   imports: [CommonModule],
   template: `
     <div class="home-container">
-      <h1 class="page-title">Panel de Control</h1>
+      <h1 class="page-title">Dashboard</h1>
       
       <div class="stats-grid">
         <div class="stat-card glass-card">
           <span class="stat-icon material-symbols-outlined">local_parking</span>
           <div class="stat-info">
-            <span class="stat-label">Parkings Activos</span>
-            <span class="stat-value">{{ stats.activeParkings }}</span>
+            <span class="stat-label">Active Parkings</span>
+            <span class="stat-value">{{ stats().activeParkings }}</span>
           </div>
         </div>
 
         <div class="stat-card glass-card">
           <span class="stat-icon material-symbols-outlined">calendar_today</span>
           <div class="stat-info">
-            <span class="stat-label">Reservas Hoy</span>
-            <span class="stat-value">{{ stats.todayReservations }}</span>
+            <span class="stat-label">Today's Reservations</span>
+            <span class="stat-value">{{ stats().todayReservations }}</span>
           </div>
         </div>
 
         <div class="stat-card glass-card">
           <span class="stat-icon material-symbols-outlined">payments</span>
           <div class="stat-info">
-            <span class="stat-label">Ingresos Totales</span>
-            <span class="stat-value">{{ stats.totalRevenue | currency:'EUR' }}</span>
+            <span class="stat-label">Total Revenue</span>
+            <span class="stat-value">{{ stats().totalRevenue | currency:'EUR' }}</span>
           </div>
         </div>
 
         <div class="stat-card glass-card">
           <span class="stat-icon material-symbols-outlined">receipt_long</span>
           <div class="stat-info">
-            <span class="stat-label">Cobros Pendientes</span>
-            <span class="stat-value">{{ stats.pendingPayments }}</span>
+            <span class="stat-label">Pending Payments</span>
+            <span class="stat-value">{{ stats().pendingPayments }}</span>
           </div>
         </div>
       </div>
 
       <div class="recent-activity glass-card">
-        <h3>Actividad Reciente</h3>
-        <div class="activity-list" *ngIf="recentActivity.length > 0; else noActivity">
-          <div class="activity-item" *ngFor="let item of recentActivity">
+        <h3>Recent Activity</h3>
+        <div class="activity-list" *ngIf="recentActivity().length > 0; else noActivity">
+          <div class="activity-item" *ngFor="let item of recentActivity()">
             <span class="activity-type" [class.reservation]="item.type === 'reservation'">
               <span class="material-symbols-outlined">{{ item.type === 'reservation' ? 'event' : 'monetization_on' }}</span>
             </span>
@@ -61,7 +63,7 @@ import { forkJoin } from 'rxjs';
           </div>
         </div>
         <ng-template #noActivity>
-          <p style="color: var(--text-secondary); margin-top: 1rem;">No hay actividad nueva para mostrar.</p>
+          <p style="color: var(--text-secondary); margin-top: 1rem;">No new activity to display.</p>
         </ng-template>
       </div>
     </div>
@@ -155,27 +157,41 @@ import { forkJoin } from 'rxjs';
     }
   `]
 })
-export class Home implements OnInit {
-  stats = {
+export class Home {
+  stats = signal({
     activeParkings: 0,
     todayReservations: 0,
     totalRevenue: 0,
     pendingPayments: 0
-  };
+  });
 
-  recentActivity: any[] = [];
+  recentActivity = signal<any[]>([]);
 
-  constructor(
-    private parkingService: ParkingService,
-    private reservationService: ReservationService,
-    private authService: AuthService
-  ) { }
+  private router = inject(Router);
+  private parkingService = inject(ParkingService);
+  private reservationService = inject(ReservationService);
+  private authService = inject(AuthService);
 
-  ngOnInit() {
-    const user = this.authService.currentUser();
-    if (user && user.companyId) {
-      this.loadDashboardData(user.companyId);
-    }
+  constructor() {
+    effect(() => {
+      const user = this.authService.currentUser();
+      if (user && user.companyId) {
+        this.loadDashboardData(user.companyId);
+      }
+    });
+
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd),
+      filter(event => {
+        const url = (event as NavigationEnd).urlAfterRedirects;
+        return url === '/dashboard' || url === '/dashboard/home';
+      })
+    ).subscribe(() => {
+      const user = this.authService.currentUser();
+      if (user && user.companyId) {
+        this.loadDashboardData(user.companyId);
+      }
+    });
   }
 
   loadDashboardData(companyId: number) {
@@ -184,8 +200,10 @@ export class Home implements OnInit {
       reservations: this.reservationService.getReservationsByCompany(companyId)
     }).subscribe({
       next: (data) => {
-        this.calculateStats(data);
-        this.processActivity(data);
+        if (data.parkings && data.reservations) {
+          this.calculateStats(data);
+          this.processActivity(data);
+        }
       },
       error: (err) => console.error('Error loading dashboard data:', err)
     });
@@ -193,17 +211,22 @@ export class Home implements OnInit {
 
   calculateStats(data: any) {
     const today = new Date().toLocaleDateString();
+    const parkings = data.parkings || [];
+    const reservations = data.reservations || [];
 
-    this.stats.activeParkings = data.parkings.length;
-    this.stats.todayReservations = data.reservations.filter((r: any) =>
-      new Date(r.startTime).toLocaleDateString() === today
-    ).length;
+    const newStats = {
+      activeParkings: parkings.length,
+      todayReservations: reservations.filter((r: any) => {
+        if (!r.startTime) return false;
+        return new Date(r.startTime).toLocaleDateString() === today;
+      }).length,
+      totalRevenue: reservations
+        .filter((r: any) => r.paid && r.price)
+        .reduce((acc: number, r: any) => acc + (r.price || 0), 0),
+      pendingPayments: reservations.filter((r: any) => !r.paid).length
+    };
 
-    this.stats.totalRevenue = data.reservations
-      .filter((r: any) => r.paid)
-      .reduce((acc: number, r: any) => acc + r.price, 0);
-
-    this.stats.pendingPayments = data.reservations.filter((r: any) => !r.paid).length;
+    this.stats.set(newStats);
   }
 
   processActivity(data: any) {
@@ -211,17 +234,17 @@ export class Home implements OnInit {
       ...data.reservations.map((r: any) => ({
         type: 'reservation',
         time: r.creationTime,
-        message: `Nueva reserva: ${r.userName} en ${r.parkingName}`
+        message: `New reservation: ${r.userName} at ${r.parkingName}`
       })),
-      ...data.reservations.filter((r: any) => r.sanctionPrice > 0).map((r: any) => ({
+      ...data.reservations.filter((r: any) => (r.sanctionPrice || 0) > 0).map((r: any) => ({
         type: 'billing',
-        time: r.startTime, // Using start time as proxy for activity
-        message: `Sanción detectada: ${r.userName} (${r.sanctionPrice}€)`
+        time: r.startTime,
+        message: `Sanction detected: ${r.userName} (${r.sanctionPrice}€)`
       }))
     ];
 
-    this.recentActivity = activities
+    this.recentActivity.set(activities
       .sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime())
-      .slice(0, 5);
+      .slice(0, 5));
   }
 }

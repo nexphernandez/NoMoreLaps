@@ -33,7 +33,9 @@ class SyncService {
               parkingId: res.parkingId,
               userId: res.userId,
               startTime: res.startTime,
-              endTime: res.endTime
+              endTime: res.endTime,
+              price: 0, 
+              state: 'ACTIVE'
             });
             await databaseService.markAsSynced(res.id);
           } catch (error: any) {

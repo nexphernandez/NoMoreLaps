@@ -34,7 +34,7 @@ export class Developer implements OnInit {
     this.loading = true;
     this.companyService.getCompanyById(companyId).subscribe({
       next: (company) => {
-        this.apiKey = company.apiKey || 'Sin clave generada';
+        this.apiKey = company.apiKey || 'No key generated';
         this.loading = false;
         this.cdr.detectChanges();
       },
@@ -51,16 +51,16 @@ export class Developer implements OnInit {
   }
 
   copyKey() {
-    if (!this.apiKey || this.apiKey === 'Sin clave generada') return;
+    if (!this.apiKey || this.apiKey === 'No key generated') return;
     navigator.clipboard.writeText(this.apiKey);
-    alert('Clave de API copiada al portapapeles');
+    alert('API Key copied to clipboard');
   }
 
   onRegenerate() {
     const user = this.authService.currentUser();
     if (!user || !user.companyId) return;
 
-    if (confirm('¿Estás seguro de que deseas regenerar tu clave de API? Todas las integraciones actuales dejarán de funcionar inmediatamente.')) {
+    if (confirm('Are you sure you want to regenerate your API key? All current integrations will stop working immediately.')) {
       this.loading = true;
       this.companyService.regenerateApiKey(user.companyId).subscribe({
         next: (company) => {
@@ -68,13 +68,13 @@ export class Developer implements OnInit {
           this.loading = false;
           this.showKey = true;
           this.cdr.detectChanges();
-          alert('Clave de API regenerada con éxito');
+          alert('API Key successfully regenerated');
         },
         error: (err) => {
           console.error('Error regenerating API Key:', err);
           this.loading = false;
           this.cdr.detectChanges();
-          alert('Error al regenerar la clave de API');
+          alert('Error regenerating API Key');
         }
       });
     }

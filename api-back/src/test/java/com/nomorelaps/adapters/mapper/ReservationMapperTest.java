@@ -26,8 +26,8 @@ class ReservationMapperTest {
         ReservationRequest request = new ReservationRequest();
         request.setUserId(10L);
         request.setParkingSpotId(20L);
-        request.setTotalPrice(15.0);
-        request.setStatus("ACTIVE");
+        request.setPrice(15.0);
+        request.setState("ACTIVE");
 
         Reservation domain = reservationMapper.toDomainFromRequest(request);
 
@@ -162,8 +162,8 @@ class ReservationMapperTest {
         ReservationRequest request = new ReservationRequest();
         request.setUserId(null);
         request.setParkingSpotId(null);
-        request.setTotalPrice(null);
-        request.setStatus(null);
+        request.setPrice(null);
+        request.setState(null);
 
         Reservation domain = reservationMapper.toDomainFromRequest(request);
         

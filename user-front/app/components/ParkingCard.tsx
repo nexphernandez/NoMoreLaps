@@ -5,6 +5,8 @@ import Card from './Card';
 import Badge from './Badge';
 import { useTheme } from '../context/ThemeContext';
 
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+
 interface ParkingCardProps {
   name: string;
   distance: string;
@@ -26,7 +28,10 @@ const ParkingCard: React.FC<ParkingCardProps> = ({ name, distance, availableSpot
           />
         </View>
         <View style={[styles.footer, { borderTopColor: theme.border }]}>
-          <Typography variant="caption">📍 {distance}</Typography>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <MaterialCommunityIcons name="map-marker" size={14} color={theme.textSecondary} style={{ marginRight: 4 }} />
+            <Typography variant="caption">{distance}</Typography>
+          </View>
           <Typography variant="label" color={theme.primary}>View Details →</Typography>
         </View>
       </Card>
