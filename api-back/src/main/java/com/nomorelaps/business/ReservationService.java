@@ -9,8 +9,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.nomorelaps.adapters.out.persistence.interfaces.IReservationPersistenceAdapter;
+import com.nomorelaps.adapters.out.persistence.interfaces.IParkingSpotPersistenceAdapter;
 import com.nomorelaps.business.interfaces.IReservationService;
+import com.nomorelaps.business.interfaces.INotificationService;
 import com.nomorelaps.domain.models.Reservation;
+import com.nomorelaps.domain.models.Notification;
+import com.nomorelaps.domain.models.ParkingSpot;
 
 /**
  * Use Case implementation for Reservation operations.
@@ -23,10 +27,23 @@ import com.nomorelaps.domain.models.Reservation;
 public class ReservationService implements IReservationService {
 
     private final IReservationPersistenceAdapter persistencePort;
+    private final INotificationService notificationService;
+    private final IParkingSpotPersistenceAdapter spotPersistencePort;
 
+    /**
+     * Constructor for ReservationService.
+     * 
+     * @param persistencePort the persistence adapter for reservation operations
+     * @param notificationService domain service for automated notifications
+     * @param spotPersistencePort the persistence adapter for parking spot lookup
+     */
     @Autowired
-    public ReservationService(IReservationPersistenceAdapter persistencePort) {
+    public ReservationService(IReservationPersistenceAdapter persistencePort, 
+                              INotificationService notificationService,
+                              IParkingSpotPersistenceAdapter spotPersistencePort) {
         this.persistencePort = persistencePort;
+        this.notificationService = notificationService;
+        this.spotPersistencePort = spotPersistencePort;
     }
 
     @Override
@@ -53,7 +70,30 @@ public class ReservationService implements IReservationService {
         if (reservation.getBasePrice() == null) {
             reservation.setBasePrice(reservation.getPrice());
         }
-        return persistencePort.save(reservation);
+        Reservation saved = persistencePort.save(reservation);
+
+        try {
+            if (saved.getParkingSpot() != null && saved.getParkingSpot().getId() != null) {
+                Optional<ParkingSpot> spotOpt = spotPersistencePort.findById(saved.getParkingSpot().getId());
+                if (spotOpt.isPresent() && spotOpt.get().getParking() != null && spotOpt.get().getParking().getCompany() != null) {
+                    Long companyId = spotOpt.get().getParking().getCompany().getId();
+                    if (companyId != null) {
+                        Notification notification = new Notification();
+                        notification.setCompanyId(companyId);
+                        notification.setType("RESERVATION");
+                        notification.setMessage("Nueva reserva recibida de " + 
+                            (saved.getUser() != null ? saved.getUser().getName() : "un usuario") + 
+                            " en " + spotOpt.get().getParking().getName());
+                        notification.setRead(false);
+                        notificationService.create(notification);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Error creating notification: " + e.getMessage());
+        }
+
+        return saved;
     }
 
     @Override
