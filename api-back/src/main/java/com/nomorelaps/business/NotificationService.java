@@ -51,6 +51,17 @@ public class NotificationService implements INotificationService {
     }
 
     @Override
+    public void markAllAsRead(Long companyId) {
+        List<Notification> notifications = persistencePort.findByCompanyId(companyId);
+        notifications.forEach(n -> {
+            if (!n.isRead()) {
+                n.setRead(true);
+                persistencePort.save(n);
+            }
+        });
+    }
+
+    @Override
     public void deleteById(Long id) {
         persistencePort.deleteById(id);
     }

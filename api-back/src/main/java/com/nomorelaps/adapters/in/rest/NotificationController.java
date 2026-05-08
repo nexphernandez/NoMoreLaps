@@ -56,6 +56,13 @@ public class NotificationController {
         return ResponseEntity.ok(notificationMapper.toResponse(notificationService.markAsRead(id)));
     }
 
+    @PatchMapping("/company/{companyId}/read-all")
+    @Operation(summary = "Mark all notifications as read", description = "Updates the status of all notifications for a company to 'read'.")
+    public ResponseEntity<Void> markAllAsRead(@PathVariable Long companyId) {
+        notificationService.markAllAsRead(companyId);
+        return ResponseEntity.ok().build();
+    }
+
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete notification", description = "Removes a notification from the system.")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
