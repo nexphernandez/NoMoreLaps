@@ -35,6 +35,13 @@ public interface INotificationService {
     List<Notification> findByCompanyId(Long companyId);
 
     /**
+     * Marks all notifications for a company as read.
+     * 
+     * @param companyId the identifier of the company
+     */
+    void markAllAsRead(Long companyId);
+
+    /**
      * Deletes a notification by its identifier.
      * 
      * @param id the identifier of the notification to delete
