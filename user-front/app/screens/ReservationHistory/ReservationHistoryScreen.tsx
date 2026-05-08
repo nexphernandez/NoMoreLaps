@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useCallback } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import ReservationHistoryView from './ReservationHistoryView';
 import { useAuth } from '../../context/AuthContext';
 import reservationService, { Reservation } from '../../services/reservationService';
@@ -9,11 +10,13 @@ const ReservationHistoryScreen = () => {
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if (user) {
-      loadReservations();
-    }
-  }, [user]);
+  useFocusEffect(
+    useCallback(() => {
+      if (user) {
+        loadReservations();
+      }
+    }, [user])
+  );
 
   const loadReservations = async () => {
     try {

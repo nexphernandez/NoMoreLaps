@@ -74,8 +74,7 @@ export class Billing implements OnInit {
   }
 
   togglePayment(reservation: Reservation) {
-    const newStatus = !reservation.paid;
-    this.reservationService.updatePaymentStatus(reservation.id, newStatus).subscribe({
+    this.reservationService.updatePaymentStatus(reservation.id, true).subscribe({
       next: (updated) => {
         reservation.paid = updated.paid;
         this.cdr.detectChanges();

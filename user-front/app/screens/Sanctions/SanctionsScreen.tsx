@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useCallback } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import SanctionsView from './SanctionsView';
 import { useAuth } from '../../context/AuthContext';
 import sanctionService, { Sanction } from '../../services/sanctionService';
@@ -9,11 +10,13 @@ const SanctionsScreen = () => {
   const [sanctions, setSanctions] = useState<Sanction[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if (user) {
-      loadSanctions();
-    }
-  }, [user]);
+  useFocusEffect(
+    useCallback(() => {
+      if (user) {
+        loadSanctions();
+      }
+    }, [user])
+  );
 
   const loadSanctions = async () => {
     try {

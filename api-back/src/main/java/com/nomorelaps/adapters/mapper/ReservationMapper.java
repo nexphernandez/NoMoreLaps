@@ -17,7 +17,7 @@ import com.nomorelaps.domain.models.Sanction;
  * @author nexphernandez DiazLuisAlejandro
  * @version 1.0.0
  */
-@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
+@Mapper(componentModel = "spring", uses = {SanctionMapper.class}, unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface ReservationMapper {
     /**
      * Converts an API request into a domain model.
@@ -53,7 +53,6 @@ public interface ReservationMapper {
      * @param domain The business domain object.
      * @return The JPA entity for database storage.
      */
-    @Mapping(target = "sanctions", ignore = true)
     @Mapping(target = "parkingSpot", ignore = true)
     @Mapping(target = "user", ignore = true)
     ReservationJpaEntity toJpaEntity(Reservation domain);
@@ -64,7 +63,6 @@ public interface ReservationMapper {
      * @param entity The JPA entity from the database.
      * @return The business domain object.
      */
-    @Mapping(target = "sanctions", ignore = true)
     @Mapping(target = "parkingSpot", ignore = true)
     @Mapping(target = "user", ignore = true)
     Reservation toDomain(ReservationJpaEntity entity);

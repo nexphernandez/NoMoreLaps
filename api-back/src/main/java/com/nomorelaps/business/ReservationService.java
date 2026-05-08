@@ -175,6 +175,19 @@ public class ReservationService implements IReservationService {
         Reservation reservation = persistencePort.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Reservation not found"));
         reservation.setPaid(paid);
+        
+        if (paid) {
+            reservation.setState("COMPLETED");
+            if (reservation.getParkingSpot() != null) {
+                reservation.getParkingSpot().setState(true); 
+                spotPersistencePort.save(reservation.getParkingSpot());
+            }
+        }
+        
+        if (reservation.getSanctions() != null) {
+            reservation.getSanctions().forEach(s -> s.setPaid(paid));
+        }
+        
         return persistencePort.save(reservation);
     }
 }

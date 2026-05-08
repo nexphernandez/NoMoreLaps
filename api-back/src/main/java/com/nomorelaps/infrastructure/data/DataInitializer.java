@@ -152,7 +152,17 @@ public class DataInitializer implements CommandLineRunner {
                 r2.setBasePrice(3.0);
                 r2.setState("ACTIVE");
                 r2.setPaid(false);
-                reservationService.create(r2);
+                Reservation savedR2 = reservationService.create(r2);
+
+                // Add a sanction to the active reservation for testing
+                Sanction s2 = new Sanction();
+                s2.setReservation(savedR2);
+                s2.setUser(user);
+                s2.setAmount(15.0);
+                s2.setReason("Unauthorized Spot Access");
+                s2.setArrivalTime(LocalDateTime.now().minusMinutes(30));
+                s2.setPaid(false);
+                sanctionService.create(s2);
 
                 // Reservation 3: Past with Sanction
                 Reservation r3 = new Reservation();
@@ -172,7 +182,7 @@ public class DataInitializer implements CommandLineRunner {
                 s.setAmount(10.0);
                 s.setReason("Overtime (30 min)");
                 s.setArrivalTime(LocalDateTime.now().minusDays(1).withHour(15).withMinute(30));
-                s.setPaid(false);
+                s.setPaid(savedR3.isPaid());
                 sanctionService.create(s);
             }
         });

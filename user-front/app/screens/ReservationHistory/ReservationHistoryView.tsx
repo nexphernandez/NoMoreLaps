@@ -54,6 +54,7 @@ const ReservationHistoryView: React.FC<ReservationHistoryViewProps> = ({ history
                 label={
                   item.state === 'PENDING_SYNC' ? 'WAITING CONNECTION' : 
                   item.state === 'SYNC_ERROR' ? 'SYNC ERROR' :
+                  item.paid ? 'PAID' : 
                   (item.state || 'UNKNOWN')
                 } 
                 type={
@@ -72,7 +73,9 @@ const ReservationHistoryView: React.FC<ReservationHistoryViewProps> = ({ history
               </View>
               <View style={styles.detailItem}>
                 <Typography variant="label">Status</Typography>
-                <Typography variant="body" style={{fontWeight: '600'}}>{item.state}</Typography>
+                <Typography variant="body" style={{fontWeight: '600'}}>
+                  {item.paid ? 'PAID' : item.state}
+                </Typography>
               </View>
               <View style={styles.detailItem}>
                 <Typography variant="label">Cost</Typography>
@@ -130,6 +133,7 @@ const ReservationHistoryView: React.FC<ReservationHistoryViewProps> = ({ history
                       label={
                         selectedRes.state === 'PENDING_SYNC' ? 'WAITING CONNECTION' : 
                         selectedRes.state === 'SYNC_ERROR' ? 'SYNC ERROR' :
+                        selectedRes.paid ? 'PAID' :
                         (selectedRes.state || '')
                       } 
                       type={
@@ -140,7 +144,14 @@ const ReservationHistoryView: React.FC<ReservationHistoryViewProps> = ({ history
                     />
                   </View>
                   <View style={styles.modalRow}>
-                    <Typography variant="label">Total Paid</Typography>
+                    <Typography variant="label">Payment</Typography>
+                    <Badge 
+                      label={selectedRes.paid ? 'PAID' : 'PENDING'} 
+                      type={selectedRes.paid ? 'success' : 'warning'} 
+                    />
+                  </View>
+                  <View style={styles.modalRow}>
+                    <Typography variant="label">Total Cost</Typography>
                     <Typography variant="h2" color={theme.primary}>{selectedRes.price || '0'}€</Typography>
                   </View>
                   
