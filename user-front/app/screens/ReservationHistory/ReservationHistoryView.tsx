@@ -183,13 +183,14 @@ const ReservationHistoryView: React.FC<ReservationHistoryViewProps> = ({ history
 };
 
 const styles = StyleSheet.create({
-  listContent: { paddingBottom: 20 },
-  header: { marginBottom: 24, marginTop: 10 },
-  cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 },
-  cardBody: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 20 },
+  listContent: { padding: 24, paddingBottom: 60 },
+  header: { marginBottom: 32, marginTop: 8 },
+  cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 },
+  cardBody: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 24 },
   detailItem: { flex: 1 },
   receiptBtn: {
     borderTopWidth: 1,
+    paddingTop: 4,
   },
   modalOverlay: {
     flex: 1,

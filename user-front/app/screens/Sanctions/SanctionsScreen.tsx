@@ -27,16 +27,6 @@ const SanctionsScreen = () => {
     }
   };
 
-  const handlePaySanction = async (id: number) => {
-    try {
-      await sanctionService.pay(id);
-      Alert.alert('Success', 'Sanction paid successfully!');
-      loadSanctions(); // Refresh list
-    } catch (error: any) {
-      Alert.alert('Error', error.message || 'Payment failed');
-    }
-  };
-
   if (loading) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -48,7 +38,6 @@ const SanctionsScreen = () => {
   return (
     <SanctionsView 
       sanctions={sanctions} 
-      onPaySanction={handlePaySanction}
     />
   );
 };

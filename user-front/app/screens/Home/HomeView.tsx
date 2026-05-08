@@ -9,6 +9,8 @@ import { useTheme } from '../../context/ThemeContext';
 
 import { Parking } from '../../services/parkingService';
 
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+
 interface HomeViewProps {
   parkings: Parking[];
   onSelectParking: (id: number) => void;
@@ -44,12 +46,15 @@ const HomeView: React.FC<HomeViewProps> = ({ parkings, onSelectParking, onGoToPr
       {/* AD ALERT MODAL - Contextual Ad */}
       {showAdAlert && viewMode === 'map' && (
         <View style={[styles.adAlert, { backgroundColor: theme.primary }]}>
+          <View style={styles.adIconContainer}>
+             <MaterialCommunityIcons name="gift-outline" size={24} color="#FFF" />
+          </View>
           <View style={{ flex: 1 }}>
-            <Typography variant="label" color="#FFF" style={{ fontWeight: 'bold' }}>🎁 NEARBY OFFER</Typography>
+            <Typography variant="label" color="#FFF" style={{ fontWeight: 'bold' }}>NEARBY OFFER</Typography>
             <Typography variant="body" color="#FFF">20% discount at 'Star Coffee' next to Sol Parking!</Typography>
           </View>
           <TouchableOpacity onPress={() => setShowAdAlert(false)} style={styles.adClose}>
-            <Typography variant="h3" color="#FFF">✕</Typography>
+            <MaterialCommunityIcons name="close" size={20} color="#FFF" />
           </TouchableOpacity>
         </View>
       )}
@@ -161,9 +166,16 @@ const HomeView: React.FC<HomeViewProps> = ({ parkings, onSelectParking, onGoToPr
         style={[styles.toggleButton, { backgroundColor: theme.text }]} 
         onPress={() => setViewMode(viewMode === 'list' ? 'map' : 'list')}
       >
-        <Typography color={theme.background} style={{ fontWeight: 'bold' }}>
-          {viewMode === 'list' ? '🗺️ Map View' : '📋 List View'}
-        </Typography>
+        <View style={styles.toggleContent}>
+          <MaterialCommunityIcons 
+            name={viewMode === 'list' ? 'map-outline' : 'view-list-outline'} 
+            size={20} 
+            color={theme.background} 
+          />
+          <Typography color={theme.background} style={{ fontWeight: 'bold', marginLeft: 8 }}>
+            {viewMode === 'list' ? 'Map View' : 'List View'}
+          </Typography>
+        </View>
       </TouchableOpacity>
     </SafeAreaView>
   );
@@ -175,8 +187,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 15,
+    paddingHorizontal: 24,
+    paddingVertical: 20,
     borderBottomWidth: 1,
     zIndex: 10,
   },
@@ -189,10 +201,10 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
+    borderTopLeftRadius: 32,
+    borderTopRightRadius: 32,
     padding: 24,
-    paddingBottom: 40,
+    paddingBottom: 48,
     elevation: 20,
     shadowColor: '#000',
     shadowOpacity: 0.2,
@@ -200,26 +212,26 @@ const styles = StyleSheet.create({
     zIndex: 100,
   },
   cardInfo: { flexDirection: 'row', marginBottom: 20 },
-  closeBtn: { padding: 5 },
+  closeBtn: { padding: 8 },
   cardButtons: { flexDirection: 'row', gap: 12 },
   toggleButton: {
     position: 'absolute',
     bottom: 50,
     alignSelf: 'center',
-    paddingHorizontal: 24,
-    paddingVertical: 12,
+    paddingHorizontal: 28,
+    paddingVertical: 14,
     borderRadius: 30,
     elevation: 5,
     zIndex: 50,
   },
   adAlert: {
-    padding: 16,
+    padding: 20,
     margin: 16,
-    borderRadius: 16,
+    borderRadius: 20,
     flexDirection: 'row',
     alignItems: 'center',
     position: 'absolute',
-    top: 70,
+    top: 85,
     left: 0,
     right: 0,
     zIndex: 1000,
@@ -228,6 +240,13 @@ const styles = StyleSheet.create({
   adClose: {
     padding: 8,
     marginLeft: 8,
+  },
+  adIconContainer: {
+    marginRight: 12,
+  },
+  toggleContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   sponsoredBanner: {
     padding: 24,

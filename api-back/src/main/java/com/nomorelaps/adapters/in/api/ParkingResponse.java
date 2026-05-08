@@ -24,7 +24,7 @@ public class ParkingResponse {
     private Integer sanctionIntervalInMinutes;
     private Double pricePerHour;
     private Long companyId;
-    private String status = "Abierto";
+    private String status = "Open";
     private Integer totalSpots;
     
     /**

@@ -47,7 +47,7 @@ export class Register {
       console.log('Password status:', this.registerForm.get('password')?.errors);
       console.log('Confirm status:', this.registerForm.get('confirmPassword')?.errors);
       
-      this.errorMessage = 'Por favor, rellena todos los campos correctamente.';
+      this.errorMessage = 'Please fill in all fields correctly.';
       return;
     }
 
@@ -62,7 +62,7 @@ export class Register {
       },
       error: (err) => {
         this.loading = false;
-        this.errorMessage = 'Error al crear la cuenta. El correo podría estar ya en uso.';
+        this.errorMessage = 'Error creating account. The email might already be in use.';
         console.error('Register error:', err);
       }
     });

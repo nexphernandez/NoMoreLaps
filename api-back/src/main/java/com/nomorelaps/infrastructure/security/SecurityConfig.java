@@ -61,10 +61,10 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/api/parkings/**").hasAnyRole("COMPANY", "ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/parkings/**").hasAnyRole("COMPANY", "ADMIN")
                         .requestMatchers(HttpMethod.PATCH, "/api/parkings/**").hasAnyRole("COMPANY", "ADMIN")
-                        
+
                         .requestMatchers("/api/parkings/company/**").hasAnyRole("COMPANY", "ADMIN")
                         .requestMatchers("/api/parkings/**").hasAnyRole("COMPANY", "ADMIN")
-                        
+
                         .requestMatchers("/api/parking-spots/**").hasAnyRole("COMPANY", "ADMIN")
                         .requestMatchers("/api/dynamic-prices/**").hasAnyRole("COMPANY", "ADMIN")
 

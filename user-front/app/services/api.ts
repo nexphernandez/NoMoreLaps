@@ -5,7 +5,7 @@ import { Alert } from 'react-native';
 /**
  * Base Axios configuration for connecting to the Spring Boot backend.
  */
-const API_URL = 'http://192.168.1.13:8080/api/'; 
+const API_URL = 'http://10.0.2.2:8080/api/'; 
 
 const api = axios.create({
   baseURL: API_URL,

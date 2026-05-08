@@ -9,7 +9,7 @@ import { CommonModule } from '@angular/common';
     <div class="parking-card glass-card">
       <div class="card-header">
         <h3 class="parking-name">{{ name }}</h3>
-        <span class="status-badge" [class.active]="status === 'Abierto'">{{ status }}</span>
+        <span class="status-badge" [class.active]="status === 'Open'">{{ status }}</span>
       </div>
       
       <p class="parking-address">
@@ -19,18 +19,18 @@ import { CommonModule } from '@angular/common';
       
       <div class="card-footer">
         <div class="stat">
-          <span class="label">Capacidad</span>
-          <span class="value">{{ capacity }} plazas</span>
+          <span class="label">Capacity</span>
+          <span class="value">{{ capacity }} spots</span>
         </div>
         
         <div class="actions">
-          <button class="icon-btn edit" (click)="onEditClick($event)" title="Editar">
+          <button class="icon-btn edit" (click)="onEditClick($event)" title="Edit">
             <span class="material-symbols-outlined">edit</span>
           </button>
-          <button class="icon-btn delete" (click)="onDeleteClick($event)" title="Eliminar">
+          <button class="icon-btn delete" (click)="onDeleteClick($event)" title="Delete">
             <span class="material-symbols-outlined">delete</span>
           </button>
-          <button class="manage-btn" (click)="onManageClick($event)">Gestionar</button>
+          <button class="manage-btn" (click)="onManageClick($event)">Manage</button>
         </div>
       </div>
     </div>
@@ -142,7 +142,7 @@ export class ParkingCard {
   @Input() name = '';
   @Input() address = '';
   @Input() capacity = 0;
-  @Input() status = 'Abierto';
+  @Input() status = 'Open';
 
   @Output() edit = new EventEmitter<number>();
   @Output() delete = new EventEmitter<number>();

@@ -96,8 +96,8 @@ public class ReservationScheduler {
             Notification notification = new Notification();
             notification.setCompanyId(parking.getCompany().getId());
             notification.setType("SANCTION");
-            notification.setMessage(String.format("Nueva sanción para %s: %.2f€ por exceso de tiempo.", 
-                                    reservation.getUser() != null ? reservation.getUser().getName() : "Usuario",
+            notification.setMessage(String.format("New sanction for %s: %.2f€ due to overtime.", 
+                                    reservation.getUser() != null ? reservation.getUser().getName() : "User",
                                     totalAmount));
             notification.setRead(false);
             notificationService.create(notification);

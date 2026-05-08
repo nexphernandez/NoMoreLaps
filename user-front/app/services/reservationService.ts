@@ -27,7 +27,7 @@ const reservationService = {
       const response = await api.post<Reservation>('reservations', reservation);
       return response.data;
     } catch (error: any) {
-      console.log('Reservation Error Object:', JSON.stringify(error));
+      console.log('Reservation Error Object:', JSON.stringify(error.response?.data || error.message));
       
       if (!error.response || error.code === 'ERR_NETWORK') {
         console.warn('OFFLINE DETECTED: saving reservation to local queue...');
@@ -50,7 +50,12 @@ const reservationService = {
           console.error('DB ERROR while saving offline:', dbError);
         }
       }
-      throw new Error(error.response?.data?.message || 'Failed to create reservation');
+
+      const backendMessage = error.response?.data?.message;
+      const validationErrors = error.response?.data?.errors;
+      const detailedError = validationErrors ? Object.values(validationErrors).join(', ') : backendMessage;
+
+      throw new Error(detailedError || 'Failed to create reservation');
     }
   },
 

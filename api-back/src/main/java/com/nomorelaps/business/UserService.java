@@ -33,10 +33,10 @@ public class UserService implements IUserService {
     @Override
     public User create(User user) {
         if (persistencePort.findByEmail(user.getEmail()).isPresent()) {
-            throw new IllegalArgumentException("BusinessRuleException: El email del usuario ya está registrado en el sistema.");
+            throw new IllegalArgumentException("BusinessRuleException: User email is already registered in the system.");
         }
         if (user.getPassword() == null || user.getPassword().isEmpty()) {
-            throw new IllegalArgumentException("La contraseña es obligatoria para el registro.");
+            throw new IllegalArgumentException("Password is required for registration.");
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return persistencePort.save(user);
@@ -85,11 +85,11 @@ public class UserService implements IUserService {
     @Override
     public void changePassword(Long userId, String currentPassword, String newPassword) {
         User user = persistencePort.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         // Validate that current password matches the one in DB
         if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
-            throw new IllegalArgumentException("La contraseña actual es incorrecta");
+            throw new IllegalArgumentException("Current password is incorrect");
         }
 
         // Encode and save the new password

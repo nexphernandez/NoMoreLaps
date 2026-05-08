@@ -9,12 +9,13 @@ import { useTheme } from '../../context/ThemeContext';
 import { Sanction } from '../../services/sanctionService';
 import CustomButton from '../../components/CustomButton';
 
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+
 interface SanctionsViewProps {
   sanctions: Sanction[];
-  onPaySanction: (id: number) => void;
 }
 
-const SanctionsView: React.FC<SanctionsViewProps> = ({ sanctions, onPaySanction }) => {
+const SanctionsView: React.FC<SanctionsViewProps> = ({ sanctions }) => {
   const { theme } = useTheme();
 
   return (
@@ -54,22 +55,12 @@ const SanctionsView: React.FC<SanctionsViewProps> = ({ sanctions, onPaySanction 
                   <Typography variant="h2" color={theme.danger}>{item.amount}€</Typography>
                 </View>
               </View>
-              
-              {!item.paid && (
-                <View style={{marginTop: 16}}>
-                  <CustomButton 
-                    title="Pay Fine" 
-                    onPress={() => onPaySanction(item.id)}
-                    variant="outline"
-                  />
-                </View>
-              )}
             </View>
           </Card>
         )}
         ListEmptyComponent={() => (
           <View style={styles.emptyContainer}>
-            <Typography style={{ fontSize: 60, marginBottom: 20 }}>✅</Typography>
+            <MaterialCommunityIcons name="check-circle-outline" size={80} color={theme.success} style={{ marginBottom: 20 }} />
             <Typography variant="h2">You're all clear!</Typography>
             <Typography variant="caption" style={{textAlign: 'center', marginTop: 8}}>You don't have any active sanctions.</Typography>
           </View>
@@ -80,14 +71,14 @@ const SanctionsView: React.FC<SanctionsViewProps> = ({ sanctions, onPaySanction 
 };
 
 const styles = StyleSheet.create({
-  listContent: { paddingBottom: 20 },
-  header: { marginBottom: 24 },
-  cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
+  listContent: { padding: 24, paddingBottom: 40 },
+  header: { marginBottom: 32 },
+  cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 },
   cardBody: { gap: 12 },
   detailItem: { flex: 1 },
   row: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: 8 },
   amountContainer: { alignItems: 'flex-end' },
-  emptyContainer: { alignItems: 'center', marginTop: 100 },
+  emptyContainer: { alignItems: 'center', marginTop: 120, paddingHorizontal: 40 },
 });
 
 export default SanctionsView;

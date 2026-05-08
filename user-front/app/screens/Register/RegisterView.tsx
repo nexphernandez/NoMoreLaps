@@ -45,16 +45,16 @@ const RegisterView: React.FC<RegisterViewProps> = ({
 
         <View style={styles.form}>
           <InputField
-            label="Nombre Completo"
-            placeholder="Juan Pérez"
+            label="Full Name"
+            placeholder="John Doe"
             value={name}
             onChangeText={setName}
             error={errors.name}
           />
 
           <InputField
-            label="Correo Electrónico"
-            placeholder="ejemplo@test.com"
+            label="Email Address"
+            placeholder="example@test.com"
             value={email}
             onChangeText={setEmail}
             keyboardType="email-address"
@@ -63,7 +63,7 @@ const RegisterView: React.FC<RegisterViewProps> = ({
           />
 
           <InputField
-            label="Contraseña"
+            label="Password"
             placeholder="••••••••"
             value={password}
             onChangeText={setPassword}
@@ -72,7 +72,7 @@ const RegisterView: React.FC<RegisterViewProps> = ({
           />
 
           <InputField
-            label="Confirmar Contraseña"
+            label="Confirm Password"
             placeholder="••••••••"
             value={confirmPassword}
             onChangeText={setConfirmPassword}

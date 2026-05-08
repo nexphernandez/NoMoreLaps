@@ -1,8 +1,8 @@
 <div class="notifications-container">
   <header class="page-header">
     <div class="header-text">
-      <h1 class="page-title">Centro de Alertas</h1>
-      <p class="page-subtitle">Mantente al día con lo que sucede en tus parkings.</p>
+      <h1 class="page-title">Alert Center</h1>
+      <p class="page-subtitle">Stay up to date with what's happening in your parkings.</p>
     </div>
   </header>
 
@@ -29,13 +29,13 @@
   </div>
 
   <div class="loading-container" *ngIf="loading">
-    <p>Cargando notificaciones...</p>
+    <p>Loading notifications...</p>
   </div>
 
   <div class="empty-container" *ngIf="!loading && notifications.length === 0">
     <div class="empty-icon">
       <span class="material-symbols-outlined" style="font-size: 4rem;">mail_outline</span>
     </div>
-    <p>No tienes notificaciones por ahora.</p>
+    <p>You have no notifications for now.</p>
   </div>
 </div>

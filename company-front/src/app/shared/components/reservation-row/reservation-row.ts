@@ -39,36 +39,36 @@ import { Reservation } from '../../../core/models/reservation.model';
               <span class="material-symbols-outlined" style="font-size: 0.9rem; vertical-align: middle;">
                 {{ reservation.paid ? 'check_circle' : 'pending' }}
               </span>
-              {{ reservation.paid ? 'Pagado' : 'Pendiente' }}
+              {{ reservation.paid ? 'Paid' : 'Pending' }}
             </span>
           </div>
         </div>
 
         <div class="res-actions">
-          <button class="action-btn">{{ expanded ? 'Cerrar' : 'Detalles' }}</button>
+          <button class="action-btn">{{ expanded ? 'Close' : 'Details' }}</button>
         </div>
       </div>
 
       <div class="details-pane glass-card" *ngIf="expanded">
         <div class="details-grid">
           <div class="detail-item">
-            <span class="label">ID Reserva</span>
+            <span class="label">Reservation ID</span>
             <span class="value">#{{ reservation.id }}</span>
           </div>
           <div class="detail-item">
-            <span class="label">ID Plaza</span>
-            <span class="value">Plaza {{ reservation.parkingSpotId }}</span>
+            <span class="label">Spot ID</span>
+            <span class="value">Spot {{ reservation.parkingSpotId }}</span>
           </div>
           <div class="detail-item">
-            <span class="label">Precio Base</span>
+            <span class="label">Base Price</span>
             <span class="value">{{ reservation.basePrice | currency:'EUR' }}</span>
           </div>
           <div class="detail-item" *ngIf="reservation.sanctionPrice > 0">
-            <span class="label">Sanciones</span>
+            <span class="label">Sanctions</span>
             <span class="value sanction">{{ reservation.sanctionPrice | currency:'EUR' }}</span>
           </div>
           <div class="detail-item">
-            <span class="label">Fecha Creación</span>
+            <span class="label">Creation Date</span>
             <span class="value">{{ reservation.creationTime | date:'medium' }}</span>
           </div>
         </div>
@@ -222,9 +222,9 @@ export class ReservationRow {
 
   getStatusLabel() {
     switch (this.reservation.state) {
-      case 'ACTIVE': return 'Activa';
-      case 'COMPLETED': return 'Finalizada';
-      case 'CANCELLED': return 'Cancelada';
+      case 'ACTIVE': return 'Active';
+      case 'COMPLETED': return 'Finished';
+      case 'CANCELLED': return 'Cancelled';
       default: return this.reservation.state;
     }
   }

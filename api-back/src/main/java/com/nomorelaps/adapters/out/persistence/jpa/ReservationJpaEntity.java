@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Set;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -57,7 +58,7 @@ public class ReservationJpaEntity {
     @JoinColumn(name = "user_id")
     private UserJpaEntity user;
 
-    @OneToMany(mappedBy = "reservation")
+    @OneToMany(mappedBy = "reservation", cascade = CascadeType.ALL)
     private Set<SanctionJpaEntity> sanctions;
 
     /**
