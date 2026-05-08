@@ -12,7 +12,10 @@ import { CommonModule } from '@angular/common';
         <span class="status-badge" [class.active]="status === 'Abierto'">{{ status }}</span>
       </div>
       
-      <p class="parking-address">📍 {{ address }}</p>
+      <p class="parking-address">
+        <span class="material-symbols-outlined" style="font-size: 1.1rem; vertical-align: middle;">location_on</span> 
+        {{ address }}
+      </p>
       
       <div class="card-footer">
         <div class="stat">
@@ -21,8 +24,12 @@ import { CommonModule } from '@angular/common';
         </div>
         
         <div class="actions">
-          <button class="icon-btn edit" (click)="onEditClick($event)" title="Editar">✏️</button>
-          <button class="icon-btn delete" (click)="onDeleteClick($event)" title="Eliminar">🗑️</button>
+          <button class="icon-btn edit" (click)="onEditClick($event)" title="Editar">
+            <span class="material-symbols-outlined">edit</span>
+          </button>
+          <button class="icon-btn delete" (click)="onDeleteClick($event)" title="Eliminar">
+            <span class="material-symbols-outlined">delete</span>
+          </button>
           <button class="manage-btn" (click)="onManageClick($event)">Gestionar</button>
         </div>
       </div>

@@ -29,7 +29,7 @@ export class Billing implements OnInit {
     private parkingService: ParkingService,
     private authService: AuthService,
     private cdr: ChangeDetectorRef
-  ) {}
+  ) { }
 
   ngOnInit() {
     const user = this.authService.currentUser();
@@ -65,9 +65,9 @@ export class Billing implements OnInit {
     return this.reservations.filter(r => {
       const matchesSearch = r.userName.toLowerCase().includes(this.searchTerm.toLowerCase());
       const matchesParking = this.parkingFilter === 'all' || r.parkingName === this.parkingFilter;
-      const matchesStatus = this.statusFilter === 'all' || 
-                           (this.statusFilter === 'paid' && r.paid) ||
-                           (this.statusFilter === 'pending' && !r.paid);
+      const matchesStatus = this.statusFilter === 'all' ||
+        (this.statusFilter === 'paid' && r.paid) ||
+        (this.statusFilter === 'pending' && !r.paid);
 
       return matchesSearch && matchesParking && matchesStatus;
     });

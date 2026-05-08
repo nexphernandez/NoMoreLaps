@@ -7,16 +7,14 @@
   </header>
 
   <div class="notifications-list" *ngIf="!loading && notifications.length > 0">
-    <div *ngFor="let n of notifications" 
-         class="notification-card glass-card" 
-         [class.unread]="!n.isRead"
-         (click)="markAsRead(n)">
+    <div *ngFor="let n of notifications" class="notification-card glass-card" [class.unread]="!n.isRead"
+      (click)="markAsRead(n)">
       <div class="notif-icon" [ngClass]="n.type.toLowerCase()">
-        <span *ngIf="n.type === 'RESERVATION'">📅</span>
-        <span *ngIf="n.type === 'SANCTION'">⚖️</span>
-        <span *ngIf="n.type === 'CANCEL'">❌</span>
+        <span class="material-symbols-outlined" *ngIf="n.type === 'RESERVATION'">calendar_today</span>
+        <span class="material-symbols-outlined" *ngIf="n.type === 'SANCTION'">warning</span>
+        <span class="material-symbols-outlined" *ngIf="n.type === 'CANCEL'">cancel</span>
       </div>
-      
+
       <div class="notif-content">
         <p class="notif-message">{{ n.message }}</p>
         <span class="notif-time">{{ formatDate(n.createdAt) }}</span>
@@ -24,7 +22,7 @@
 
       <div class="notif-actions">
         <button class="delete-btn" (click)="$event.stopPropagation(); deleteNotification(n.id)">
-          🗑️
+          <span class="material-symbols-outlined">delete</span>
         </button>
       </div>
     </div>
@@ -35,7 +33,9 @@
   </div>
 
   <div class="empty-container" *ngIf="!loading && notifications.length === 0">
-    <div class="empty-icon">📭</div>
+    <div class="empty-icon">
+      <span class="material-symbols-outlined" style="font-size: 4rem;">mail_outline</span>
+    </div>
     <p>No tienes notificaciones por ahora.</p>
   </div>
 </div>

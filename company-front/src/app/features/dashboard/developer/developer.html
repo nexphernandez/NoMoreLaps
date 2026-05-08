@@ -22,8 +22,12 @@
       <div class="key-container">
         <code class="api-key">{{ showKey ? apiKey : '••••••••••••••••••••••••••••••••' }}</code>
         <div class="key-actions">
-          <button class="icon-btn" (click)="toggleKey()">{{ showKey ? '👁️‍🗨️' : '👁️' }}</button>
-          <button class="icon-btn" (click)="copyKey()">📋</button>
+          <button class="icon-btn" (click)="toggleKey()">
+            <span class="material-symbols-outlined">{{ showKey ? 'visibility_off' : 'visibility' }}</span>
+          </button>
+          <button class="icon-btn" (click)="copyKey()">
+            <span class="material-symbols-outlined">content_copy</span>
+          </button>
         </div>
       </div>
 

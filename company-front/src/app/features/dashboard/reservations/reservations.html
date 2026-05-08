@@ -7,13 +7,6 @@
   </header>
 
   <div class="filters-bar glass-card">
-    <div class="search-box">
-      <span class="search-icon">🔍</span>
-      <input type="text" 
-             placeholder="Buscar por usuario..." 
-             class="filter-input"
-             [(ngModel)]="searchTerm">
-    </div>
     <div class="filter-actions">
       <select class="filter-select" [(ngModel)]="parkingFilter">
         <option value="all">Todos los parkings</option>
@@ -40,13 +33,7 @@
 
     <app-reservation-row 
       *ngFor="let res of filteredReservations"
-      [userName]="res.userName"
-      [parkingName]="res.parkingName"
-      [date]="formatDate(res.startTime)"
-      [time]="formatTime(res.startTime, res.endTime)"
-      [status]="res.state === 'ACTIVE' ? 'Activa' : res.state === 'COMPLETED' ? 'Finalizada' : 'Cancelada'"
-      [price]="res.price"
-      [paid]="res.paid"
+      [reservation]="res"
     ></app-reservation-row>
   </div>
 
