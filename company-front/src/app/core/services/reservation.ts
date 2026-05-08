@@ -27,4 +27,8 @@ export class ReservationService {
   deleteReservation(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
+
+  updatePaymentStatus(id: number, paid: boolean): Observable<Reservation> {
+    return this.http.patch<Reservation>(`${this.apiUrl}/${id}/payment-status?paid=${paid}`, {});
+  }
 }

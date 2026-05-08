@@ -194,4 +194,24 @@ public class ReservationController {
         reservationService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
+
+    /**
+     * Updates the payment status of a reservation.
+     *
+     * @param id   The reservation ID.
+     * @param paid The new payment status.
+     * @return The updated reservation.
+     */
+    @PatchMapping("/{id}/payment-status")
+    @Operation(summary = "Update payment status", description = "Marks a reservation as paid or pending.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Payment status updated successfully"),
+            @ApiResponse(responseCode = "404", description = "Reservation not found")
+    })
+    public ResponseEntity<ReservationResponse> updatePaymentStatus(
+            @PathVariable Long id,
+            @RequestParam boolean paid) {
+        Reservation updated = reservationService.updatePaymentStatus(id, paid);
+        return ResponseEntity.ok(reservationMapper.toResponse(updated));
+    }
 }

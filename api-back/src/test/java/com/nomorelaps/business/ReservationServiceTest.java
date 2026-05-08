@@ -230,5 +230,20 @@ class ReservationServiceTest {
         verify(persistencePort, never()).hasOverlappingReservationsExcluding(anyLong(), any(), any(), anyLong());
         verify(persistencePort).save(validReservation);
     }
+
+    @Test
+    @DisplayName("Should update payment status")
+    void shouldUpdatePaymentStatus() {
+        validReservation.setId(1L);
+        validReservation.setPaid(false);
+        
+        when(persistencePort.findById(1L)).thenReturn(Optional.of(validReservation));
+        when(persistencePort.save(any(Reservation.class))).thenAnswer(i -> i.getArgument(0));
+
+        Reservation result = reservationService.updatePaymentStatus(1L, true);
+
+        assertTrue(result.isPaid());
+        verify(persistencePort).save(validReservation);
+    }
 }
 

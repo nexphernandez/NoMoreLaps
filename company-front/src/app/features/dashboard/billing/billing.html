@@ -1,0 +1,89 @@
+<div class="billing-container">
+  <header class="page-header">
+    <div class="header-text">
+      <h1 class="page-title">Facturación Unificada</h1>
+      <p class="page-subtitle">Gestiona cobros, desgloses de precios y estados de pago.</p>
+    </div>
+  </header>
+
+  <div class="stats-row">
+    <div class="mini-stat glass-card">
+      <span class="label">Cobrado (Total)</span>
+      <span class="value">{{ totalCollected | currency:'EUR' }}</span>
+    </div>
+    <div class="mini-stat glass-card">
+      <span class="label">Pendiente de Cobro</span>
+      <span class="value highlight">{{ pendingAmount | currency:'EUR' }}</span>
+    </div>
+  </div>
+
+  <div class="filters-bar glass-card">
+    <div class="search-box">
+      <span class="search-icon">🔍</span>
+      <input type="text" 
+             placeholder="Buscar por usuario..." 
+             class="filter-input"
+             [(ngModel)]="searchTerm">
+    </div>
+    <div class="filter-actions">
+      <select class="filter-select" [(ngModel)]="parkingFilter">
+        <option value="all">Todos los parkings</option>
+        <option *ngFor="let p of parkings" [value]="p.name">{{ p.name }}</option>
+      </select>
+
+      <select class="filter-select" [(ngModel)]="statusFilter">
+        <option value="all">Todos los estados</option>
+        <option value="pending">Pendiente</option>
+        <option value="paid">Pagado</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="billing-list">
+    <div class="list-header">
+      <span>USUARIO Y PLAZA</span>
+      <span>DESGLOSE (BASE + SANC.)</span>
+      <span>TOTAL</span>
+      <span>ESTADO / ACCIÓN</span>
+    </div>
+
+    <div *ngFor="let r of filteredReservations" class="billing-row glass-card" [class.paid]="r.paid">
+      <div class="user-info">
+        <div class="avatar-mini">{{ r.userName.charAt(0) }}</div>
+        <div class="details">
+          <span class="name">{{ r.userName }}</span>
+          <span class="parking">{{ r.parkingName }} - Spot #{{ r.parkingSpotId }}</span>
+        </div>
+      </div>
+
+      <div class="breakdown">
+        <span class="base">{{ r.basePrice | currency:'EUR' }}</span>
+        <span class="plus">+</span>
+        <span class="sanction">{{ r.sanctionPrice | currency:'EUR' }}</span>
+      </div>
+
+      <div class="total-price">
+        <span class="value">{{ r.price | currency:'EUR' }}</span>
+      </div>
+
+      <div class="actions">
+        <span class="status-badge" [class.paid]="r.paid">
+          {{ r.paid ? 'Pagado' : 'Pendiente' }}
+        </span>
+        <button class="toggle-btn" (click)="togglePayment(r)">
+          {{ r.paid ? 'Revertir' : 'Marcar Pagado' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="loading-container" *ngIf="loading">
+    <div class="spinner"></div>
+    <p>Cargando datos financieros...</p>
+  </div>
+
+  <div class="empty-container" *ngIf="!loading && filteredReservations.length === 0">
+    <div class="empty-icon">💸</div>
+    <p>No se encontraron registros de facturación.</p>
+  </div>
+</div>

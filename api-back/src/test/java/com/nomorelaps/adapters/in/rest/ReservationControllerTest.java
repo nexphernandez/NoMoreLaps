@@ -2,7 +2,7 @@ package com.nomorelaps.adapters.in.rest;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
@@ -181,6 +181,20 @@ class ReservationControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(1))
                 .andExpect(jsonPath("$[0].id").value(1));
+    }
+
+    @Test
+    @DisplayName("PATCH /api/reservations/{id}/payment-status - Success")
+    @WithMockUser
+    void shouldUpdatePaymentStatus() throws Exception {
+        Reservation updated = new Reservation(1L);
+        updated.setPaid(true);
+        when(reservationService.updatePaymentStatus(eq(1L), anyBoolean())).thenReturn(updated);
+
+        mockMvc.perform(patch("/api/reservations/1/payment-status")
+                .param("paid", "true"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.paid").value(true));
     }
 }
 

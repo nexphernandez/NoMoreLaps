@@ -47,10 +47,13 @@ public class ReservationResponseTest {
         ReservationResponse r2 = new ReservationResponse(1L);
         assertEquals(1L, r2.getId());
         
-        ReservationResponse r3 = new ReservationResponse(1L, now, now, 10.5, "ACTIVE", now, 2L, 3L, "Name", "Juan Perez");
+        ReservationResponse r3 = new ReservationResponse(1L, now, now, 10.5, "ACTIVE", now, 2L, 3L, "Name", "Juan Perez", 8.0, 2.5, true);
         assertEquals(1L, r3.getId());
         assertEquals("ACTIVE", r3.getState());
         assertEquals("Juan Perez", r3.getUserName());
+        assertEquals(8.0, r3.getBasePrice());
+        assertEquals(2.5, r3.getSanctionPrice());
+        assertTrue(r3.isPaid());
     }
 
     @Test

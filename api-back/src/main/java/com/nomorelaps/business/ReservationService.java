@@ -50,6 +50,9 @@ public class ReservationService implements IReservationService {
         }
 
         reservation.setState("ACTIVE");
+        if (reservation.getBasePrice() == null) {
+            reservation.setBasePrice(reservation.getPrice());
+        }
         return persistencePort.save(reservation);
     }
 
@@ -123,5 +126,14 @@ public class ReservationService implements IReservationService {
     @Override
     public void deleteById(Long id) {
         persistencePort.deleteById(id);
+    }
+
+    @Override
+    @Transactional
+    public Reservation updatePaymentStatus(Long id, boolean paid) {
+        Reservation reservation = persistencePort.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Reservation not found"));
+        reservation.setPaid(paid);
+        return persistencePort.save(reservation);
     }
 }
