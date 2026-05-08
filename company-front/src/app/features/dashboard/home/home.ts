@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ParkingService } from '../../../core/services/parking';
 import { ReservationService } from '../../../core/services/reservation';
-import { SanctionService } from '../../../core/services/sanction';
 import { AuthService } from '../../../core/services/auth';
 import { forkJoin } from 'rxjs';
 
@@ -40,10 +39,10 @@ import { forkJoin } from 'rxjs';
         </div>
 
         <div class="stat-card glass-card">
-          <span class="stat-icon">⚖️</span>
+          <span class="stat-icon">🧾</span>
           <div class="stat-info">
-            <span class="stat-label">Sanciones Pendientes</span>
-            <span class="stat-value">{{ stats.pendingSanctions }}</span>
+            <span class="stat-label">Cobros Pendientes</span>
+            <span class="stat-value">{{ stats.pendingPayments }}</span>
           </div>
         </div>
       </div>
@@ -53,7 +52,7 @@ import { forkJoin } from 'rxjs';
         <div class="activity-list" *ngIf="recentActivity.length > 0; else noActivity">
           <div class="activity-item" *ngFor="let item of recentActivity">
             <span class="activity-type" [class.reservation]="item.type === 'reservation'">
-              {{ item.type === 'reservation' ? '📅' : '⚖️' }}
+              {{ item.type === 'reservation' ? '📅' : '💰' }}
             </span>
             <div class="activity-details">
               <p class="activity-text">{{ item.message }}</p>
@@ -135,6 +134,9 @@ import { forkJoin } from 'rxjs';
       border-radius: 0.5rem;
       background: rgba(255, 255, 255, 0.05);
     }
+    .activity-type.reservation {
+      color: var(--accent);
+    }
     .activity-details {
       display: flex;
       flex-direction: column;
@@ -158,7 +160,7 @@ export class Home implements OnInit {
     activeParkings: 0,
     todayReservations: 0,
     totalRevenue: 0,
-    pendingSanctions: 0
+    pendingPayments: 0
   };
 
   recentActivity: any[] = [];
@@ -166,7 +168,6 @@ export class Home implements OnInit {
   constructor(
     private parkingService: ParkingService,
     private reservationService: ReservationService,
-    private sanctionService: SanctionService,
     private authService: AuthService
   ) {}
 
@@ -180,8 +181,7 @@ export class Home implements OnInit {
   loadDashboardData(companyId: number) {
     forkJoin({
       parkings: this.parkingService.getParkingsByCompany(companyId),
-      reservations: this.reservationService.getReservationsByCompany(companyId),
-      sanctions: this.sanctionService.getSanctionsByCompany(companyId)
+      reservations: this.reservationService.getReservationsByCompany(companyId)
     }).subscribe({
       next: (data) => {
         this.calculateStats(data);
@@ -200,10 +200,10 @@ export class Home implements OnInit {
     ).length;
     
     this.stats.totalRevenue = data.reservations
-      .filter((r: any) => r.state === 'COMPLETED' || r.state === 'ACTIVE')
+      .filter((r: any) => r.paid)
       .reduce((acc: number, r: any) => acc + r.price, 0);
       
-    this.stats.pendingSanctions = data.sanctions.filter((s: any) => !s.paid).length;
+    this.stats.pendingPayments = data.reservations.filter((r: any) => !r.paid).length;
   }
 
   processActivity(data: any) {
@@ -211,12 +211,12 @@ export class Home implements OnInit {
       ...data.reservations.map((r: any) => ({
         type: 'reservation',
         time: r.creationTime,
-        message: `Nueva reserva de ${r.userName} en ${r.parkingName}`
+        message: `Nueva reserva: ${r.userName} en ${r.parkingName}`
       })),
-      ...data.sanctions.map((s: any) => ({
-        type: 'sanction',
-        time: s.arrivalTime,
-        message: `Sanción aplicada a ${s.userName} (${s.amount}€)`
+      ...data.reservations.filter((r: any) => r.sanctionPrice > 0).map((r: any) => ({
+        type: 'billing',
+        time: r.startTime, // Using start time as proxy for activity
+        message: `Sanción detectada: ${r.userName} (${r.sanctionPrice}€)`
       }))
     ];
 

@@ -9,4 +9,7 @@ export interface Reservation {
   userId: number;
   parkingName: string;
   userName: string;
+  basePrice: number;
+  sanctionPrice: number;
+  paid: boolean;
 }

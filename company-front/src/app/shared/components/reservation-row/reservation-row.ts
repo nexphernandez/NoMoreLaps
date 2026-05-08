@@ -21,6 +21,15 @@ import { CommonModule } from '@angular/common';
         <span class="status-badge" [ngClass]="status.toLowerCase()">{{ status }}</span>
       </div>
 
+      <div class="res-billing" *ngIf="price > 0">
+        <div class="price-box">
+          <span class="total">{{ price | currency:'EUR' }}</span>
+          <span class="paid-indicator" [class.is-paid]="paid">
+            {{ paid ? '✅ Pagado' : '⏳ Pendiente' }}
+          </span>
+        </div>
+      </div>
+
       <div class="res-actions">
         <button class="action-btn">Detalles</button>
       </div>
@@ -29,7 +38,7 @@ import { CommonModule } from '@angular/common';
   styles: [`
     .reservation-row {
       display: grid;
-      grid-template-columns: 1.5fr 1fr 1fr 0.5fr;
+      grid-template-columns: 1.5fr 1fr 1fr 1fr 0.5fr;
       align-items: center;
       padding: 1.25rem 2rem;
       margin-bottom: 1rem;
@@ -81,6 +90,28 @@ import { CommonModule } from '@angular/common';
       color: var(--accent-primary);
     }
 
+    .res-billing {
+      display: flex;
+      justify-content: center;
+    }
+    .price-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.25rem;
+    }
+    .total {
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+    .paid-indicator {
+      font-size: 0.7rem;
+      color: var(--danger);
+    }
+    .paid-indicator.is-paid {
+      color: var(--success);
+    }
+
     @media (max-width: 768px) {
       .reservation-row {
         grid-template-columns: 1fr 1fr;
@@ -99,4 +130,6 @@ export class ReservationRow {
   @Input() date = '';
   @Input() time = '';
   @Input() status = 'Pendiente';
+  @Input() price = 0;
+  @Input() paid = false;
 }

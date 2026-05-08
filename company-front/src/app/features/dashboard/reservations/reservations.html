@@ -34,6 +34,7 @@
       <span>USUARIO Y UBICACIÓN</span>
       <span>FECHA Y HORA</span>
       <span>ESTADO</span>
+      <span>PAGO</span>
       <span>ACCIONES</span>
     </div>
 
@@ -44,6 +45,8 @@
       [date]="formatDate(res.startTime)"
       [time]="formatTime(res.startTime, res.endTime)"
       [status]="res.state === 'ACTIVE' ? 'Activa' : res.state === 'COMPLETED' ? 'Finalizada' : 'Cancelada'"
+      [price]="res.price"
+      [paid]="res.paid"
     ></app-reservation-row>
   </div>
 

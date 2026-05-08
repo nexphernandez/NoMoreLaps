@@ -105,4 +105,13 @@ public interface IReservationService {
      * @param id The reservation ID.
      */
     void deleteById(Long id);
+
+    /**
+     * Updates the payment status of a reservation.
+     * 
+     * @param id   The reservation ID.
+     * @param paid The new payment status.
+     * @return Updated reservation.
+     */
+    Reservation updatePaymentStatus(Long id, boolean paid);
 }

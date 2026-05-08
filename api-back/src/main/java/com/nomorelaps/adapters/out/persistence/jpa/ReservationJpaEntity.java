@@ -40,6 +40,12 @@ public class ReservationJpaEntity {
     @Column(name = "status")
     private String state;
 
+    @Column(name = "base_price")
+    private Double basePrice;
+
+    @Column(name = "paid")
+    private boolean paid = false;
+
     @Column(name = "created_at")
     private LocalDateTime creationTime;
 
@@ -142,6 +148,22 @@ public class ReservationJpaEntity {
 
     public void setCreationTime(LocalDateTime creationTime) {
         this.creationTime = creationTime;
+    }
+
+    public Double getBasePrice() {
+        return basePrice;
+    }
+
+    public void setBasePrice(Double basePrice) {
+        this.basePrice = basePrice;
+    }
+
+    public boolean isPaid() {
+        return paid;
+    }
+
+    public void setPaid(boolean paid) {
+        this.paid = paid;
     }
 
     public ParkingSpotJpaEntity getParkingSpot() {

@@ -63,6 +63,8 @@ class ReservationMapperTest {
         assertEquals(20L, response.getParkingSpotId());
         assertEquals("Main Parking", response.getParkingName());
         assertEquals(15.0, response.getPrice());
+        assertEquals(0.0, response.getSanctionPrice());
+        assertFalse(response.isPaid());
     }
 
     @Test

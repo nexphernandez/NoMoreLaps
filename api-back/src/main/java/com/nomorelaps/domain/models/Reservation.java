@@ -20,6 +20,8 @@ public class Reservation {
     private Double price;
     private String state;
     private LocalDateTime creationTime;
+    private Double basePrice;
+    private boolean paid;
     private ParkingSpot parkingSpot;
     private User user;
     private Set<Sanction> sanctions = new HashSet<>();
@@ -110,6 +112,22 @@ public class Reservation {
 
     public void setCreationTime(LocalDateTime creationTime) {
         this.creationTime = creationTime;
+    }
+
+    public Double getBasePrice() {
+        return basePrice;
+    }
+
+    public void setBasePrice(Double basePrice) {
+        this.basePrice = basePrice;
+    }
+
+    public boolean isPaid() {
+        return paid;
+    }
+
+    public void setPaid(boolean paid) {
+        this.paid = paid;
     }
 
     public ParkingSpot getParkingSpot() {

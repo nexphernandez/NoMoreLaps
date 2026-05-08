@@ -8,6 +8,7 @@ import com.nomorelaps.adapters.in.api.ReservationRequest;
 import com.nomorelaps.adapters.in.api.ReservationResponse;
 import com.nomorelaps.adapters.out.persistence.jpa.ReservationJpaEntity;
 import com.nomorelaps.domain.models.Reservation;
+import com.nomorelaps.domain.models.Sanction;
 
 /**
  * Mapper interface for Reservation entity and DTOs.
@@ -40,7 +41,13 @@ public interface ReservationMapper {
     @Mapping(target = "userName", source = "user.name")
     @Mapping(target = "parkingSpotId", source = "parkingSpot.id")
     @Mapping(target = "parkingName", source = "parkingSpot.parking.name")
+    @Mapping(target = "sanctionPrice", expression = "java(calculateSanctionPrice(domain))")
     ReservationResponse toResponse(Reservation domain);
+
+    default double calculateSanctionPrice(Reservation domain) {
+        if (domain.getSanctions() == null) return 0.0;
+        return domain.getSanctions().stream().mapToDouble(Sanction::getAmount).sum();
+    }
 
     /**
      * Converts a domain model into a JPA persistence entity.
