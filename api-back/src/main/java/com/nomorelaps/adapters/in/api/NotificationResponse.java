@@ -2,6 +2,8 @@ package com.nomorelaps.adapters.in.api;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * Response DTO for Notification.
  *
@@ -12,7 +14,8 @@ public class NotificationResponse {
     private Long id;
     private String message;
     private String type;
-    private boolean read;
+    @JsonProperty("isRead")
+    private boolean isRead;
     private Long companyId;
     private LocalDateTime createdAt;
 
@@ -41,11 +44,11 @@ public class NotificationResponse {
      * @param companyId identifier of the related company
      * @param createdAt creation timestamp
      */
-    public NotificationResponse(Long id, String message, String type, boolean read, Long companyId, LocalDateTime createdAt) {
+    public NotificationResponse(Long id, String message, String type, boolean isRead, Long companyId, LocalDateTime createdAt) {
         this(id);
         this.message = message;
         this.type = type;
-        this.read = read;
+        this.isRead = isRead;
         this.companyId = companyId;
         this.createdAt = createdAt;
     }
@@ -74,12 +77,13 @@ public class NotificationResponse {
         this.type = type;
     }
 
-    public boolean isRead() {
-        return read;
+    @JsonProperty("isRead")
+    public boolean getIsRead() {
+        return isRead;
     }
 
-    public void setRead(boolean read) {
-        this.read = read;
+    public void setIsRead(boolean isRead) {
+        this.isRead = isRead;
     }
 
     public Long getCompanyId() {

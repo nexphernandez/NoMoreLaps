@@ -41,7 +41,7 @@ public class NotificationService implements INotificationService {
     public Notification markAsRead(Long id) {
         Notification notification = persistencePort.findById(id)
                 .orElseThrow(() -> new RuntimeException("Notification not found with ID: " + id));
-        notification.setRead(true);
+        notification.setIsRead(true);
         return persistencePort.save(notification);
     }
 
@@ -54,8 +54,8 @@ public class NotificationService implements INotificationService {
     public void markAllAsRead(Long companyId) {
         List<Notification> notifications = persistencePort.findByCompanyId(companyId);
         notifications.forEach(n -> {
-            if (!n.isRead()) {
-                n.setRead(true);
+            if (!n.getIsRead()) {
+                n.setIsRead(true);
                 persistencePort.save(n);
             }
         });

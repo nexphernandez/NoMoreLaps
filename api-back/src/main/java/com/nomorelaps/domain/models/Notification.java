@@ -13,7 +13,7 @@ public class Notification {
     private Long id;
     private String message;
     private String type;
-    private boolean read;
+    private boolean isRead;
     private Long companyId;
     private LocalDateTime createdAt;
 
@@ -42,11 +42,11 @@ public class Notification {
      * @param companyId identifier of the related company
      * @param createdAt creation timestamp
      */
-    public Notification(Long id, String message, String type, boolean read, Long companyId, LocalDateTime createdAt) {
+    public Notification(Long id, String message, String type, boolean isRead, Long companyId, LocalDateTime createdAt) {
         this(id);
         this.message = message;
         this.type = type;
-        this.read = read;
+        this.isRead = isRead;
         this.companyId = companyId;
         this.createdAt = createdAt;
     }
@@ -75,12 +75,12 @@ public class Notification {
         this.type = type;
     }
 
-    public boolean isRead() {
-        return read;
+    public boolean getIsRead() {
+        return isRead;
     }
 
-    public void setRead(boolean read) {
-        this.read = read;
+    public void setIsRead(boolean isRead) {
+        this.isRead = isRead;
     }
 
     public Long getCompanyId() {
