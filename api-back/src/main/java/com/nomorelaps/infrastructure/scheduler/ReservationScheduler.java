@@ -82,14 +82,17 @@ public class ReservationScheduler {
 
         Sanction sanction = new Sanction();
         sanction.setAmount(totalAmount);
-        sanction.setReason(String.format("Overtime (%d min) for reservation #%d. Policy: %.2f€ per %d min.", 
-                           minutesOverdue, reservation.getId(), rate, interval));
+        sanction.setReason("Overtime Fine");
         sanction.setArrivalTime(LocalDateTime.now());
         sanction.setPaid(false);
         sanction.setReservation(reservation);
         sanction.setUser(reservation.getUser());
 
         sanctionService.create(sanction);
+        
+        reservation.setPrice(reservation.getPrice() + totalAmount);
+        reservationService.update(reservation);
+        
         System.out.println("Applied dynamic sanction of " + totalAmount + "€ to user for reservation " + reservation.getId());
 
         if (parking != null && parking.getCompany() != null && parking.getCompany().getId() != null) {
@@ -99,7 +102,7 @@ public class ReservationScheduler {
             notification.setMessage(String.format("New sanction for %s: %.2f€ due to overtime.", 
                                     reservation.getUser() != null ? reservation.getUser().getName() : "User",
                                     totalAmount));
-            notification.setRead(false);
+            notification.setIsRead(false);
             notificationService.create(notification);
         }
     }

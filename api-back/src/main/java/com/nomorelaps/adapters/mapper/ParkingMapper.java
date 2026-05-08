@@ -16,7 +16,7 @@ import com.nomorelaps.domain.models.Parking;
  * @author nexphernandez DiazLuisAlejandro
  * @version 1.0.0
  */
-@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
+@Mapper(componentModel = "spring", uses = {UserMapper.class, CompanyMapper.class, DynamicPriceMapper.class}, unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface ParkingMapper {
     /**
      * Converts an API request into a domain model.
@@ -55,6 +55,6 @@ public interface ParkingMapper {
      */
     @Mapping(target = "parkingSpots", ignore = true)
     @Mapping(target = "dynamicPrice", ignore = true)
-    @Mapping(target = "company", ignore = true)
+    @Mapping(target = "company", source = "company")
     Parking toDomain(ParkingJpaEntity entity);
 }

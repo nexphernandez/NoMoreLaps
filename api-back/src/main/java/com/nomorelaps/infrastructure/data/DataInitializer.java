@@ -21,12 +21,14 @@ public class DataInitializer implements CommandLineRunner {
     private final IReservationService reservationService;
     private final ISanctionService sanctionService;
     private final IDynamicPriceService dynamicPriceService;
+    private final org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
 
     public DataInitializer(IRoleService roleService, IUserService userService,
             ICompanyService companyService, IParkingService parkingService,
             IParkingSpotService parkingSpotService, INotificationService notificationService,
             IReservationService reservationService, ISanctionService sanctionService,
-            IDynamicPriceService dynamicPriceService) {
+            IDynamicPriceService dynamicPriceService,
+            org.springframework.security.crypto.password.PasswordEncoder passwordEncoder) {
         this.roleService = roleService;
         this.userService = userService;
         this.companyService = companyService;
@@ -36,6 +38,7 @@ public class DataInitializer implements CommandLineRunner {
         this.reservationService = reservationService;
         this.sanctionService = sanctionService;
         this.dynamicPriceService = dynamicPriceService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -49,7 +52,7 @@ public class DataInitializer implements CommandLineRunner {
             User user = new User();
             user.setName("Test User");
             user.setEmail("test@test.com");
-            user.setPassword("123456"); 
+            user.setPassword("123456");
             user.setRole(userRole);
             user.setCalendarEnable(true);
             user.setCreateAt(LocalDateTime.now());
@@ -62,7 +65,7 @@ public class DataInitializer implements CommandLineRunner {
             User companyUser = new User();
             companyUser.setName("Company Manager");
             companyUser.setEmail("company@test.com");
-            companyUser.setPassword("123456"); 
+            companyUser.setPassword("123456");
             companyUser.setRole(companyRole);
             companyUser.setCreateAt(LocalDateTime.now());
             userService.create(companyUser);
@@ -159,10 +162,14 @@ public class DataInitializer implements CommandLineRunner {
                 s2.setReservation(savedR2);
                 s2.setUser(user);
                 s2.setAmount(15.0);
-                s2.setReason("Unauthorized Spot Access");
+                s2.setReason("Overtime Fine");
                 s2.setArrivalTime(LocalDateTime.now().minusMinutes(30));
                 s2.setPaid(false);
                 sanctionService.create(s2);
+
+                // Update reservation price to include sanction
+                savedR2.setPrice(savedR2.getPrice() + s2.getAmount());
+                reservationService.update(savedR2);
 
                 // Reservation 3: Past with Sanction
                 Reservation r3 = new Reservation();
@@ -180,42 +187,37 @@ public class DataInitializer implements CommandLineRunner {
                 s.setReservation(savedR3);
                 s.setUser(user);
                 s.setAmount(10.0);
-                s.setReason("Overtime (30 min)");
+                s.setReason("Overtime Fine");
                 s.setArrivalTime(LocalDateTime.now().minusDays(1).withHour(15).withMinute(30));
                 s.setPaid(savedR3.isPaid());
                 sanctionService.create(s);
+
+                // Update reservation price to include sanction
+                savedR3.setPrice(savedR3.getPrice() + s.getAmount());
+                reservationService.update(savedR3);
             }
         });
         System.out.println("DataInitializer: Sample reservations, sanctions and dynamic prices created.");
     }
 
     private void seedSampleNotifications(Long companyId) {
-        // Create 3 types of notifications
         Notification n1 = new Notification();
-        n1.setMessage("New reservation made at Sol Central Parking.");
+        n1.setMessage("New reservation received from Test User at Sol Central Parking.");
         n1.setType("RESERVATION");
         n1.setCompanyId(companyId);
-        n1.setRead(false);
-        n1.setCreatedAt(LocalDateTime.now().minusHours(2));
+        n1.setIsRead(false);
+        n1.setCreatedAt(LocalDateTime.now().minusHours(1));
         notificationService.create(n1);
 
         Notification n2 = new Notification();
-        n2.setMessage("Sanction applied for overtime at Plaza de España.");
+        n2.setMessage("New sanction for Test User: 15.00€ due to overtime.");
         n2.setType("SANCTION");
         n2.setCompanyId(companyId);
-        n2.setRead(false);
-        n2.setCreatedAt(LocalDateTime.now().minusHours(5));
+        n2.setIsRead(false);
+        n2.setCreatedAt(LocalDateTime.now().minusMinutes(30));
         notificationService.create(n2);
 
-        Notification n3 = new Notification();
-        n3.setMessage("Scheduled maintenance for the sensor system.");
-        n3.setType("CANCEL");
-        n3.setCompanyId(companyId);
-        n3.setRead(true);
-        n3.setCreatedAt(LocalDateTime.now().minusDays(1));
-        notificationService.create(n3);
-
-        System.out.println("DataInitializer: Sample notifications created for company ID " + companyId);
+        System.out.println("DataInitializer: Sample notifications (RESERVATION & SANCTION) created for company ID " + companyId);
     }
 
     private Role createRoleIfNotFound(String name) {
@@ -246,7 +248,7 @@ public class DataInitializer implements CommandLineRunner {
         for (int i = 1; i <= totalSpots; i++) {
             ParkingSpot spot = new ParkingSpot();
             spot.setNumber(i);
-            spot.setState(true); 
+            spot.setState(true);
             spot.setRegisterDate(LocalDateTime.now());
             spot.setParking(savedParking);
             parkingSpotService.create(spot);

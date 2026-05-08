@@ -33,7 +33,7 @@ public class NotificationJpaEntity {
     private String type; 
 
     @Column(name = "is_read", nullable = false)
-    private boolean read = false;
+    private boolean isRead = false;
 
     @Column(name = "company_id", nullable = false)
     private Long companyId;
@@ -66,11 +66,11 @@ public class NotificationJpaEntity {
      * @param companyId identifier of the related company
      * @param createdAt creation timestamp
      */
-    public NotificationJpaEntity(Long id, String message, String type, boolean read, Long companyId, LocalDateTime createdAt) {
+    public NotificationJpaEntity(Long id, String message, String type, boolean isRead, Long companyId, LocalDateTime createdAt) {
         this(id);
         this.message = message;
         this.type = type;
-        this.read = read;
+        this.isRead = isRead;
         this.companyId = companyId;
         this.createdAt = createdAt;
     }
@@ -100,12 +100,12 @@ public class NotificationJpaEntity {
         this.type = type;
     }
 
-    public boolean isRead() {
-        return read;
+    public boolean getIsRead() {
+        return isRead;
     }
 
-    public void setRead(boolean read) {
-        this.read = read;
+    public void setIsRead(boolean isRead) {
+        this.isRead = isRead;
     }
 
     public Long getCompanyId() {

@@ -14,6 +14,7 @@ import { Notification } from '../../../core/models/notification.model';
 export class NotificationsComponent implements OnInit {
   notifications: Notification[] = [];
   loading = true;
+  private pollInterval: any;
 
   constructor(
     private notificationService: NotificationService,
@@ -22,17 +23,40 @@ export class NotificationsComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.checkUserAndLoad();
+  }
+
+  private checkUserAndLoad() {
     const user = this.authService.currentUser();
     if (user && user.companyId) {
       this.loadNotifications(user.companyId);
+      if (this.pollInterval) clearInterval(this.pollInterval);
+      this.pollInterval = setInterval(() => {
+        const currentUser = this.authService.currentUser();
+        if (currentUser && currentUser.companyId) {
+          this.loadNotifications(currentUser.companyId, false);
+        }
+      }, 5000);
+    } else {
+      setTimeout(() => this.checkUserAndLoad(), 1000);
     }
   }
 
-  loadNotifications(companyId: number) {
-    this.loading = true;
+  ngOnDestroy() {
+    if (this.pollInterval) {
+      clearInterval(this.pollInterval);
+    }
+  }
+
+  loadNotifications(companyId: number, showLoading: boolean = true) {
+    if (showLoading) this.loading = true;
     this.notificationService.getNotifications(companyId).subscribe({
       next: (data) => {
-        this.notifications = data;
+        // Filter only UNREAD and requested types, sort by date
+        this.notifications = data
+          .filter(n => !n.isRead && (n.type === 'RESERVATION' || n.type === 'SANCTION'))
+          .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        
         this.loading = false;
         this.cdr.detectChanges();
       },
@@ -49,7 +73,7 @@ export class NotificationsComponent implements OnInit {
     
     this.notificationService.markAsRead(notification.id).subscribe({
       next: () => {
-        notification.isRead = true;
+        this.notifications = this.notifications.filter(n => n.id !== notification.id);
         this.cdr.detectChanges();
       }
     });

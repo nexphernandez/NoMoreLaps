@@ -79,7 +79,14 @@ const ReservationHistoryView: React.FC<ReservationHistoryViewProps> = ({ history
               </View>
               <View style={styles.detailItem}>
                 <Typography variant="label">Cost</Typography>
-                <Typography variant="body" style={{fontWeight: '600'}}>{item.price}€</Typography>
+                <View style={{ flexDirection: 'row', alignItems: 'baseline' }}>
+                  <Typography variant="body" style={{fontWeight: '600'}}>{item.price}€</Typography>
+                  {item.sanctionPrice && item.sanctionPrice > 0 ? (
+                    <Typography variant="caption" color={theme.danger} style={{marginLeft: 4}}>
+                      (inc. {item.sanctionPrice}€ fine)
+                    </Typography>
+                  ) : null}
+                </View>
               </View>
             </View>
             
@@ -150,6 +157,16 @@ const ReservationHistoryView: React.FC<ReservationHistoryViewProps> = ({ history
                       type={selectedRes.paid ? 'success' : 'warning'} 
                     />
                   </View>
+                  <View style={styles.modalRow}>
+                    <Typography variant="label">Base Price</Typography>
+                    <Typography variant="body">{selectedRes.basePrice || selectedRes.price}€</Typography>
+                  </View>
+                  {selectedRes.sanctionPrice && selectedRes.sanctionPrice > 0 ? (
+                    <View style={styles.modalRow}>
+                      <Typography variant="label" color={theme.danger}>Sanctions</Typography>
+                      <Typography variant="body" color={theme.danger}>+{selectedRes.sanctionPrice}€</Typography>
+                    </View>
+                  ) : null}
                   <View style={styles.modalRow}>
                     <Typography variant="label">Total Cost</Typography>
                     <Typography variant="h2" color={theme.primary}>{selectedRes.price || '0'}€</Typography>

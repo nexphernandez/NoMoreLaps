@@ -84,7 +84,7 @@ public class ReservationService implements IReservationService {
                         notification.setMessage("New reservation received from " +
                                 (saved.getUser() != null ? saved.getUser().getName() : "a user") +
                                 " at " + spotOpt.get().getParking().getName());
-                        notification.setRead(false);
+                        notification.setIsRead(false);
                         notificationService.create(notification);
                     }
                 }
