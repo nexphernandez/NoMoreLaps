@@ -19,7 +19,7 @@
 
   <div class="filters-bar glass-card">
     <div class="search-box">
-      <span class="search-icon">🔍</span>
+      <span class="material-symbols-outlined search-icon">search</span>
       <input type="text" 
              placeholder="Buscar por usuario..." 
              class="filter-input"
@@ -68,6 +68,9 @@
 
       <div class="actions">
         <span class="status-badge" [class.paid]="r.paid">
+          <span class="material-symbols-outlined" style="font-size: 1rem; vertical-align: middle;">
+            {{ r.paid ? 'check_circle' : 'pending' }}
+          </span>
           {{ r.paid ? 'Pagado' : 'Pendiente' }}
         </span>
         <button class="toggle-btn" (click)="togglePayment(r)">
@@ -83,7 +86,9 @@
   </div>
 
   <div class="empty-container" *ngIf="!loading && filteredReservations.length === 0">
-    <div class="empty-icon">💸</div>
+    <div class="empty-icon">
+      <span class="material-symbols-outlined" style="font-size: 4rem;">payments</span>
+    </div>
     <p>No se encontraron registros de facturación.</p>
   </div>
 </div>

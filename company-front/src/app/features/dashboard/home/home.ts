@@ -15,7 +15,7 @@ import { forkJoin } from 'rxjs';
       
       <div class="stats-grid">
         <div class="stat-card glass-card">
-          <span class="stat-icon">🅿️</span>
+          <span class="stat-icon material-symbols-outlined">local_parking</span>
           <div class="stat-info">
             <span class="stat-label">Parkings Activos</span>
             <span class="stat-value">{{ stats.activeParkings }}</span>
@@ -23,7 +23,7 @@ import { forkJoin } from 'rxjs';
         </div>
 
         <div class="stat-card glass-card">
-          <span class="stat-icon">📅</span>
+          <span class="stat-icon material-symbols-outlined">calendar_today</span>
           <div class="stat-info">
             <span class="stat-label">Reservas Hoy</span>
             <span class="stat-value">{{ stats.todayReservations }}</span>
@@ -31,7 +31,7 @@ import { forkJoin } from 'rxjs';
         </div>
 
         <div class="stat-card glass-card">
-          <span class="stat-icon">💰</span>
+          <span class="stat-icon material-symbols-outlined">payments</span>
           <div class="stat-info">
             <span class="stat-label">Ingresos Totales</span>
             <span class="stat-value">{{ stats.totalRevenue | currency:'EUR' }}</span>
@@ -39,7 +39,7 @@ import { forkJoin } from 'rxjs';
         </div>
 
         <div class="stat-card glass-card">
-          <span class="stat-icon">🧾</span>
+          <span class="stat-icon material-symbols-outlined">receipt_long</span>
           <div class="stat-info">
             <span class="stat-label">Cobros Pendientes</span>
             <span class="stat-value">{{ stats.pendingPayments }}</span>
@@ -52,7 +52,7 @@ import { forkJoin } from 'rxjs';
         <div class="activity-list" *ngIf="recentActivity.length > 0; else noActivity">
           <div class="activity-item" *ngFor="let item of recentActivity">
             <span class="activity-type" [class.reservation]="item.type === 'reservation'">
-              {{ item.type === 'reservation' ? '📅' : '💰' }}
+              <span class="material-symbols-outlined">{{ item.type === 'reservation' ? 'event' : 'monetization_on' }}</span>
             </span>
             <div class="activity-details">
               <p class="activity-text">{{ item.message }}</p>
@@ -169,7 +169,7 @@ export class Home implements OnInit {
     private parkingService: ParkingService,
     private reservationService: ReservationService,
     private authService: AuthService
-  ) {}
+  ) { }
 
   ngOnInit() {
     const user = this.authService.currentUser();
@@ -193,16 +193,16 @@ export class Home implements OnInit {
 
   calculateStats(data: any) {
     const today = new Date().toLocaleDateString();
-    
+
     this.stats.activeParkings = data.parkings.length;
-    this.stats.todayReservations = data.reservations.filter((r: any) => 
+    this.stats.todayReservations = data.reservations.filter((r: any) =>
       new Date(r.startTime).toLocaleDateString() === today
     ).length;
-    
+
     this.stats.totalRevenue = data.reservations
       .filter((r: any) => r.paid)
       .reduce((acc: number, r: any) => acc + r.price, 0);
-      
+
     this.stats.pendingPayments = data.reservations.filter((r: any) => !r.paid).length;
   }
 

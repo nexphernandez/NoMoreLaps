@@ -6,27 +6,27 @@
 
   <nav class="sidebar-nav">
     <a routerLink="/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-item">
-      <span class="icon">📊</span>
+      <span class="icon material-symbols-outlined">dashboard</span>
       <span>Dashboard</span>
     </a>
-    
+
     <a routerLink="/dashboard/parkings" routerLinkActive="active" class="nav-item">
-      <span class="icon">🅿️</span>
+      <span class="icon material-symbols-outlined">local_parking</span>
       <span>Mis Parkings</span>
     </a>
 
     <a routerLink="/dashboard/reservations" routerLinkActive="active" class="nav-item">
-      <span class="icon">📅</span>
+      <span class="icon material-symbols-outlined">calendar_today</span>
       <span>Reservas</span>
     </a>
 
     <a routerLink="/dashboard/billing" routerLinkActive="active" class="nav-item">
-      <span class="icon">🧾</span>
+      <span class="icon material-symbols-outlined">receipt_long</span>
       <span>Facturación</span>
     </a>
 
     <a routerLink="/dashboard/notifications" routerLinkActive="active" class="nav-item">
-      <span class="icon">🔔</span>
+      <span class="icon material-symbols-outlined">notifications</span>
       <span>Notificaciones</span>
       <span class="badge" *ngIf="(unreadCount$ | async) ?? 0 > 0">{{ unreadCount$ | async }}</span>
     </a>
@@ -34,19 +34,19 @@
     <div class="nav-divider"></div>
 
     <a routerLink="/dashboard/profile" routerLinkActive="active" class="nav-item">
-      <span class="icon">👤</span>
+      <span class="icon material-symbols-outlined">person</span>
       <span>Perfil</span>
     </a>
-    
+
     <a routerLink="/dashboard/developer" routerLinkActive="active" class="nav-item">
-      <span class="icon">🔑</span>
+      <span class="icon material-symbols-outlined">api</span>
       <span>API & Integración</span>
     </a>
   </nav>
 
   <div class="sidebar-footer">
     <button class="logout-btn" (click)="onLogout()">
-      <span class="icon">🚪</span>
+      <span class="icon material-symbols-outlined">logout</span>
       <span>Cerrar Sesión</span>
     </button>
   </div>

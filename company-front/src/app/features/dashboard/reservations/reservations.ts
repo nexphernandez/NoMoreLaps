@@ -8,6 +8,7 @@ import { AuthService } from '../../../core/services/auth';
 import { Reservation } from '../../../core/models/reservation.model';
 import { Parking } from '../../../core/models/parking.model';
 import { forkJoin } from 'rxjs';
+import { SearchService } from '../../../core/services/search';
 
 @Component({
   selector: 'app-reservations',
@@ -29,10 +30,16 @@ export class Reservations implements OnInit {
     private reservationService: ReservationService,
     private parkingService: ParkingService,
     private authService: AuthService,
+    private searchService: SearchService,
     private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
+    this.searchService.searchQuery$.subscribe(query => {
+      this.searchTerm = query;
+      this.cdr.detectChanges();
+    });
+
     const user = this.authService.currentUser();
     if (user && user.companyId) {
       this.loadData(user.companyId);
