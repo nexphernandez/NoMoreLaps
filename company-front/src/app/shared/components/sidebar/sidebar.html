@@ -25,6 +25,12 @@
       <span>Facturación</span>
     </a>
 
+    <a routerLink="/dashboard/notifications" routerLinkActive="active" class="nav-item">
+      <span class="icon">🔔</span>
+      <span>Notificaciones</span>
+      <span class="badge" *ngIf="(unreadCount$ | async) ?? 0 > 0">{{ unreadCount$ | async }}</span>
+    </a>
+
     <div class="nav-divider"></div>
 
     <a routerLink="/dashboard/profile" routerLinkActive="active" class="nav-item">
