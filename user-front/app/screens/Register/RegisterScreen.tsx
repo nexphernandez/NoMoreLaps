@@ -21,16 +21,14 @@ const RegisterScreen = () => {
     const { login } = useAuth();
     const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
 
-    // Real-time validation
     useEffect(() => {
         const newErrors: any = {};
         
-        // Only validate if the user has started typing in the field
-        if (name && !name.trim()) newErrors.name = 'El nombre es obligatorio';
+        if (name && !name.trim()) newErrors.name = 'Name is required';
         
         if (email) {
             if (!isValidEmail(email.trim())) {
-                newErrors.email = 'El formato del email no es válido';
+                newErrors.email = 'Invalid email format';
             }
         }
         
@@ -42,7 +40,7 @@ const RegisterScreen = () => {
         }
 
         if (confirmPassword && password.trim() !== confirmPassword) {
-            newErrors.confirmPassword = 'Las contraseñas no coinciden';
+            newErrors.confirmPassword = 'Passwords do not match';
         }
 
         setErrors(newErrors);
@@ -50,11 +48,11 @@ const RegisterScreen = () => {
 
     const validate = () => {
         const newErrors: any = {};
-        if (!name.trim()) newErrors.name = 'El nombre es obligatorio';
+        if (!name.trim()) newErrors.name = 'Name is required';
         if (!email.trim()) {
-            newErrors.email = 'El email es obligatorio';
+            newErrors.email = 'Email is required';
         } else if (!isValidEmail(email.trim())) {
-            newErrors.email = 'El formato del email no es válido';
+            newErrors.email = 'Invalid email format';
         }
         
         const pwdError = getPasswordError(password.trim());
@@ -63,9 +61,9 @@ const RegisterScreen = () => {
         }
 
         if (!confirmPassword) {
-            newErrors.confirmPassword = 'Por favor confirma tu contraseña';
+            newErrors.confirmPassword = 'Please confirm your password';
         } else if (password.trim() !== confirmPassword) {
-            newErrors.confirmPassword = 'Las contraseñas no coinciden';
+            newErrors.confirmPassword = 'Passwords do not match';
         }
 
         setErrors(newErrors);
@@ -81,27 +79,22 @@ const RegisterScreen = () => {
 
         setLoading(true);
         try {
-            // 1. REGISTRO REAL
             await authService.register({
                 name: cleanName,
                 email: cleanEmail,
                 password: cleanPassword
             });
 
-            // 2. LOGIN AUTOMÁTICO
             const authResponse = await authService.login({ 
                 email: cleanEmail, 
                 password: cleanPassword 
             });
 
             if (authResponse.token) {
-                // Inyectamos el token momentáneamente
                 api.defaults.headers.common['Authorization'] = `Bearer ${authResponse.token}`;
 
-                // 3. OBTENER DATOS PARA EL CONTEXTO
                 const userDetails = await userService.getUserByEmail(cleanEmail);
                 
-                // 4. GUARDAR Y ENTRAR
                 await login(authResponse.token, {
                   id: userDetails.id,
                   name: userDetails.name,
@@ -110,14 +103,20 @@ const RegisterScreen = () => {
                   avatar: undefined
                 });
                 
-                Alert.alert('¡Bienvenido!', `Hola ${cleanName}, tu cuenta ha sido creada y ya has iniciado sesión.`);
+                Alert.alert('Welcome!', `Hello ${cleanName}, your account has been created and you are now logged in.`);
                 navigation.replace('Home');
             }
         } catch (error: any) {
-            Alert.alert(
-                'Error en el proceso',
-                error.message || 'No se pudo completar el registro automático.'
-            );
+            console.error('Register error details:', error);
+            let message = 'Could not complete registration. Please try again later.';
+            
+            if (error.response?.status === 409) {
+                message = 'This email address is already registered. Please try another one.';
+            } else if (error.message && error.message.includes('network')) {
+                message = 'Network error. Please check your internet connection.';
+            }
+
+            Alert.alert('Registration Error', message);
         } finally {
             setLoading(false);
         }

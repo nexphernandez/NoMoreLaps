@@ -12,8 +12,11 @@ import { CommonModule } from '@angular/common';
       [disabled]="disabled || loading"
       (click)="onClick.emit($event)"
     >
-      <span *ngIf="!loading">{{ text }}</span>
-      <span *ngIf="loading" class="loader">Cargando...</span>
+      @if (!loading) {
+        <span>{{ text }}</span>
+      } @else {
+        <span class="loader">Loading...</span>
+      }
     </button>
   `,
   styles: [`

@@ -8,17 +8,23 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@a
   imports: [CommonModule, ReactiveFormsModule],
   template: `
     <div class="input-group">
-      <label *ngIf="label" [for]="id">{{ label }}</label>
+      @if (label) {
+        <label [for]="id">{{ label }}</label>
+      }
       <input 
         [id]="id"
         [type]="type"
         [placeholder]="placeholder"
         class="input-field"
+        [class.input-error]="error"
         [value]="value"
         (input)="handleInput($event)"
         (blur)="onTouched()"
         [disabled]="disabled"
       >
+      @if (error) {
+        <span class="error-hint">{{ error }}</span>
+      }
     </div>
   `,
   providers: [
@@ -34,6 +40,7 @@ export class InputComponent implements ControlValueAccessor {
   @Input() label = '';
   @Input() type = 'text';
   @Input() placeholder = '';
+  @Input() error: string | null = null;
   
   @Input() value: any = '';
   @Input() disabled = false;

@@ -49,30 +49,34 @@ import { Reservation } from '../../../core/models/reservation.model';
         </div>
       </div>
 
-      <div class="details-pane glass-card" *ngIf="expanded">
-        <div class="details-grid">
-          <div class="detail-item">
-            <span class="label">Reservation ID</span>
-            <span class="value">#{{ reservation.id }}</span>
-          </div>
-          <div class="detail-item">
-            <span class="label">Spot ID</span>
-            <span class="value">Spot {{ reservation.parkingSpotId }}</span>
-          </div>
-          <div class="detail-item">
-            <span class="label">Base Price</span>
-            <span class="value">{{ reservation.basePrice | currency:'EUR' }}</span>
-          </div>
-          <div class="detail-item" *ngIf="reservation.sanctionPrice > 0">
-            <span class="label">Sanctions</span>
-            <span class="value sanction">{{ reservation.sanctionPrice | currency:'EUR' }}</span>
-          </div>
-          <div class="detail-item">
-            <span class="label">Creation Date</span>
-            <span class="value">{{ reservation.creationTime | date:'medium' }}</span>
+      @if (expanded) {
+        <div class="details-pane glass-card">
+          <div class="details-grid">
+            <div class="detail-item">
+              <span class="label">Reservation ID</span>
+              <span class="value">#{{ reservation.id }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="label">Spot ID</span>
+              <span class="value">Spot {{ reservation.parkingSpotId }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="label">Base Price</span>
+              <span class="value">{{ reservation.basePrice | currency:'EUR' }}</span>
+            </div>
+            @if (reservation.sanctionPrice > 0) {
+              <div class="detail-item">
+                <span class="label">Sanctions</span>
+                <span class="value sanction">{{ reservation.sanctionPrice | currency:'EUR' }}</span>
+              </div>
+            }
+            <div class="detail-item">
+              <span class="label">Creation Date</span>
+              <span class="value">{{ reservation.creationTime | date:'medium' }}</span>
+            </div>
           </div>
         </div>
-      </div>
+      }
     </div>
   `,
   styles: [`

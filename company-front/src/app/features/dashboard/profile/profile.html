@@ -22,56 +22,60 @@
     </aside>
 
     <main class="profile-content glass-card">
-      <div *ngIf="loading" class="loading-overlay">
-        <p>Loading company data...</p>
-      </div>
-
-      <ng-container *ngIf="!loading">
+      @if (loading) {
+        <div class="loading-overlay">
+          <p>Loading company data...</p>
+        </div>
+      } @else {
         <!-- Pestaña Información General -->
-        <form class="profile-form" *ngIf="activeTab === 'general'" (submit)="onSave($event)">
-          <div class="form-section">
-            <h3>Organization Details</h3>
-            <div class="input-row">
-              <app-input label="Business Name" [(ngModel)]="company.name" name="name" type="text"></app-input>
-              <app-input label="Tax ID / CIF" [(ngModel)]="company.cif" name="cif" type="text"></app-input>
+        @if (activeTab === 'general') {
+          <form class="profile-form" (submit)="onSave($event)">
+            <div class="form-section">
+              <h3>Organization Details</h3>
+              <div class="input-row">
+                <app-input label="Business Name" [(ngModel)]="company.name" name="name" type="text"></app-input>
+                <app-input label="Tax ID / CIF" [(ngModel)]="company.cif" name="cif" type="text"></app-input>
+              </div>
+              
+              <app-input label="Contact Email" [(ngModel)]="company.email" name="email" type="email"></app-input>
+              
+              <div class="input-row">
+                <app-input label="Phone" [(ngModel)]="company.phone" name="phone" type="tel"></app-input>
+                <app-input label="Website (Read-only)" value="https://nomorelaps.com" [disabled]="true" name="web" type="url"></app-input>
+              </div>
             </div>
-            
-            <app-input label="Contact Email" [(ngModel)]="company.email" name="email" type="email"></app-input>
-            
-            <div class="input-row">
-              <app-input label="Phone" [(ngModel)]="company.phone" name="phone" type="tel"></app-input>
-              <app-input label="Website (Read-only)" value="https://nomorelaps.com" [disabled]="true" name="web" type="url"></app-input>
+
+            <div class="form-section">
+              <h3>Fiscal Address (Read-only)</h3>
+              <app-input label="Full Address" [disabled]="true" value="Example St, 123, Madrid" type="text"></app-input>
             </div>
-          </div>
 
-          <div class="form-section">
-            <h3>Fiscal Address (Read-only)</h3>
-            <app-input label="Full Address" [disabled]="true" value="Example St, 123, Madrid" type="text"></app-input>
-          </div>
-
-          <div class="form-actions">
-            <app-button text="Save Profile" (onClick)="onSave($event)"></app-button>
-          </div>
-        </form>
+            <div class="form-actions">
+              <app-button text="Save Profile" (onClick)="onSave($event)"></app-button>
+            </div>
+          </form>
+        }
 
         <!-- Pestaña Seguridad -->
-        <div class="security-section" *ngIf="activeTab === 'security'">
-          <div class="form-section">
-            <h3>Change Password</h3>
-            <p class="section-desc">Update your password to keep your account secure.</p>
-            
-            <div class="password-form">
-              <app-input label="Current Password" [(ngModel)]="passwordData.currentPassword" name="currentPassword" type="password"></app-input>
-              <app-input label="New Password" [(ngModel)]="passwordData.newPassword" name="newPassword" type="password"></app-input>
-              <app-input label="Confirm New Password" [(ngModel)]="passwordData.confirmPassword" name="confirmPassword" type="password"></app-input>
+        @if (activeTab === 'security') {
+          <div class="security-section">
+            <div class="form-section">
+              <h3>Change Password</h3>
+              <p class="section-desc">Update your password to keep your account secure.</p>
+              
+              <div class="password-form">
+                <app-input label="Current Password" [(ngModel)]="passwordData.currentPassword" name="currentPassword" type="password"></app-input>
+                <app-input label="New Password" [(ngModel)]="passwordData.newPassword" name="newPassword" type="password"></app-input>
+                <app-input label="Confirm New Password" [(ngModel)]="passwordData.confirmPassword" name="confirmPassword" type="password"></app-input>
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <app-button text="Update Password" (onClick)="onChangePassword($event)"></app-button>
             </div>
           </div>
-
-          <div class="form-actions">
-            <app-button text="Update Password" (onClick)="onChangePassword($event)"></app-button>
-          </div>
-        </div>
-      </ng-container>
+        }
+      }
     </main>
   </div>
 </div>

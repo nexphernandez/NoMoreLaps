@@ -11,6 +11,7 @@
         placeholder="My Parking Ltd."
         type="text"
         formControlName="name"
+        [error]="getFieldError('name')"
       ></app-input>
 
       <app-input 
@@ -18,6 +19,7 @@
         placeholder="A12345678"
         type="text"
         formControlName="cif"
+        [error]="getFieldError('cif')"
       ></app-input>
 
       <app-input 
@@ -25,6 +27,7 @@
         placeholder="contact@company.com"
         type="email"
         formControlName="email"
+        [error]="getFieldError('email')"
       ></app-input>
 
       <div class="password-row">
@@ -33,6 +36,7 @@
           placeholder="••••••••"
           type="password"
           formControlName="password"
+          [error]="getFieldError('password')"
         ></app-input>
         
         <app-input 
@@ -40,14 +44,15 @@
           placeholder="••••••••"
           type="password"
           formControlName="confirmPassword"
+          [error]="getFieldError('confirmPassword')"
         ></app-input>
       </div>
 
-      <div class="error-container" *ngIf="errorMessage || registerForm.get('email')?.invalid && registerForm.get('email')?.touched || registerForm.hasError('mismatch')">
-        <p class="error-text" *ngIf="errorMessage">{{ errorMessage }}</p>
-        <p class="error-text" *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched">Invalid email</p>
-        <p class="error-text" *ngIf="registerForm.hasError('mismatch') && registerForm.get('confirmPassword')?.touched">Passwords do not match</p>
-      </div>
+      @if (errorMessage) {
+        <div class="error-container">
+          <p class="error-text">{{ errorMessage }}</p>
+        </div>
+      }
 
 
 

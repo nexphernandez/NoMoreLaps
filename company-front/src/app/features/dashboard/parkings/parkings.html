@@ -17,25 +17,30 @@
     </div>
   </div>
 
-  <div class="parkings-grid" *ngIf="!loading">
-    <app-parking-card 
-      *ngFor="let parking of filteredParkings"
-      [id]="parking.id!"
-      [name]="parking.name"
-      [address]="parking.address"
-      [capacity]="parking.totalSpots || 0" 
-      [status]="parking.status"
-      (edit)="onEdit($event)"
-      (delete)="onDelete($event)"
-      (manage)="onManage($event)"
-    ></app-parking-card>
-  </div>
+  @if (!loading) {
+    <div class="parkings-grid">
+      @for (parking of filteredParkings; track parking.id) {
+        <app-parking-card 
+          [id]="parking.id!"
+          [name]="parking.name"
+          [address]="parking.address"
+          [capacity]="parking.totalSpots || 0" 
+          [status]="parking.status"
+          (edit)="onEdit($event)"
+          (delete)="onDelete($event)"
+          (manage)="onManage($event)"
+        ></app-parking-card>
+      }
+    </div>
 
-  <div class="loading-container" *ngIf="loading">
-    <p>Loading your parkings...</p>
-  </div>
-
-  <div class="empty-container" *ngIf="!loading && parkings.length === 0">
-    <p>No parkings registered. Start by adding one!</p>
-  </div>
+    @if (parkings.length === 0) {
+      <div class="empty-container">
+        <p>No parkings registered. Start by adding one!</p>
+      </div>
+    }
+  } @else {
+    <div class="loading-container">
+      <p>Loading your parkings...</p>
+    </div>
+  }
 </div>

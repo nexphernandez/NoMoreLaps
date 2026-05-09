@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
@@ -21,7 +21,8 @@ export class LoginComponent {
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef
   ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
@@ -29,8 +30,21 @@ export class LoginComponent {
     });
   }
 
+  getFieldError(fieldName: string): string | null {
+    const control = this.loginForm.get(fieldName);
+    if (control?.invalid && (control.dirty || control.touched)) {
+      if (control.errors?.['required']) return 'This field is required';
+      if (control.errors?.['email']) return 'Invalid email format';
+      if (control.errors?.['minlength']) return 'Minimum 6 characters required';
+    }
+    return null;
+  }
+
   onLogin() {
-    if (this.loginForm.invalid) return;
+    if (this.loginForm.invalid) {
+      this.loginForm.markAllAsTouched();
+      return;
+    }
 
     this.loading = true;
     this.errorMessage = '';
@@ -40,9 +54,10 @@ export class LoginComponent {
         this.router.navigate(['/dashboard']);
       },
       error: (err) => {
+        console.error('Login error block reached:', err);
         this.loading = false;
-        this.errorMessage = 'Invalid credentials. Please try again.';
-        console.error('Login error:', err);
+        this.errorMessage = 'Email or password incorrect. Please try again.';
+        this.cdr.detectChanges();
       }
     });
   }

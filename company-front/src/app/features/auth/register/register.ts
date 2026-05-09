@@ -34,6 +34,21 @@ export class Register {
     });
   }
 
+  getFieldError(fieldName: string): string | null {
+    const control = this.registerForm.get(fieldName);
+    if (control?.invalid && (control.dirty || control.touched)) {
+      if (control.errors?.['required']) return 'This field is required';
+      if (control.errors?.['email']) return 'Invalid email format';
+      if (control.errors?.['minlength']) return 'Minimum 6 characters required';
+    }
+    
+    if (fieldName === 'confirmPassword' && this.registerForm.errors?.['mismatch'] && (control?.dirty || control?.touched)) {
+      return 'Passwords do not match';
+    }
+
+    return null;
+  }
+
   passwordMatchValidator(g: FormGroup) {
     return g.get('password')?.value === g.get('confirmPassword')?.value
       ? null : { 'mismatch': true };
@@ -41,13 +56,8 @@ export class Register {
 
   onRegister() {
     if (this.registerForm.invalid) {
-      console.log('Form errors:', this.registerForm.errors);
-      console.log('Name status:', this.registerForm.get('name')?.errors);
-      console.log('Email status:', this.registerForm.get('email')?.errors);
-      console.log('Password status:', this.registerForm.get('password')?.errors);
-      console.log('Confirm status:', this.registerForm.get('confirmPassword')?.errors);
-      
-      this.errorMessage = 'Please fill in all fields correctly.';
+      this.registerForm.markAllAsTouched();
+      this.errorMessage = 'Please fix the errors before submitting.';
       return;
     }
 
@@ -62,7 +72,11 @@ export class Register {
       },
       error: (err) => {
         this.loading = false;
-        this.errorMessage = 'Error creating account. The email might already be in use.';
+        if (err.status === 409) {
+          this.errorMessage = 'This email or CIF is already registered.';
+        } else {
+          this.errorMessage = 'An error occurred during registration. Please try again.';
+        }
         console.error('Register error:', err);
       }
     });

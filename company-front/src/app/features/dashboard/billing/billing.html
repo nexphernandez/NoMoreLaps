@@ -28,7 +28,9 @@
     <div class="filter-actions">
       <select class="filter-select" [(ngModel)]="parkingFilter">
         <option value="all">All parkings</option>
-        <option *ngFor="let p of parkings" [value]="p.name">{{ p.name }}</option>
+        @for (p of parkings; track p.id) {
+          <option [value]="p.name">{{ p.name }}</option>
+        }
       </select>
 
       <select class="filter-select" [(ngModel)]="statusFilter">
@@ -47,48 +49,56 @@
       <span>STATUS / ACTION</span>
     </div>
 
-    <div *ngFor="let r of filteredReservations" class="billing-row glass-card" [class.paid]="r.paid">
-      <div class="user-info">
-        <div class="avatar-mini">{{ r.userName.charAt(0) }}</div>
-        <div class="details">
-          <span class="name">{{ r.userName }}</span>
-          <span class="parking">{{ r.parkingName }} - Spot #{{ r.parkingSpotId }}</span>
+    @for (r of filteredReservations; track r.id) {
+      <div class="billing-row glass-card" [class.paid]="r.paid">
+        <div class="user-info">
+          <div class="avatar-mini">{{ r.userName.charAt(0) }}</div>
+          <div class="details">
+            <span class="name">{{ r.userName }}</span>
+            <span class="parking">{{ r.parkingName }} - Spot #{{ r.parkingSpotId }}</span>
+          </div>
+        </div>
+
+        <div class="breakdown">
+          <span class="base">{{ r.basePrice | currency:'EUR' }}</span>
+          <span class="plus">+</span>
+          <span class="sanction">{{ r.sanctionPrice | currency:'EUR' }}</span>
+        </div>
+
+        <div class="total-price">
+          <span class="value">{{ r.price | currency:'EUR' }}</span>
+        </div>
+
+        <div class="actions">
+          <span class="status-badge" [class.paid]="r.paid">
+            <span class="material-symbols-outlined" style="font-size: 1rem; vertical-align: middle;">
+              {{ r.paid ? 'check_circle' : 'pending' }}
+            </span>
+            {{ r.paid ? 'Paid' : 'Pending' }}
+          </span>
+          @if (!r.paid) {
+            <button class="toggle-btn" (click)="togglePayment(r)">
+              Mark Paid
+            </button>
+          }
         </div>
       </div>
+    }
+  </div>
 
-      <div class="breakdown">
-        <span class="base">{{ r.basePrice | currency:'EUR' }}</span>
-        <span class="plus">+</span>
-        <span class="sanction">{{ r.sanctionPrice | currency:'EUR' }}</span>
-      </div>
-
-      <div class="total-price">
-        <span class="value">{{ r.price | currency:'EUR' }}</span>
-      </div>
-
-      <div class="actions">
-        <span class="status-badge" [class.paid]="r.paid">
-          <span class="material-symbols-outlined" style="font-size: 1rem; vertical-align: middle;">
-            {{ r.paid ? 'check_circle' : 'pending' }}
-          </span>
-          {{ r.paid ? 'Paid' : 'Pending' }}
-        </span>
-        <button class="toggle-btn" *ngIf="!r.paid" (click)="togglePayment(r)">
-          Mark Paid
-        </button>
-      </div>
+  @if (loading) {
+    <div class="loading-container">
+      <div class="spinner"></div>
+      <p>Loading financial data...</p>
     </div>
-  </div>
+  }
 
-  <div class="loading-container" *ngIf="loading">
-    <div class="spinner"></div>
-    <p>Loading financial data...</p>
-  </div>
-
-  <div class="empty-container" *ngIf="!loading && filteredReservations.length === 0">
-    <div class="empty-icon">
-      <span class="material-symbols-outlined" style="font-size: 4rem;">payments</span>
+  @if (!loading && filteredReservations.length === 0) {
+    <div class="empty-container">
+      <div class="empty-icon">
+        <span class="material-symbols-outlined" style="font-size: 4rem;">payments</span>
+      </div>
+      <p>No billing records found.</p>
     </div>
-    <p>No billing records found.</p>
-  </div>
+  }
 </div>

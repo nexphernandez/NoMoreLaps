@@ -10,7 +10,9 @@
     <div class="filter-actions">
       <select class="filter-select" [(ngModel)]="parkingFilter">
         <option value="all">All parkings</option>
-        <option *ngFor="let p of parkings" [value]="p.name">{{ p.name }}</option>
+        @for (p of parkings; track p.id) {
+        <option [value]="p.name">{{ p.name }}</option>
+      }
       </select>
       
       <select class="filter-select" [(ngModel)]="statusFilter">
@@ -22,26 +24,31 @@
     </div>
   </div>
 
-  <div class="reservations-list">
-    <div class="list-header">
-      <span>USER & LOCATION</span>
-      <span>DATE & TIME</span>
-      <span>STATUS</span>
-      <span>PAYMENT</span>
-      <span>ACTIONS</span>
+  @if (!loading) {
+    <div class="reservations-list">
+      <div class="list-header">
+        <span>USER & LOCATION</span>
+        <span>DATE & TIME</span>
+        <span>STATUS</span>
+        <span>PAYMENT</span>
+        <span>ACTIONS</span>
+      </div>
+
+      @for (res of filteredReservations; track res.id) {
+        <app-reservation-row 
+          [reservation]="res"
+        ></app-reservation-row>
+      }
     </div>
 
-    <app-reservation-row 
-      *ngFor="let res of filteredReservations"
-      [reservation]="res"
-    ></app-reservation-row>
-  </div>
-
-  <div class="loading-container" *ngIf="loading">
-    <p>Loading reservations...</p>
-  </div>
-
-  <div class="empty-container" *ngIf="!loading && filteredReservations.length === 0">
-    <p>No reservations found.</p>
-  </div>
+    @if (filteredReservations.length === 0) {
+      <div class="empty-container">
+        <p>No reservations found.</p>
+      </div>
+    }
+  } @else {
+    <div class="loading-container">
+      <p>Loading reservations...</p>
+    </div>
+  }
 </div>
