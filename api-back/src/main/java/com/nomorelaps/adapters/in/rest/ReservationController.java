@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import com.nomorelaps.adapters.in.api.ReservationRequest;
@@ -101,6 +102,7 @@ public class ReservationController {
      * @return A list of reservations for the company.
      */
     @GetMapping("/company/{companyId}")
+    @PreAuthorize("@securityService.isCompanyOwner(#companyId)")
     @Operation(summary = "Find reservations by Company", description = "Lists all bookings for all parkings owned by a company.")
     @ApiResponse(responseCode = "200", description = "List retrieved")
     public ResponseEntity<List<ReservationResponse>> findByCompanyId(@PathVariable Long companyId) {

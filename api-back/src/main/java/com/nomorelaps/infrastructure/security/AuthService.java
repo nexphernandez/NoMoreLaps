@@ -1,5 +1,8 @@
 package com.nomorelaps.infrastructure.security;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.nomorelaps.adapters.in.api.AuthRequest;
 import com.nomorelaps.adapters.in.api.AuthResponse;
 import com.nomorelaps.adapters.in.api.UserRequest;
@@ -119,11 +122,12 @@ public class AuthService {
         return login(authRequest);
     }
 
+
     /**
-     * Authenticates credentials and returns a JWT token.
+     * Authenticates a user and generates a JWT token with company claims if applicable.
      * 
-     * @param request Authentication credentials.
-     * @return AuthResponse with JWT.
+     * @param request The login credentials.
+     * @return AuthResponse containing the token, user details and companyId.
      */
     public AuthResponse login(AuthRequest request) {
         authenticationManager.authenticate(
@@ -133,11 +137,15 @@ public class AuthService {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         UserDetails userDetails = new SecurityUser(userEntity);
-        String jwtToken = jwtService.generateToken(userDetails);
-
         Long companyId = companyRepository.findByUserId(userEntity.getId())
                 .map(CompanyJpaEntity::getId)
                 .orElse(null);
+
+        Map<String, Object> extraClaims = new HashMap<>();
+        if (companyId != null) {
+            extraClaims.put("companyId", companyId);
+        }
+        String jwtToken = jwtService.generateToken(extraClaims, userDetails);
 
         return new AuthResponse(jwtToken, "Login successful", companyId, userEntity.getEmail(), userEntity.getName(), userEntity.getId());
     }
