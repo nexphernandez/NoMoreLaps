@@ -1,82 +1,95 @@
 package com.nomorelaps.adapters.in.rest;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.nomorelaps.adapters.in.api.NotificationResponse;
 import com.nomorelaps.adapters.mapper.NotificationMapper;
 import com.nomorelaps.business.interfaces.INotificationService;
 import com.nomorelaps.domain.models.Notification;
-import com.nomorelaps.infrastructure.security.JwtService;
 
-@WebMvcTest(NotificationController.class)
+/**
+ * Integration tests for NotificationController.
+ * Verifies notification retrieval, status updates (marking as read), and deletion.
+ * 
+ * @author nexphernandez
+ * @version 1.1.0
+ */
+@SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
 class NotificationControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
+    @MockitoBean
     private INotificationService notificationService;
 
-    @MockBean
+    @MockitoBean
     private NotificationMapper notificationMapper;
 
-    @MockBean
-    private JwtService jwtService;
+    private Notification sampleNotification;
+    private NotificationResponse sampleResponse;
 
-    @MockBean
-    private com.nomorelaps.business.interfaces.ICompanyService companyService;
+    @BeforeEach
+    void setUp() {
+        sampleNotification = new Notification(1L);
+        sampleNotification.setMessage("Test Message");
+        sampleNotification.setType("ALERT");
+        sampleNotification.setIsRead(false);
 
-    @MockBean
-    private com.nomorelaps.infrastructure.security.SecurityService securityService;
+        sampleResponse = new NotificationResponse();
+        sampleResponse.setId(1L);
+        sampleResponse.setMessage("Test Message");
+        sampleResponse.setType("ALERT");
+        sampleResponse.setIsRead(false);
+    }
 
     @Test
-    @DisplayName("GET /api/notifications/company/{companyId} - Should return list")
-    void shouldFindByCompanyId() throws Exception {
-        Notification domain = new Notification(1L);
-        NotificationResponse response = new NotificationResponse();
-        response.setId(1L);
-
-        when(notificationService.findByCompanyId(10L)).thenReturn(List.of(domain));
-        when(notificationMapper.toResponse(domain)).thenReturn(response);
+    @DisplayName("GET /api/notifications/company/{companyId} - Success: Should return list of notifications")
+    void shouldFindNotificationsByCompanyId() throws Exception {
+        when(notificationService.findByCompanyId(10L)).thenReturn(List.of(sampleNotification));
+        when(notificationMapper.toResponse(sampleNotification)).thenReturn(sampleResponse);
 
         mockMvc.perform(get("/api/notifications/company/10"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id").value(1L));
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$[0].id").value(1L))
+                .andExpect(jsonPath("$[0].message").value("Test Message"));
     }
 
     @Test
-    @DisplayName("PATCH /api/notifications/{id}/read - Should mark as read")
-    void shouldMarkAsRead() throws Exception {
-        Notification domain = new Notification(1L);
-        NotificationResponse response = new NotificationResponse();
-        response.setId(1L);
-
-        when(notificationService.markAsRead(1L)).thenReturn(domain);
-        when(notificationMapper.toResponse(domain)).thenReturn(response);
+    @DisplayName("PATCH /api/notifications/{id}/read - Success: Should mark notification as read")
+    void shouldMarkNotificationAsReadSuccessfully() throws Exception {
+        sampleResponse.setIsRead(true);
+        when(notificationService.markAsRead(1L)).thenReturn(sampleNotification);
+        when(notificationMapper.toResponse(sampleNotification)).thenReturn(sampleResponse);
 
         mockMvc.perform(patch("/api/notifications/1/read"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1L));
+                .andExpect(jsonPath("$.id").value(1L))
+                .andExpect(jsonPath("$.isRead").value(true));
     }
 
     @Test
-    @DisplayName("PATCH /api/notifications/company/{companyId}/read-all - Should mark all as read")
-    void shouldMarkAllAsRead() throws Exception {
+    @DisplayName("PATCH /api/notifications/company/{companyId}/read-all - Success: Should mark all as read")
+    void shouldMarkAllNotificationsAsReadSuccessfully() throws Exception {
         mockMvc.perform(patch("/api/notifications/company/10/read-all"))
                 .andExpect(status().isOk());
 
@@ -84,8 +97,8 @@ class NotificationControllerTest {
     }
 
     @Test
-    @DisplayName("DELETE /api/notifications/{id} - Should delete")
-    void shouldDelete() throws Exception {
+    @DisplayName("DELETE /api/notifications/{id} - Success: Should delete notification")
+    void shouldDeleteNotificationSuccessfully() throws Exception {
         mockMvc.perform(delete("/api/notifications/1"))
                 .andExpect(status().isNoContent());
 
