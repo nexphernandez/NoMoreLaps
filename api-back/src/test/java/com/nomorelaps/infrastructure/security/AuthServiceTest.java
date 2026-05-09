@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import java.util.Map;
 import java.util.Optional;
 
 import org.junit.jupiter.api.DisplayName;
@@ -35,7 +36,6 @@ import com.nomorelaps.adapters.in.api.CompanyRequest;
 import com.nomorelaps.domain.models.Company;
 import com.nomorelaps.adapters.out.persistence.repository.RoleJpaRepository;
 import com.nomorelaps.adapters.out.persistence.repository.CompanyJpaRepository;
-import com.nomorelaps.infrastructure.security.JwtService;
 
 @ExtendWith(MockitoExtension.class)
 class AuthServiceTest {
@@ -84,13 +84,35 @@ class AuthServiceTest {
         when(userService.create(any(User.class))).thenReturn(user);
         when(companyMapper.toDomainFromRequest(request)).thenReturn(company);
         when(userRepository.findByEmail("comp@test.com")).thenReturn(Optional.of(userEntity));
-        when(jwtService.generateToken(any(UserDetails.class))).thenReturn("token");
+        when(jwtService.generateToken(any(Map.class), any(UserDetails.class))).thenReturn("token");
 
         AuthResponse result = authService.registerCompany(request);
 
         assertNotNull(result);
         assertEquals("token", result.getToken());
         verify(companyService).create(company);
+    }
+
+    @Test
+    @DisplayName("register - Should throw when password is null or blank")
+    void shouldThrowWhenRegisterPasswordInvalid() {
+        UserRequest request = new UserRequest();
+        request.setPassword(null);
+        assertThrows(IllegalArgumentException.class, () -> authService.register(request));
+        
+        request.setPassword("   ");
+        assertThrows(IllegalArgumentException.class, () -> authService.register(request));
+    }
+
+    @Test
+    @DisplayName("registerCompany - Should throw when password is null or blank")
+    void shouldThrowWhenRegisterCompanyPasswordInvalid() {
+        CompanyRequest request = new CompanyRequest();
+        request.setPassword(null);
+        assertThrows(IllegalArgumentException.class, () -> authService.registerCompany(request));
+        
+        request.setPassword("");
+        assertThrows(IllegalArgumentException.class, () -> authService.registerCompany(request));
     }
 
     @Test
@@ -127,7 +149,7 @@ class AuthServiceTest {
 
         when(userRepository.findByEmail("admin@company.com")).thenReturn(Optional.of(entity));
         when(companyRepository.findByUserId(10L)).thenReturn(Optional.of(companyEntity));
-        when(jwtService.generateToken(any(UserDetails.class))).thenReturn("token");
+        when(jwtService.generateToken(any(Map.class), any(UserDetails.class))).thenReturn("token");
 
         AuthResponse response = authService.login(request);
 
@@ -148,7 +170,7 @@ class AuthServiceTest {
 
         when(userRepository.findByEmail("user@test.com")).thenReturn(Optional.of(entity));
         when(companyRepository.findByUserId(10L)).thenReturn(Optional.empty());
-        when(jwtService.generateToken(any(UserDetails.class))).thenReturn("token");
+        when(jwtService.generateToken(any(Map.class), any(UserDetails.class))).thenReturn("token");
 
         AuthResponse response = authService.login(request);
 
@@ -168,7 +190,7 @@ class AuthServiceTest {
 
         when(userRepository.findByEmail("user@test.com")).thenReturn(Optional.of(entity));
         when(companyRepository.findByUserId(10L)).thenReturn(Optional.empty());
-        when(jwtService.generateToken(any(UserDetails.class))).thenReturn("token");
+        when(jwtService.generateToken(any(Map.class), any(UserDetails.class))).thenReturn("token");
 
         AuthResponse response = authService.login(request);
 

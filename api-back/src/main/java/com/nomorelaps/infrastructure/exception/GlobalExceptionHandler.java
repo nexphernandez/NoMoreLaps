@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -30,6 +31,32 @@ public class GlobalExceptionHandler {
         error.put("message", "Email or password incorrect");
         error.put("status", "401");
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+    }
+
+    /**
+     * Handles validation errors when @Valid fails.
+     * Returns 400 Bad Request with field errors.
+     */
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Map<String, String>> handleValidationException(MethodArgumentNotValidException ex) {
+        Map<String, String> errors = new HashMap<>();
+        ex.getBindingResult().getFieldErrors().forEach(error -> 
+            errors.put(error.getField(), error.getDefaultMessage())
+        );
+        errors.put("status", "400");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+    }
+
+    /**
+     * Handles illegal arguments or states (often from business logic).
+     * Returns 400 Bad Request.
+     */
+    @ExceptionHandler({IllegalArgumentException.class, IllegalStateException.class})
+    public ResponseEntity<Map<String, String>> handleBusinessException(Exception ex) {
+        Map<String, String> error = new HashMap<>();
+        error.put("message", ex.getMessage());
+        error.put("status", "400");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
     /**

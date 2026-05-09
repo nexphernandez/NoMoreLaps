@@ -5,8 +5,11 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -19,8 +22,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.nomorelaps.adapters.out.persistence.interfaces.IReservationPersistenceAdapter;
 import com.nomorelaps.adapters.out.persistence.interfaces.IParkingSpotPersistenceAdapter;
 import com.nomorelaps.business.interfaces.INotificationService;
+import com.nomorelaps.domain.models.Company;
+import com.nomorelaps.domain.models.Notification;
+import com.nomorelaps.domain.models.Parking;
 import com.nomorelaps.domain.models.ParkingSpot;
 import com.nomorelaps.domain.models.Reservation;
+import com.nomorelaps.domain.models.Sanction;
+import com.nomorelaps.domain.models.User;
 
 @ExtendWith(MockitoExtension.class)
 class ReservationServiceTest {
@@ -240,18 +248,242 @@ class ReservationServiceTest {
     }
 
     @Test
-    @DisplayName("Should update payment status")
-    void shouldUpdatePaymentStatus() {
+    @DisplayName("Should create reservation and send notification")
+    void shouldCreateReservationAndSendNotification() {
+        validReservation.setId(500L);
+        User user = new User();
+        user.setName("John Doe");
+        validReservation.setUser(user);
+
+        Parking parking = new Parking();
+        parking.setName("Main Parking");
+        Company company = new Company(10L);
+        parking.setCompany(company);
+        
+        validSpot.setParking(parking);
+
+        when(persistencePort.hasOverlappingReservations(anyLong(), any(), any())).thenReturn(false);
+        when(persistencePort.save(any(Reservation.class))).thenReturn(validReservation);
+        when(spotPersistencePort.findById(validSpot.getId())).thenReturn(Optional.of(validSpot));
+
+        Reservation created = reservationService.create(validReservation);
+
+        assertNotNull(created);
+        verify(notificationService, times(1)).create(any(Notification.class));
+    }
+
+    @Test
+    @DisplayName("updatePaymentStatus - Should set to COMPLETED and free the spot when paid")
+    void shouldUpdatePaymentStatusToCompleted() {
         validReservation.setId(1L);
         validReservation.setPaid(false);
-        
+        validReservation.setState("ACTIVE");
+        validSpot.setState(false); 
+
         when(persistencePort.findById(1L)).thenReturn(Optional.of(validReservation));
         when(persistencePort.save(any(Reservation.class))).thenAnswer(i -> i.getArgument(0));
 
         Reservation result = reservationService.updatePaymentStatus(1L, true);
 
         assertTrue(result.isPaid());
+        assertEquals("COMPLETED", result.getState());
+        assertTrue(validSpot.isState()); 
+        verify(spotPersistencePort).save(validSpot);
         verify(persistencePort).save(validReservation);
+    }
+
+    @Test
+    @DisplayName("Should create reservation and set basePrice if null")
+    void shouldSetBasePriceIfNull() {
+        validReservation.setPrice(10.0);
+        validReservation.setBasePrice(null);
+        when(persistencePort.hasOverlappingReservations(anyLong(), any(), any())).thenReturn(false);
+        when(persistencePort.save(any(Reservation.class))).thenAnswer(i -> i.getArgument(0));
+
+        Reservation result = reservationService.create(validReservation);
+
+        assertEquals(10.0, result.getBasePrice());
+    }
+
+    @Test
+    @DisplayName("Should not crash and send no notification when objects are null in create")
+    void shouldNotCrashWhenObjectsAreNullInNotificationLogic() {
+        validReservation.setParkingSpot(new ParkingSpot(1L)); 
+        when(persistencePort.hasOverlappingReservations(anyLong(), any(), any())).thenReturn(false);
+        when(persistencePort.save(any(Reservation.class))).thenReturn(validReservation);
+        when(spotPersistencePort.findById(anyLong())).thenReturn(Optional.empty());
+
+        assertDoesNotThrow(() -> reservationService.create(validReservation));
+        verify(notificationService, never()).create(any());
+    }
+
+    @Test
+    @DisplayName("updatePaymentStatus - Should not crash when spot is null")
+    void shouldNotCrashWhenSpotIsNullInPaymentUpdate() {
+        validReservation.setId(1L);
+        validReservation.setPaid(false);
+        validReservation.setParkingSpot(null);
+
+        when(persistencePort.findById(1L)).thenReturn(Optional.of(validReservation));
+        when(persistencePort.save(any(Reservation.class))).thenAnswer(i -> i.getArgument(0));
+
+        Reservation result = reservationService.updatePaymentStatus(1L, true);
+
+        assertTrue(result.isPaid());
+        verify(spotPersistencePort, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("updatePaymentStatus - Should update sanctions to paid")
+    void shouldUpdateSanctionsToPaid() {
+        validReservation.setId(1L);
+        validReservation.setPaid(false);
+        Sanction s1 = new Sanction();
+        s1.setPaid(false);
+        Set<Sanction> sanctions = new HashSet<>();
+        sanctions.add(s1);
+        validReservation.setSanctions(sanctions);
+
+        when(persistencePort.findById(1L)).thenReturn(Optional.of(validReservation));
+        when(persistencePort.save(any(Reservation.class))).thenAnswer(i -> i.getArgument(0));
+
+        Reservation result = reservationService.updatePaymentStatus(1L, true);
+
+        assertTrue(s1.isPaid());
+    }
+
+    @Test
+    @DisplayName("Should not set basePrice if already present in create")
+    void shouldNotSetBasePriceIfPresent() {
+        validReservation.setPrice(10.0);
+        validReservation.setBasePrice(5.0); 
+        when(persistencePort.hasOverlappingReservations(anyLong(), any(), any())).thenReturn(false);
+        when(persistencePort.save(any(Reservation.class))).thenAnswer(i -> i.getArgument(0));
+
+        Reservation result = reservationService.create(validReservation);
+
+        assertEquals(5.0, result.getBasePrice());
+    }
+
+    @Test
+    @DisplayName("Should not send notification if spot has no parking in create")
+    void shouldNotSendNotificationIfParkingIsNull() {
+        validReservation.setParkingSpot(validSpot);
+        validSpot.setParking(null);
+
+        when(persistencePort.hasOverlappingReservations(anyLong(), any(), any())).thenReturn(false);
+        when(persistencePort.save(any(Reservation.class))).thenReturn(validReservation);
+        when(spotPersistencePort.findById(validSpot.getId())).thenReturn(Optional.of(validSpot));
+
+        reservationService.create(validReservation);
+
+        verify(notificationService, never()).create(any());
+    }
+
+    @Test
+    @DisplayName("Should not send notification if parking has no company in create")
+    void shouldNotSendNotificationIfCompanyIsNull() {
+        validReservation.setParkingSpot(validSpot);
+        Parking parking = new Parking();
+        parking.setCompany(null); 
+        validSpot.setParking(parking);
+
+        when(persistencePort.hasOverlappingReservations(anyLong(), any(), any())).thenReturn(false);
+        when(persistencePort.save(any(Reservation.class))).thenReturn(validReservation);
+        when(spotPersistencePort.findById(validSpot.getId())).thenReturn(Optional.of(validSpot));
+
+        reservationService.create(validReservation);
+
+        verify(notificationService, never()).create(any());
+    }
+
+    @Test
+    @DisplayName("updatePaymentStatus - Should not update state or free spot if paid is false")
+    void shouldNotUpdateIfPaidIsFalse() {
+        validReservation.setId(1L);
+        validReservation.setPaid(false);
+        validReservation.setState("ACTIVE");
+        validSpot.setState(false);
+
+        when(persistencePort.findById(1L)).thenReturn(Optional.of(validReservation));
+        when(persistencePort.save(any(Reservation.class))).thenAnswer(i -> i.getArgument(0));
+
+        Reservation result = reservationService.updatePaymentStatus(1L, false);
+
+        assertFalse(result.isPaid());
+        assertEquals("ACTIVE", result.getState());
+        assertFalse(validSpot.isState());
+        verify(spotPersistencePort, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("Should not throw when notification logic fails in create (try-catch)")
+    void shouldNotThrowWhenNotificationFails() {
+        when(persistencePort.hasOverlappingReservations(anyLong(), any(), any())).thenReturn(false);
+        when(persistencePort.save(any(Reservation.class))).thenReturn(validReservation);
+        
+        when(spotPersistencePort.findById(anyLong())).thenThrow(new RuntimeException("Database error"));
+
+        assertDoesNotThrow(() -> {
+            Reservation result = reservationService.create(validReservation);
+            assertNotNull(result);
+        });
+    }
+
+    @Test
+    @DisplayName("updatePaymentStatus - Should not crash when sanctions are null")
+    void shouldNotCrashWhenSanctionsAreNull() {
+        validReservation.setId(1L);
+        validReservation.setSanctions(null);
+        when(persistencePort.findById(1L)).thenReturn(Optional.of(validReservation));
+        when(persistencePort.save(any(Reservation.class))).thenAnswer(i -> i.getArgument(0));
+
+        assertDoesNotThrow(() -> reservationService.updatePaymentStatus(1L, true));
+    }
+
+    @Test
+    @DisplayName("Should not send notification if companyId is null in create")
+    void shouldNotSendNotificationIfCompanyIdIsNull() {
+        validReservation.setParkingSpot(validSpot);
+        Parking parking = new Parking();
+        Company company = new Company(null); 
+        parking.setCompany(company);
+        validSpot.setParking(parking);
+
+        when(persistencePort.hasOverlappingReservations(anyLong(), any(), any())).thenReturn(false);
+        when(persistencePort.save(any(Reservation.class))).thenReturn(validReservation);
+        when(spotPersistencePort.findById(validSpot.getId())).thenReturn(Optional.of(validSpot));
+
+        reservationService.create(validReservation);
+
+        verify(notificationService, never()).create(any());
+    }
+
+    @Test
+    @DisplayName("Should use 'a user' in notification when user is null in create")
+    void shouldSendNotificationWithGenericUserWhenUserIsNull() {
+        validReservation.setUser(null); 
+        validReservation.setParkingSpot(validSpot);
+        Parking parking = new Parking();
+        parking.setName("Main Parking");
+        Company company = new Company(10L);
+        parking.setCompany(company);
+        validSpot.setParking(parking);
+
+        when(persistencePort.hasOverlappingReservations(anyLong(), any(), any())).thenReturn(false);
+        when(persistencePort.save(any(Reservation.class))).thenReturn(validReservation);
+        when(spotPersistencePort.findById(validSpot.getId())).thenReturn(Optional.of(validSpot));
+
+        reservationService.create(validReservation);
+
+        verify(notificationService).create(argThat(n -> n.getMessage().contains("received from a user")));
+    }
+
+    @Test
+    @DisplayName("updatePaymentStatus - Should throw when reservation not found")
+    void shouldThrowWhenReservationNotFoundForPayment() {
+        when(persistencePort.findById(99L)).thenReturn(Optional.empty());
+        assertThrows(IllegalArgumentException.class, () -> reservationService.updatePaymentStatus(99L, true));
     }
 }
 

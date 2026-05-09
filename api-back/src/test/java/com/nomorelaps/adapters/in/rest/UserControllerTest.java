@@ -20,9 +20,13 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nomorelaps.adapters.in.api.ChangePasswordRequest;
 import com.nomorelaps.adapters.in.api.UserRequest;
+import com.nomorelaps.adapters.mapper.UserMapper;
 import com.nomorelaps.business.interfaces.IUserService;
 import com.nomorelaps.domain.models.User;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 
 /**
  * Integration tests for UserController.
@@ -39,6 +43,9 @@ class UserControllerTest {
 
     @MockBean
     private IUserService userService;
+
+    @Autowired
+    private UserMapper userMapper;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -154,6 +161,22 @@ class UserControllerTest {
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("Alice Updated"));
+    }
+
+    @Test
+    @DisplayName("PATCH /api/users/{id}/change-password - Success")
+    @WithMockUser
+    void shouldChangePassword() throws Exception {
+        ChangePasswordRequest request = new ChangePasswordRequest();
+        request.setCurrentPassword("oldPass123");
+        request.setNewPassword("newPass123");
+
+        doNothing().when(userService).changePassword(eq(1L), anyString(), anyString());
+
+        mockMvc.perform(patch("/api/users/1/change-password")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk());
     }
 }
 

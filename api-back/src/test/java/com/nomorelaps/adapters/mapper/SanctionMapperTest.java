@@ -5,11 +5,16 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
+import java.lang.reflect.Method;
 
 import com.nomorelaps.adapters.in.api.SanctionRequest;
 import com.nomorelaps.adapters.in.api.SanctionResponse;
 import com.nomorelaps.adapters.out.persistence.jpa.SanctionJpaEntity;
+import com.nomorelaps.domain.models.Parking;
+import com.nomorelaps.domain.models.ParkingSpot;
+import com.nomorelaps.domain.models.Reservation;
 import com.nomorelaps.domain.models.Sanction;
+import com.nomorelaps.domain.models.User;
 
 class SanctionMapperTest {
 
@@ -77,5 +82,102 @@ class SanctionMapperTest {
         assertNull(mapper.toResponse(null));
         assertNull(mapper.toJpaEntity(null));
         assertNull(mapper.toDomain(null));
+    }
+
+    @Test
+    @DisplayName("toResponse - Should handle nested nulls")
+    void shouldHandleNestedNullsInResponse() {
+        Sanction s = new Sanction(1L);
+        
+        s.setUser(null);
+        SanctionResponse r1 = mapper.toResponse(s);
+        assertNull(r1.getUserId());
+        assertNull(r1.getUserName());
+
+        User u = new User();
+        u.setId(null);
+        u.setName(null);
+        s.setUser(u);
+        SanctionResponse r2 = mapper.toResponse(s);
+        assertNull(r2.getUserId());
+        assertNull(r2.getUserName());
+
+        s.setReservation(null);
+        SanctionResponse r3 = mapper.toResponse(s);
+        assertNull(r3.getParkingName());
+
+        Reservation res = new Reservation();
+        res.setParkingSpot(null);
+        s.setReservation(res);
+        SanctionResponse r4 = mapper.toResponse(s);
+        assertNull(r4.getParkingName());
+
+        ParkingSpot spot = new ParkingSpot();
+        spot.setParking(null);
+        res.setParkingSpot(spot);
+        SanctionResponse r5 = mapper.toResponse(s);
+        assertNull(r5.getParkingName());
+
+        Parking p = new Parking();
+        p.setName(null);
+        spot.setParking(p);
+        SanctionResponse r6 = mapper.toResponse(s);
+        assertNull(r6.getParkingName());
+    }
+
+    @Test
+    @DisplayName("Internal methods null checks - Reflection")
+    void shouldHandleNullsInInternalMethods() throws Exception {
+        Object impl = mapper;
+
+        Method m1 = impl.getClass().getDeclaredMethod("domainUserId", Sanction.class);
+        m1.setAccessible(true);
+        assertNull(m1.invoke(impl, (Sanction) null));
+        Sanction s = new Sanction();
+        s.setUser(null);
+        assertNull(m1.invoke(impl, s));
+        User u = new User();
+        u.setId(null);
+        s.setUser(u);
+        assertNull(m1.invoke(impl, s));
+        
+        u.setId(55L);
+        assertEquals(55L, m1.invoke(impl, s));
+
+        Method m2 = impl.getClass().getDeclaredMethod("domainUserName", Sanction.class);
+        m2.setAccessible(true);
+        assertNull(m2.invoke(impl, (Sanction) null));
+        s.setUser(null);
+        assertNull(m2.invoke(impl, s));
+        u.setName(null);
+        s.setUser(u);
+        assertNull(m2.invoke(impl, s));
+        
+        u.setName("Bob");
+        assertEquals("Bob", m2.invoke(impl, s));
+
+        Method m3 = impl.getClass().getDeclaredMethod("domainReservationParkingSpotParkingName", Sanction.class);
+        m3.setAccessible(true);
+        assertNull(m3.invoke(impl, (Sanction) null));
+        s.setReservation(null);
+        assertNull(m3.invoke(impl, s));
+        
+        Reservation res = new Reservation();
+        res.setParkingSpot(null);
+        s.setReservation(res);
+        assertNull(m3.invoke(impl, s));
+
+        ParkingSpot spot = new ParkingSpot();
+        spot.setParking(null);
+        res.setParkingSpot(spot);
+        assertNull(m3.invoke(impl, s));
+
+        Parking p = new Parking();
+        p.setName(null);
+        spot.setParking(p);
+        assertNull(m3.invoke(impl, s));
+
+        p.setName("Parking Lot");
+        assertEquals("Parking Lot", m3.invoke(impl, s));
     }
 }

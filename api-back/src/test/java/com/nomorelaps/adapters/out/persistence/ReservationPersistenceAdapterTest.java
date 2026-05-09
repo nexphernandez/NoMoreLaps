@@ -285,6 +285,22 @@ class ReservationPersistenceAdapterTest {
         assertTrue(reservationAdapter.hasOverlappingReservationsExcluding(testSpot.getId(), start, end, saved1.getId()), 
             "Should return true because r2 still overlaps even if r1 is excluded");
     }
+
+    @Test
+    @DisplayName("toEntity - Should cover sanctions null and not-null branches")
+    void shouldCoverSanctionsInToEntity() {
+        ReservationPersistenceAdapter impl = (ReservationPersistenceAdapter) reservationAdapter;
+        
+        Reservation r1 = new Reservation();
+        r1.setSanctions(null);
+        ReservationJpaEntity e1 = impl.toEntity(r1);
+        assertNull(e1.getSanctions());
+
+        Reservation r2 = new Reservation();
+        r2.setSanctions(java.util.Collections.emptySet());
+        ReservationJpaEntity e2 = impl.toEntity(r2);
+        assertNotNull(e2.getSanctions());
+    }
 }
 
 

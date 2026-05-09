@@ -11,9 +11,23 @@ import com.nomorelaps.adapters.in.api.ParkingSpotResponse;
 import com.nomorelaps.adapters.out.persistence.jpa.ParkingSpotJpaEntity;
 import com.nomorelaps.domain.models.ParkingSpot;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.springframework.test.util.ReflectionTestUtils;
+
 class ParkingSpotMapperTest {
 
     private final ParkingSpotMapper mapper = Mappers.getMapper(ParkingSpotMapper.class);
+
+    @Mock
+    private ParkingMapper parkingMapper;
+
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+        ReflectionTestUtils.setField(mapper, "parkingMapper", parkingMapper);
+    }
 
     @Test
     @DisplayName("toDomainFromRequest - Should map request to domain")

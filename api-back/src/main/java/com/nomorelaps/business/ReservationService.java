@@ -97,26 +97,31 @@ public class ReservationService implements IReservationService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<Reservation> findById(Long id) {
         return persistencePort.findById(id);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Reservation> findByUserId(Long userId) {
         return persistencePort.findByUserId(userId);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Reservation> findByParkingSpotId(Long spotId) {
         return persistencePort.findByParkingSpotId(spotId);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Reservation> findByParkingId(Long parkingId) {
         return persistencePort.findByParkingId(parkingId);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Reservation> findByState(String state) {
         return persistencePort.findByState(state);
     }
@@ -160,6 +165,7 @@ public class ReservationService implements IReservationService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Reservation> findByCompanyId(Long companyId) {
         return persistencePort.findByCompanyId(companyId);
     }

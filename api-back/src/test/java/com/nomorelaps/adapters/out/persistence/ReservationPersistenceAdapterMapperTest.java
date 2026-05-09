@@ -11,6 +11,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.nomorelaps.adapters.mapper.ReservationMapper;
+import com.nomorelaps.adapters.mapper.SanctionMapper;
 import com.nomorelaps.adapters.out.persistence.jpa.ParkingSpotJpaEntity;
 import com.nomorelaps.adapters.out.persistence.jpa.ReservationJpaEntity;
 import com.nomorelaps.adapters.out.persistence.repository.ReservationJpaRepository;
@@ -26,6 +27,9 @@ class ReservationPersistenceAdapterMapperTest {
 
     @Mock
     private ReservationMapper mapper;
+
+    @Mock
+    private SanctionMapper sanctionMapper;
 
     @InjectMocks
     private ReservationPersistenceAdapter adapter;
