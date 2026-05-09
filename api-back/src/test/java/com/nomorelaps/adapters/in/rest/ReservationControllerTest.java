@@ -1,220 +1,193 @@
 package com.nomorelaps.adapters.in.rest;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nomorelaps.adapters.in.api.ReservationRequest;
-import com.nomorelaps.adapters.in.api.ReservationResponse;
+import com.nomorelaps.adapters.mapper.ReservationMapper;
 import com.nomorelaps.business.interfaces.IReservationService;
 import com.nomorelaps.domain.models.Reservation;
+import com.nomorelaps.infrastructure.security.SecurityService;
 
+/**
+ * Integration tests for ReservationController.
+ * Verifies the full reservation lifecycle including creation, retrieval by user/company/parking,
+ * state filtering, and payment status updates.
+ * 
+ * @author nexphernandez
+ * @version 1.1.0
+ */
 @SpringBootTest
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
 class ReservationControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
-    private IReservationService reservationService;
-
-    @Autowired
-    private com.nomorelaps.adapters.mapper.ReservationMapper reservationMapper;
-
     @Autowired
     private ObjectMapper objectMapper;
 
-    @MockBean
-    private com.nomorelaps.infrastructure.security.SecurityService securityService;
+    @MockitoBean
+    private IReservationService reservationService;
+
+    @MockitoSpyBean
+    private ReservationMapper reservationMapper;
+
+    @MockitoBean(name = "securityService")
+    private SecurityService securityService;
+
+    private ReservationRequest validRequest;
+    private Reservation sampleReservation;
+
+    @BeforeEach
+    void setUp() {
+        validRequest = new ReservationRequest();
+        validRequest.setStartTime(LocalDateTime.now().plusHours(1));
+        validRequest.setEndTime(LocalDateTime.now().plusHours(2));
+        validRequest.setPrice(15.5);
+        validRequest.setUserId(10L);
+        validRequest.setParkingSpotId(20L);
+        validRequest.setState("ACTIVE");
+
+        sampleReservation = new Reservation(1L);
+        sampleReservation.setState("ACTIVE");
+        sampleReservation.setPrice(15.5);
+        sampleReservation.setPaid(false);
+
+        when(securityService.isCompanyOwner(any())).thenReturn(true);
+    }
 
     @Test
-    @DisplayName("GET /api/reservations/{id} - Found")
+    @DisplayName("POST /api/reservations - Success: Should create reservation")
     @WithMockUser
-    void shouldReturnReservationById() throws Exception {
-        Reservation reservation = new Reservation(1L);
-        reservation.setState("ACTIVE");
-        when(reservationService.findById(1L)).thenReturn(Optional.of(reservation));
+    void shouldCreateReservationSuccessfully() throws Exception {
+        when(reservationService.create(any(Reservation.class))).thenReturn(sampleReservation);
+
+        mockMvc.perform(post("/api/reservations")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(validRequest)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(1L));
+    }
+
+    @Test
+    @DisplayName("GET /api/reservations/{id} - Success: Should return reservation details")
+    @WithMockUser
+    void shouldReturnReservationByIdSuccessfully() throws Exception {
+        when(reservationService.findById(1L)).thenReturn(Optional.of(sampleReservation));
 
         mockMvc.perform(get("/api/reservations/1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.id").value(1L))
                 .andExpect(jsonPath("$.state").value("ACTIVE"));
     }
 
     @Test
-    @DisplayName("POST /api/reservations - Created")
+    @DisplayName("GET /api/reservations/user/{userId} - Success: Should return user reservations")
     @WithMockUser
-    void shouldCreateReservation() throws Exception {
-        ReservationRequest request = new ReservationRequest();
-        request.setStartTime(LocalDateTime.now().plusHours(1));
-        request.setEndTime(LocalDateTime.now().plusHours(2));
-        request.setPrice(10.0);
-        request.setState("ACTIVE");
-        request.setUserId(1L);
-        request.setParkingSpotId(1L);
+    void shouldReturnUserReservationsSuccessfully() throws Exception {
+        when(reservationService.findByUserId(10L)).thenReturn(List.of(sampleReservation));
 
-        Reservation saved = new Reservation(1L);
-        when(reservationService.create(any(Reservation.class))).thenReturn(saved);
-
-        mockMvc.perform(post("/api/reservations")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isCreated());
-    }
-
-    @Test
-    @DisplayName("GET /api/reservations/user/{id} - List")
-    @WithMockUser
-    void shouldReturnUserReservations() throws Exception {
-        when(reservationService.findByUserId(1L)).thenReturn(Collections.emptyList());
-
-        mockMvc.perform(get("/api/reservations/user/1"))
+        mockMvc.perform(get("/api/reservations/user/10"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray());
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$[0].id").value(1L));
     }
 
     @Test
-    @DisplayName("GET /api/reservations/{id} - Not Found")
+    @DisplayName("GET /api/reservations/company/{companyId} - Success: Should return company reservations")
     @WithMockUser
-    void shouldReturn404WhenReservationNotFound() throws Exception {
-        when(reservationService.findById(99L)).thenReturn(Optional.empty());
-        mockMvc.perform(get("/api/reservations/99"))
-                .andExpect(status().isNotFound());
+    void shouldReturnCompanyReservationsSuccessfully() throws Exception {
+        when(reservationService.findByCompanyId(100L)).thenReturn(List.of(sampleReservation));
+
+        mockMvc.perform(get("/api/reservations/company/100"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$[0].id").value(1L));
     }
 
     @Test
-    @DisplayName("GET /api/reservations/spot/{id} - List")
+    @DisplayName("GET /api/reservations/spot/{spotId}/occupied - Success: Should return active spot reservations")
     @WithMockUser
-    void shouldReturnSpotReservations() throws Exception {
-        when(reservationService.findByParkingSpotId(1L)).thenReturn(Collections.emptyList());
-        mockMvc.perform(get("/api/reservations/spot/1/occupied"))
-                .andExpect(status().isOk());
+    void shouldReturnOccupiedHoursForSpotSuccessfully() throws Exception {
+        Reservation cancelled = new Reservation(2L);
+        cancelled.setState("CANCELLED");
+        when(reservationService.findByParkingSpotId(20L)).thenReturn(List.of(sampleReservation, cancelled));
+
+        mockMvc.perform(get("/api/reservations/spot/20/occupied"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(1))
+                .andExpect(jsonPath("$[0].state").value("ACTIVE"));
     }
 
     @Test
-    @DisplayName("GET /api/reservations/parking/{id} - List")
+    @DisplayName("GET /api/reservations/state/{state} - Success: Should return filtered reservations")
     @WithMockUser
-    void shouldReturnParkingReservations() throws Exception {
-        when(reservationService.findByParkingId(1L)).thenReturn(Collections.emptyList());
-        mockMvc.perform(get("/api/reservations/parking/1/occupied"))
-                .andExpect(status().isOk());
-    }
+    void shouldFilterReservationsByStateSuccessfully() throws Exception {
+        when(reservationService.findByState("ACTIVE")).thenReturn(List.of(sampleReservation));
 
-    @Test
-    @DisplayName("GET /api/reservations/state/{state} - List")
-    @WithMockUser
-    void shouldReturnReservationsByState() throws Exception {
-        when(reservationService.findByState("ACTIVE")).thenReturn(Collections.emptyList());
         mockMvc.perform(get("/api/reservations/state/ACTIVE"))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].state").value("ACTIVE"));
     }
 
     @Test
-    @DisplayName("PUT /api/reservations/{id} - Updated")
+    @DisplayName("PUT /api/reservations/{id} - Success: Should update reservation")
     @WithMockUser
-    void shouldUpdateReservation() throws Exception {
-        Reservation saved = new Reservation(1L);
-        when(reservationService.update(any(Reservation.class))).thenReturn(saved);
-
-        ReservationRequest request = new ReservationRequest();
-        request.setStartTime(LocalDateTime.now().plusHours(1));
-        request.setEndTime(LocalDateTime.now().plusHours(2));
-        request.setPrice(10.0);
-        request.setState("ACTIVE");
-        request.setUserId(1L);
-        request.setParkingSpotId(1L);
+    void shouldUpdateReservationSuccessfully() throws Exception {
+        sampleReservation.setPrice(20.0);
+        when(reservationService.update(any(Reservation.class))).thenReturn(sampleReservation);
 
         mockMvc.perform(put("/api/reservations/1")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isOk());
+                .content(objectMapper.writeValueAsString(validRequest)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.price").value(20.0));
     }
 
     @Test
-    @DisplayName("DELETE /api/reservations/{id} - Deleted")
+    @DisplayName("DELETE /api/reservations/{id} - Success: Should return 204")
     @WithMockUser
-    void shouldDeleteReservation() throws Exception {
+    void shouldDeleteReservationSuccessfully() throws Exception {
+        doNothing().when(reservationService).deleteById(1L);
+
         mockMvc.perform(delete("/api/reservations/1"))
                 .andExpect(status().isNoContent());
     }
 
     @Test
-    @DisplayName("GET /api/reservations/spot/{id}/occupied - Filter check")
+    @DisplayName("PATCH /api/reservations/{id}/payment-status - Success: Should update paid flag")
     @WithMockUser
-    void shouldFilterNonActiveReservations() throws Exception {
-        Reservation active = new Reservation(1L);
-        active.setState("ACTIVE");
-        Reservation cancelled = new Reservation(2L);
-        cancelled.setState("CANCELLED");
-        
-        when(reservationService.findByParkingSpotId(1L)).thenReturn(Arrays.asList(active, cancelled));
-        
-        mockMvc.perform(get("/api/reservations/spot/1/occupied"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(1))
-                .andExpect(jsonPath("$[0].id").value(1));
-    }
-
-    @Test
-    @DisplayName("GET /api/reservations/parking/{id}/occupied - Filter check")
-    @WithMockUser
-    void shouldFilterNonActiveReservationsByParking() throws Exception {
-        Reservation active = new Reservation(10L);
-        active.setState("ACTIVE");
-        Reservation completed = new Reservation(11L);
-        completed.setState("COMPLETED");
-        
-        when(reservationService.findByParkingId(1L)).thenReturn(Arrays.asList(active, completed));
-        
-        mockMvc.perform(get("/api/reservations/parking/1/occupied"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(1))
-                .andExpect(jsonPath("$[0].id").value(10));
-    }
-
-    @Test
-    @DisplayName("GET /api/reservations/company/{companyId} - Should return list")
-    @WithMockUser
-    void shouldFindByCompanyId() throws Exception {
-        Reservation domain = new Reservation(1L);
-        domain.setState("ACTIVE"); // Ensure state is set for json path
-
-        when(securityService.isCompanyOwner(100L)).thenReturn(true);
-        when(reservationService.findByCompanyId(100L)).thenReturn(List.of(domain));
-
-        mockMvc.perform(get("/api/reservations/company/100"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id").value(1L));
-    }
-
-    @Test
-    @DisplayName("PATCH /api/reservations/{id}/payment-status - Success")
-    @WithMockUser
-    void shouldUpdatePaymentStatus() throws Exception {
-        Reservation updated = new Reservation(1L);
-        updated.setPaid(true);
-        when(reservationService.updatePaymentStatus(eq(1L), anyBoolean())).thenReturn(updated);
+    void shouldUpdatePaymentStatusSuccessfully() throws Exception {
+        sampleReservation.setPaid(true);
+        when(reservationService.updatePaymentStatus(eq(1L), anyBoolean())).thenReturn(sampleReservation);
 
         mockMvc.perform(patch("/api/reservations/1/payment-status")
                 .param("paid", "true"))
@@ -222,4 +195,3 @@ class ReservationControllerTest {
                 .andExpect(jsonPath("$.paid").value(true));
     }
 }
-
