@@ -4,6 +4,12 @@
       <h1 class="page-title">API & Integration</h1>
       <p class="page-subtitle">Connect your external systems with the NoMoreLaps platform.</p>
     </div>
+    <div class="header-actions">
+      <a [href]="swaggerUrl" target="_blank" class="btn-swagger">
+        <span class="material-symbols-outlined">description</span>
+        View Full API Docs (Swagger)
+      </a>
+    </div>
   </header>
 
   <div class="api-key-section glass-card">
@@ -13,11 +19,16 @@
     
     <div *ngIf="!loading">
       <div class="section-header">
-        <h3>Your API Key</h3>
+        <h3>Your Integration Details</h3>
         <span class="badge-status">Active</span>
       </div>
       
-      <p class="section-desc">Use this key to authenticate your requests from third-party systems. Keep this key secret.</p>
+      <div class="id-container">
+        <span class="id-label">Company ID:</span>
+        <code class="id-value">{{ companyId }}</code>
+      </div>
+
+      <p class="section-desc">Use this ID and Key to authenticate your requests from third-party systems.</p>
       
       <div class="key-container">
         <code class="api-key">{{ showKey ? apiKey : '••••••••••••••••••••••••••••••••' }}</code>

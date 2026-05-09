@@ -12,8 +12,10 @@ import { AuthService } from '../../../core/services/auth';
 })
 export class Developer implements OnInit {
   apiKey = '';
+  companyId: number | null = null;
   showKey = false;
   loading = true;
+  swaggerUrl = 'http://localhost:8080/swagger-ui/index.html?urls.primaryName=CompanyAPI';
 
   constructor(
     private companyService: CompanyService,
@@ -35,6 +37,7 @@ export class Developer implements OnInit {
     this.companyService.getCompanyById(companyId).subscribe({
       next: (company) => {
         this.apiKey = company.apiKey || 'No key generated';
+        this.companyId = company.id;
         this.loading = false;
         this.cdr.detectChanges();
       },

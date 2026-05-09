@@ -17,9 +17,41 @@ import java.util.Collections;
 public class SecurityUser implements UserDetails {
 
     private final UserJpaEntity user;
+    private final Long companyId;
 
+    /**
+     * Default constructor for normal users.
+     * @param user The JPA entity of the user.
+     */
     public SecurityUser(UserJpaEntity user) {
         this.user = user;
+        this.companyId = null;
+    }
+
+    /**
+     * Constructor for company-related users.
+     * @param user The JPA entity of the user.
+     * @param companyId The ID of the company this user belongs to.
+     */
+    public SecurityUser(UserJpaEntity user, Long companyId) {
+        this.user = user;
+        this.companyId = companyId;
+    }
+
+    /**
+     * Gets the associated company ID.
+     * @return The company ID or null if not a company user.
+     */
+    public Long getCompanyId() {
+        return companyId;
+    }
+
+    /**
+     * Gets the underlying JPA user entity.
+     * @return The UserJpaEntity.
+     */
+    public UserJpaEntity getUserEntity() {
+        return user;
     }
 
     @Override
