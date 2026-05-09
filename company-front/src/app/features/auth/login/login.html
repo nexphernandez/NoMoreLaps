@@ -11,6 +11,7 @@
         placeholder="example@company.com"
         type="email"
         formControlName="email"
+        [error]="getFieldError('email')"
       ></app-input>
 
       <app-input 
@@ -18,11 +19,14 @@
         placeholder="••••••••"
         type="password"
         formControlName="password"
+        [error]="getFieldError('password')"
       ></app-input>
 
-      <div class="error-container" *ngIf="errorMessage">
-        <p class="error-text">{{ errorMessage }}</p>
-      </div>
+      @if (errorMessage) {
+        <div class="error-container">
+          <p class="error-text">{{ errorMessage }}</p>
+        </div>
+      }
 
       <div class="form-footer">
         <a href="#" class="forgot-password">Forgot password?</a>

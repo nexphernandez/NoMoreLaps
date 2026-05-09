@@ -51,20 +51,21 @@ import { filter } from 'rxjs/operators';
 
       <div class="recent-activity glass-card">
         <h3>Recent Activity</h3>
-        <div class="activity-list" *ngIf="recentActivity().length > 0; else noActivity">
-          <div class="activity-item" *ngFor="let item of recentActivity()">
-            <span class="activity-type" [class.reservation]="item.type === 'reservation'">
-              <span class="material-symbols-outlined">{{ item.type === 'reservation' ? 'event' : 'monetization_on' }}</span>
-            </span>
-            <div class="activity-details">
-              <p class="activity-text">{{ item.message }}</p>
-              <span class="activity-time">{{ item.time | date:'short' }}</span>
+        <div class="activity-list">
+          @for (item of recentActivity(); track item.time) {
+            <div class="activity-item">
+              <span class="activity-type" [class.reservation]="item.type === 'reservation'">
+                <span class="material-symbols-outlined">{{ item.type === 'reservation' ? 'event' : 'monetization_on' }}</span>
+              </span>
+              <div class="activity-details">
+                <p class="activity-text">{{ item.message }}</p>
+                <span class="activity-time">{{ item.time | date:'short' }}</span>
+              </div>
             </div>
-          </div>
+          } @empty {
+            <p style="color: var(--text-secondary); margin-top: 1rem;">No new activity to display.</p>
+          }
         </div>
-        <ng-template #noActivity>
-          <p style="color: var(--text-secondary); margin-top: 1rem;">No new activity to display.</p>
-        </ng-template>
       </div>
     </div>
   `,

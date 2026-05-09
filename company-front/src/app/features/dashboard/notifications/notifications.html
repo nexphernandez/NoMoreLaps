@@ -6,36 +6,47 @@
     </div>
   </header>
 
-  <div class="notifications-list" *ngIf="!loading && notifications.length > 0">
-    <div *ngFor="let n of notifications" class="notification-card glass-card" [class.unread]="!n.isRead"
-      (click)="markAsRead(n)">
-      <div class="notif-icon" [ngClass]="n.type.toLowerCase()">
-        <span class="material-symbols-outlined" *ngIf="n.type === 'RESERVATION'">calendar_today</span>
-        <span class="material-symbols-outlined" *ngIf="n.type === 'SANCTION'">warning</span>
-        <span class="material-symbols-outlined" *ngIf="n.type === 'CANCEL'">cancel</span>
-      </div>
+  @if (!loading && notifications.length > 0) {
+    <div class="notifications-list">
+      @for (n of notifications; track n.id) {
+        <div class="notification-card glass-card" [class.unread]="!n.isRead" (click)="markAsRead(n)">
+          <div class="notif-icon" [ngClass]="n.type.toLowerCase()">
+            @if (n.type === 'RESERVATION') {
+              <span class="material-symbols-outlined">calendar_today</span>
+            } @else if (n.type === 'SANCTION') {
+              <span class="material-symbols-outlined">warning</span>
+            } @else if (n.type === 'CANCEL') {
+              <span class="material-symbols-outlined">cancel</span>
+            }
+          </div>
 
-      <div class="notif-content">
-        <p class="notif-message">{{ n.message }}</p>
-        <span class="notif-time">{{ formatDate(n.createdAt) }}</span>
-      </div>
+          <div class="notif-content">
+            <p class="notif-message">{{ n.message }}</p>
+            <span class="notif-time">{{ formatDate(n.createdAt) }}</span>
+          </div>
 
-      <div class="notif-actions">
-        <button class="delete-btn" (click)="$event.stopPropagation(); deleteNotification(n.id)">
-          <span class="material-symbols-outlined">delete</span>
-        </button>
-      </div>
+          <div class="notif-actions">
+            <button class="delete-btn" (click)="$event.stopPropagation(); deleteNotification(n.id)">
+              <span class="material-symbols-outlined">delete</span>
+            </button>
+          </div>
+        </div>
+      }
     </div>
-  </div>
+  }
 
-  <div class="loading-container" *ngIf="loading">
-    <p>Loading notifications...</p>
-  </div>
-
-  <div class="empty-container" *ngIf="!loading && notifications.length === 0">
-    <div class="empty-icon">
-      <span class="material-symbols-outlined" style="font-size: 4rem;">mail_outline</span>
+  @if (loading) {
+    <div class="loading-container">
+      <p>Loading notifications...</p>
     </div>
-    <p>You have no notifications for now.</p>
-  </div>
+  }
+
+  @if (!loading && notifications.length === 0) {
+    <div class="empty-container">
+      <div class="empty-icon">
+        <span class="material-symbols-outlined" style="font-size: 4rem;">mail_outline</span>
+      </div>
+      <p>You have no notifications for now.</p>
+    </div>
+  }
 </div>

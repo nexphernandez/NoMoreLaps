@@ -28,7 +28,9 @@
     <a routerLink="/dashboard/notifications" routerLinkActive="active" class="nav-item">
       <span class="icon material-symbols-outlined">notifications</span>
       <span>Notifications</span>
-      <span class="badge" *ngIf="(unreadCount$ | async) ?? 0 > 0">{{ unreadCount$ | async }}</span>
+      @if ((unreadCount$ | async) ?? 0 > 0) {
+        <span class="badge">{{ unreadCount$ | async }}</span>
+      }
     </a>
 
     <div class="nav-divider"></div>

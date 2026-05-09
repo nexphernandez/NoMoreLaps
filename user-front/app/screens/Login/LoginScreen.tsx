@@ -23,7 +23,7 @@ const LoginScreen = () => {
   useEffect(() => {
     const newErrors: any = {};
     if (email && !isValidEmail(email.trim())) {
-      newErrors.email = 'El formato del email no es válido';
+      newErrors.email = 'Invalid email format';
     }
     setErrors(newErrors);
   }, [email, password]);
@@ -31,13 +31,13 @@ const LoginScreen = () => {
   const validate = () => {
     const newErrors: any = {};
     if (!email.trim()) {
-      newErrors.email = 'El email es obligatorio';
+      newErrors.email = 'Email is required';
     } else if (!isValidEmail(email.trim())) {
-      newErrors.email = 'El formato del email no es válido';
+      newErrors.email = 'Invalid email format';
     }
     
     if (!password.trim()) {
-      newErrors.password = 'La contraseña es obligatoria';
+      newErrors.password = 'Password is required';
     }
 
     setErrors(newErrors);
@@ -52,19 +52,14 @@ const LoginScreen = () => {
 
     setLoading(true);
     try {
-      // 1. LOGIN PARA OBTENER EL TOKEN
       const authResponse = await authService.login({ email: cleanEmail, password: cleanPassword });
       
       if (authResponse.token) {
-        // Inyectamos el token manualmente para esta sesión inmediata
         api.defaults.headers.common['Authorization'] = `Bearer ${authResponse.token}`;
 
-        // 2. OBTENER DATOS DEL USUARIO USANDO EL EMAIL
-        // (El interceptor de Axios ya inyectará el token si lo acabamos de recibir, 
-        // pero para estar seguros lo manejamos bien)
+        
         const userDetails = await userService.getUserByEmail(cleanEmail);
         
-        // 3. LOGUEAR EN EL CONTEXTO (Garantiza persistencia)
         await login(authResponse.token, {
           id: userDetails.id,
           name: userDetails.name,
@@ -76,10 +71,12 @@ const LoginScreen = () => {
         navigation.replace('Home');
       }
     } catch (error: any) {
-      Alert.alert(
-        'Error de Inicio de Sesión', 
-        error.message || 'No se pudo conectar con el servidor.'
-      );
+      console.error('Login error details:', error);
+      const message = error.response?.status === 401 
+        ? 'Email or password incorrect. Please try again.' 
+        : 'Could not connect to the server. Please check your connection.';
+      
+      Alert.alert('Login Error', message);
     } finally {
       setLoading(false);
     }

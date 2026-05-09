@@ -11,39 +11,48 @@
         <div class="notification-wrapper">
           <button class="icon-btn" (click)="toggleNotifications()">
             <span class="material-symbols-outlined">notifications</span>
-            <span class="badge" *ngIf="(unreadCount$ | async) ?? 0 > 0">{{ unreadCount$ | async }}</span>
+            @if ((unreadCount$ | async) ?? 0 > 0) {
+              <span class="badge">{{ unreadCount$ | async }}</span>
+            }
           </button>
 
-          <div class="notification-dropdown" *ngIf="showNotifications">
-            <div class="dropdown-header">
-              <h3>Notifications</h3>
-              <a routerLink="/dashboard/notifications" (click)="showNotifications = false">View all</a>
-            </div>
-            <div class="dropdown-body">
-              <div *ngFor="let note of (recentNotifications$ | async)?.slice(0, 5)" class="notification-item"
-                [class.unread]="!note.isRead" (click)="markAsRead(note.id)">
-                <div class="note-icon">
-                  <span class="material-symbols-outlined">{{ note.type === 'SANCTION' ? 'warning' : 'info' }}</span>
-                </div>
-                <div class="note-content">
-                  <p class="note-message">{{ note.message }}</p>
-                  <span class="note-date">{{ note.createdAt | date:'short' }}</span>
-                </div>
+          @if (showNotifications) {
+            <div class="notification-dropdown">
+              <div class="dropdown-header">
+                <h3>Notifications</h3>
+                <a routerLink="/dashboard/notifications" (click)="showNotifications = false">View all</a>
               </div>
-              <div class="empty-notifications" *ngIf="((recentNotifications$ | async)?.length ?? 0) === 0">
-                No notifications
+              <div class="dropdown-body">
+                @for (note of (recentNotifications$ | async)?.slice(0, 5); track note.id) {
+                  <div class="notification-item" [class.unread]="!note.isRead" (click)="markAsRead(note.id)">
+                    <div class="note-icon">
+                      <span class="material-symbols-outlined">{{ note.type === 'SANCTION' ? 'warning' : 'info' }}</span>
+                    </div>
+                    <div class="note-content">
+                      <p class="note-message">{{ note.message }}</p>
+                      <span class="note-date">{{ note.createdAt | date:'short' }}</span>
+                    </div>
+                  </div>
+                }
+                @if (((recentNotifications$ | async)?.length ?? 0) === 0) {
+                  <div class="empty-notifications">
+                    No notifications
+                  </div>
+                }
               </div>
             </div>
-          </div>
+          }
         </div>
         <div class="user-profile">
           <div class="user-avatar">
             <span class="material-symbols-outlined">corporate_fare</span>
           </div>
-          <div class="user-info" *ngIf="user() as userData">
-            <span class="user-name">{{ userData.name }}</span>
-            <span class="user-role">{{ userData.email }}</span>
-          </div>
+          @if (user(); as userData) {
+            <div class="user-info">
+              <span class="user-name">{{ userData.name }}</span>
+              <span class="user-role">{{ userData.email }}</span>
+            </div>
+          }
         </div>
       </div>
     </header>
