@@ -217,6 +217,44 @@ class ReservationMapperTest {
         Method m5 = impl.getClass().getDeclaredMethod("domainParkingSpotParkingName", Reservation.class);
         m5.setAccessible(true);
         assertNull(m5.invoke(impl, (Reservation) null));
+
+        Method m6 = impl.getClass().getDeclaredMethod("domainUserName", Reservation.class);
+        m6.setAccessible(true);
+        assertNull(m6.invoke(impl, (Reservation) null));
+        
+        Reservation r = new Reservation();
+        r.setUser(null);
+        assertNull(m6.invoke(impl, r));
+
+        User u = new User();
+        u.setName(null);
+        r.setUser(u);
+        assertNull(m6.invoke(impl, r));
+
+        u.setName("Alice");
+        assertEquals("Alice", m6.invoke(impl, r));
+    }
+
+    @Test
+    @DisplayName("toResponse - Should handle basePrice cases")
+    void shouldHandleBasePriceInToResponse() {
+        Reservation r = new Reservation(1L);
+        
+        r.setBasePrice(null);
+        ReservationResponse resNull = reservationMapper.toResponse(r);
+        assertEquals(0.0, resNull.getBasePrice());
+
+        r.setBasePrice(123.45);
+        ReservationResponse resValue = reservationMapper.toResponse(r);
+        assertEquals(123.45, resValue.getBasePrice());
+    }
+
+    @Test
+    @DisplayName("calculateSanctionPrice - Should handle null sanctions")
+    void shouldHandleNullSanctionsInCalculatePrice() {
+        Reservation r = new Reservation();
+        r.setSanctions(null);
+        assertEquals(0.0, reservationMapper.calculateSanctionPrice(r));
     }
 }
 

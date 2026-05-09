@@ -1,5 +1,7 @@
 package com.nomorelaps.adapters.in.rest;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -8,6 +10,7 @@ import static org.mockito.Mockito.when;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.DisplayName;
@@ -22,6 +25,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nomorelaps.adapters.in.api.ReservationRequest;
+import com.nomorelaps.adapters.in.api.ReservationResponse;
 import com.nomorelaps.business.interfaces.IReservationService;
 import com.nomorelaps.domain.models.Reservation;
 
@@ -36,7 +40,13 @@ class ReservationControllerTest {
     private IReservationService reservationService;
 
     @Autowired
+    private com.nomorelaps.adapters.mapper.ReservationMapper reservationMapper;
+
+    @Autowired
     private ObjectMapper objectMapper;
+
+    @MockBean
+    private com.nomorelaps.infrastructure.security.SecurityService securityService;
 
     @Test
     @DisplayName("GET /api/reservations/{id} - Found")
@@ -170,9 +180,9 @@ class ReservationControllerTest {
     @DisplayName("GET /api/reservations/parking/{id}/occupied - Filter check")
     @WithMockUser
     void shouldFilterNonActiveReservationsByParking() throws Exception {
-        Reservation active = new Reservation(1L);
+        Reservation active = new Reservation(10L);
         active.setState("ACTIVE");
-        Reservation completed = new Reservation(2L);
+        Reservation completed = new Reservation(11L);
         completed.setState("COMPLETED");
         
         when(reservationService.findByParkingId(1L)).thenReturn(Arrays.asList(active, completed));
@@ -180,7 +190,22 @@ class ReservationControllerTest {
         mockMvc.perform(get("/api/reservations/parking/1/occupied"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(1))
-                .andExpect(jsonPath("$[0].id").value(1));
+                .andExpect(jsonPath("$[0].id").value(10));
+    }
+
+    @Test
+    @DisplayName("GET /api/reservations/company/{companyId} - Should return list")
+    @WithMockUser
+    void shouldFindByCompanyId() throws Exception {
+        Reservation domain = new Reservation(1L);
+        domain.setState("ACTIVE"); // Ensure state is set for json path
+
+        when(securityService.isCompanyOwner(100L)).thenReturn(true);
+        when(reservationService.findByCompanyId(100L)).thenReturn(List.of(domain));
+
+        mockMvc.perform(get("/api/reservations/company/100"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(1L));
     }
 
     @Test

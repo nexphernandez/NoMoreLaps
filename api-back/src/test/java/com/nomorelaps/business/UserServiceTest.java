@@ -265,5 +265,40 @@ class UserServiceTest {
         assertEquals("encoded", existingUser.getPassword());
         verify(passwordEncoder, never()).encode(anyString());
     }
+
+    @Test
+    @DisplayName("changePassword - Should encode and save new password")
+    void shouldChangePasswordSuccessfully() {
+        when(persistencePort.findById(1L)).thenReturn(Optional.of(testUser));
+        when(passwordEncoder.matches("oldPass", "plainPassword")).thenReturn(true);
+        when(passwordEncoder.encode("newPass")).thenReturn("encodedNew");
+
+        userService.changePassword(1L, "oldPass", "newPass");
+
+        assertEquals("encodedNew", testUser.getPassword());
+        verify(persistencePort).save(testUser);
+    }
+
+    @Test
+    @DisplayName("changePassword - Should throw when user not found")
+    void shouldThrowWhenUserNotFoundOnChangePassword() {
+        when(persistencePort.findById(99L)).thenReturn(Optional.empty());
+
+        assertThrows(IllegalArgumentException.class, () -> 
+            userService.changePassword(99L, "old", "new")
+        );
+    }
+
+    @Test
+    @DisplayName("changePassword - Should throw when current password incorrect")
+    void shouldThrowWhenCurrentPasswordIncorrect() {
+        when(persistencePort.findById(1L)).thenReturn(Optional.of(testUser));
+        when(passwordEncoder.matches("wrongPass", "plainPassword")).thenReturn(false);
+
+        assertThrows(IllegalArgumentException.class, () -> 
+            userService.changePassword(1L, "wrongPass", "newPass")
+        );
+        verify(persistencePort, never()).save(any());
+    }
 }
 

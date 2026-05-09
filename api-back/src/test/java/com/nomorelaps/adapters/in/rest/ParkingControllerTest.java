@@ -25,6 +25,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nomorelaps.adapters.in.api.ParkingRequest;
 import com.nomorelaps.business.interfaces.IParkingService;
 import com.nomorelaps.domain.models.Parking;
+import com.nomorelaps.infrastructure.security.SecurityService;
 
 /**
  * Integration tests for ParkingController.
@@ -41,6 +42,9 @@ class ParkingControllerTest {
 
     @MockBean
     private IParkingService parkingService;
+
+    @MockBean(name = "securityService")
+    private SecurityService securityService;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -163,6 +167,7 @@ class ParkingControllerTest {
     void shouldFindParkingsByCompany() throws Exception {
         Parking p = new Parking(1L);
         when(parkingService.findAllByCompanyId(10L)).thenReturn(Collections.singletonList(p));
+        when(securityService.isCompanyOwner(10L)).thenReturn(true);
 
         mockMvc.perform(get("/api/parkings/company/10"))
                 .andExpect(status().isOk())

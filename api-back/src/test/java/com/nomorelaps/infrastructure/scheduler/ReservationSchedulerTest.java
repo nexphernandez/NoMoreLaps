@@ -18,6 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.nomorelaps.business.interfaces.IReservationService;
 import com.nomorelaps.business.interfaces.ISanctionService;
 import com.nomorelaps.business.interfaces.INotificationService;
+import com.nomorelaps.domain.models.Company;
 import com.nomorelaps.domain.models.Parking;
 import com.nomorelaps.domain.models.ParkingSpot;
 import com.nomorelaps.domain.models.Reservation;
@@ -55,6 +56,7 @@ class ReservationSchedulerTest {
         reservation.setParkingSpot(parkingSpot);
         reservation.setUser(new User(1L));
         reservation.setState("ACTIVE");
+        reservation.setPrice(0.0);
     }
 
     @Test
@@ -88,7 +90,7 @@ class ReservationSchedulerTest {
 
         scheduler.checkExpiredReservations();
 
-        verify(reservationService, times(1)).update(reservation);
+        verify(reservationService, times(2)).update(reservation);
         verify(sanctionService, times(1)).create(any());
     }
 
@@ -140,7 +142,55 @@ class ReservationSchedulerTest {
 
         scheduler.checkExpiredReservations();
 
-        verify(reservationService, times(1)).update(reservation);
+        verify(reservationService, times(2)).update(reservation);
         verify(sanctionService, times(1)).create(any());
+    }
+
+    @Test
+    @DisplayName("Should send notification with user name when sanctioned")
+    void shouldSendNotificationWhenSanctioned() {
+        reservation.setEndTime(LocalDateTime.now().minusMinutes(20));
+        User user = new User(1L);
+        user.setName("John");
+        reservation.setUser(user);
+        Company company = new Company(10L);
+        parking.setCompany(company);
+        
+        when(reservationService.findByState("ACTIVE")).thenReturn(List.of(reservation));
+
+        scheduler.checkExpiredReservations();
+
+        verify(notificationService).create(argThat(n -> n.getMessage().contains("New sanction for John")));
+    }
+
+    @Test
+    @DisplayName("Should send notification with generic User name when user is null")
+    void shouldSendNotificationWithGenericUser() {
+        reservation.setEndTime(LocalDateTime.now().minusMinutes(20));
+        reservation.setUser(null);
+        Company company = new Company(10L);
+        parking.setCompany(company);
+        
+        when(reservationService.findByState("ACTIVE")).thenReturn(List.of(reservation));
+
+        scheduler.checkExpiredReservations();
+
+        verify(notificationService).create(argThat(n -> n.getMessage().contains("New sanction for User")));
+    }
+
+    @Test
+    @DisplayName("Should not send notification if company or its ID is null")
+    void shouldNotSendNotificationIfCompanyInvalid() {
+        reservation.setEndTime(LocalDateTime.now().minusMinutes(20));
+        
+        parking.setCompany(null);
+        when(reservationService.findByState("ACTIVE")).thenReturn(List.of(reservation));
+        scheduler.checkExpiredReservations();
+        verify(notificationService, never()).create(any());
+
+        Company company = new Company(null);
+        parking.setCompany(company);
+        scheduler.checkExpiredReservations();
+        verify(notificationService, never()).create(any());
     }
 }

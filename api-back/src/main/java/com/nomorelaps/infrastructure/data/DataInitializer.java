@@ -3,6 +3,7 @@ package com.nomorelaps.infrastructure.data;
 import com.nomorelaps.business.interfaces.*;
 import com.nomorelaps.domain.models.*;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -21,7 +22,7 @@ public class DataInitializer implements CommandLineRunner {
     private final IReservationService reservationService;
     private final ISanctionService sanctionService;
     private final IDynamicPriceService dynamicPriceService;
-    private final org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
     public DataInitializer(IRoleService roleService, IUserService userService,
             ICompanyService companyService, IParkingService parkingService,
@@ -112,7 +113,7 @@ public class DataInitializer implements CommandLineRunner {
 
         // 6. Create Sample Reservations and Sanctions
         Optional<User> testUser = userService.findByEmail("test@test.com");
-        if (testUser.isPresent() && reservationService.findByCompanyId(company.getId()).isEmpty()) {
+        if (testUser.isPresent() && company != null && reservationService.findByCompanyId(company.getId()).isEmpty()) {
             seedSampleReservations(testUser.get());
         }
     }
@@ -156,20 +157,22 @@ public class DataInitializer implements CommandLineRunner {
                 r2.setState("ACTIVE");
                 r2.setPaid(false);
                 Reservation savedR2 = reservationService.create(r2);
+                
+                if (savedR2 != null) {
+                    // Add a sanction to the active reservation for testing
+                    Sanction s2 = new Sanction();
+                    s2.setReservation(savedR2);
+                    s2.setUser(user);
+                    s2.setAmount(15.0);
+                    s2.setReason("Overtime Fine");
+                    s2.setArrivalTime(LocalDateTime.now().minusMinutes(30));
+                    s2.setPaid(false);
+                    sanctionService.create(s2);
 
-                // Add a sanction to the active reservation for testing
-                Sanction s2 = new Sanction();
-                s2.setReservation(savedR2);
-                s2.setUser(user);
-                s2.setAmount(15.0);
-                s2.setReason("Overtime Fine");
-                s2.setArrivalTime(LocalDateTime.now().minusMinutes(30));
-                s2.setPaid(false);
-                sanctionService.create(s2);
-
-                // Update reservation price to include sanction
-                savedR2.setPrice(savedR2.getPrice() + s2.getAmount());
-                reservationService.update(savedR2);
+                    // Update reservation price to include sanction
+                    savedR2.setPrice(savedR2.getPrice() + s2.getAmount());
+                    reservationService.update(savedR2);
+                }
 
                 // Reservation 3: Past with Sanction
                 Reservation r3 = new Reservation();
@@ -183,18 +186,20 @@ public class DataInitializer implements CommandLineRunner {
                 r3.setPaid(true);
                 Reservation savedR3 = reservationService.create(r3);
 
-                Sanction s = new Sanction();
-                s.setReservation(savedR3);
-                s.setUser(user);
-                s.setAmount(10.0);
-                s.setReason("Overtime Fine");
-                s.setArrivalTime(LocalDateTime.now().minusDays(1).withHour(15).withMinute(30));
-                s.setPaid(savedR3.isPaid());
-                sanctionService.create(s);
+                if (savedR3 != null) {
+                    Sanction s = new Sanction();
+                    s.setReservation(savedR3);
+                    s.setUser(user);
+                    s.setAmount(10.0);
+                    s.setReason("Overtime Fine");
+                    s.setArrivalTime(LocalDateTime.now().minusDays(1).withHour(15).withMinute(30));
+                    s.setPaid(savedR3.isPaid());
+                    sanctionService.create(s);
 
-                // Update reservation price to include sanction
-                savedR3.setPrice(savedR3.getPrice() + s.getAmount());
-                reservationService.update(savedR3);
+                    // Update reservation price to include sanction
+                    savedR3.setPrice(savedR3.getPrice() + s.getAmount());
+                    reservationService.update(savedR3);
+                }
             }
         });
         System.out.println("DataInitializer: Sample reservations, sanctions and dynamic prices created.");

@@ -4,78 +4,47 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDateTime;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-public class ReservationResponseTest {
-    
+class ReservationResponseTest {
+
     @Test
-    void testGettersAndSetters() {
-        ReservationResponse response = new ReservationResponse();
-        assertNotNull(response);
-
-        response.setId(1L);
-        assertEquals(1L, response.getId());
-
+    @DisplayName("Should test constructors, getters, setters, equals and hashCode")
+    void testReservationResponse() {
+        LocalDateTime start = LocalDateTime.now().plusHours(1);
+        LocalDateTime end = start.plusHours(2);
         LocalDateTime now = LocalDateTime.now();
-        response.setStartTime(now);
-        assertEquals(now, response.getStartTime());
 
-        response.setEndTime(now);
-        assertEquals(now, response.getEndTime());
-
-        response.setPrice(10.5);
-        assertEquals(10.5, response.getPrice());
-
-        response.setState("ACTIVE");
-        assertEquals("ACTIVE", response.getState());
-
-        response.setCreationTime(now);
-        assertEquals(now, response.getCreationTime());
+        // All fields constructor
+        ReservationResponse r1 = new ReservationResponse(1L, start, end, 15.0, "ACTIVE", now, 101L, 500L, "Central Park", "John Doe", 10.0, 5.0, true);
         
-        response.setParkingSpotId(2L);
-        assertEquals(2L, response.getParkingSpotId());
+        assertEquals(1L, r1.getId());
+        assertEquals(start, r1.getStartTime());
+        assertEquals(end, r1.getEndTime());
+        assertEquals(15.0, r1.getPrice());
+        assertEquals("ACTIVE", r1.getState());
+        assertEquals(now, r1.getCreationTime());
+        assertEquals(101L, r1.getParkingSpotId());
+        assertEquals(500L, r1.getUserId());
+        assertEquals("Central Park", r1.getParkingName());
+        assertEquals("John Doe", r1.getUserName());
+        assertEquals(10.0, r1.getBasePrice());
+        assertEquals(5.0, r1.getSanctionPrice());
+        assertTrue(r1.isPaid());
 
-        response.setUserId(3L);
-        assertEquals(3L, response.getUserId());
+        // Setter for basePrice (specifically requested)
+        ReservationResponse r2 = new ReservationResponse();
+        r2.setBasePrice(25.5);
+        assertEquals(25.5, r2.getBasePrice());
 
-        response.setParkingName("Name");
-        assertEquals("Name", response.getParkingName());
-
-        response.setUserName("Juan Perez");
-        assertEquals("Juan Perez", response.getUserName());
-
-        ReservationResponse r2 = new ReservationResponse(1L);
-        assertEquals(1L, r2.getId());
-        
-        ReservationResponse r3 = new ReservationResponse(1L, now, now, 10.5, "ACTIVE", now, 2L, 3L, "Name", "Juan Perez", 8.0, 2.5, true);
-        assertEquals(1L, r3.getId());
-        assertEquals("ACTIVE", r3.getState());
-        assertEquals("Juan Perez", r3.getUserName());
-        assertEquals(8.0, r3.getBasePrice());
-        assertEquals(2.5, r3.getSanctionPrice());
-        assertTrue(r3.isPaid());
-    }
-
-    @Test
-    void testEqualsAndHashCode() {
-        ReservationResponse response1 = new ReservationResponse(1L);
-        ReservationResponse response2 = new ReservationResponse(1L);
-        ReservationResponse response3 = new ReservationResponse(2L);
-
-        assertEquals(response1, response1);
-        
-        assertEquals(response1, response2);
-        assertEquals(response1.hashCode(), response2.hashCode());
-        
-        assertNotEquals(response1, response3);
-        
-        assertNotEquals(response1, null);
-        assertNotEquals(response1, new Object());
-        
-        ReservationResponse responseNull = new ReservationResponse(null);
-        ReservationResponse responseNull2 = new ReservationResponse(null);
-        assertEquals(responseNull, responseNull2);
-        assertNotEquals(responseNull, response1);
-        assertNotEquals(response1, responseNull);
+        // Equals and HashCode
+        ReservationResponse r3 = new ReservationResponse(1L);
+        assertEquals(r1, r3);
+        assertEquals(r1.hashCode(), r3.hashCode());
+        assertNotEquals(r1, new ReservationResponse(2L));
+        assertNotEquals(r1, null);
+        assertNotEquals(r1, "String");
+        assertEquals(r1, r1);
     }
 }

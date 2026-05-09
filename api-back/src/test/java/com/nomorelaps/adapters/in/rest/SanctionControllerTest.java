@@ -1,13 +1,13 @@
 package com.nomorelaps.adapters.in.rest;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.DisplayName;
@@ -22,6 +22,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nomorelaps.adapters.in.api.SanctionRequest;
+import com.nomorelaps.adapters.mapper.SanctionMapper;
 import com.nomorelaps.business.interfaces.ISanctionService;
 import com.nomorelaps.domain.models.Sanction;
 
@@ -40,6 +41,9 @@ class SanctionControllerTest {
 
     @MockBean
     private ISanctionService sanctionService;
+
+    @Autowired
+    private SanctionMapper sanctionMapper;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -83,11 +87,13 @@ class SanctionControllerTest {
     @DisplayName("GET /api/sanctions/reservation/{id} - List")
     @WithMockUser
     void shouldReturnSanctionsByReservation() throws Exception {
-        when(sanctionService.findByReservationId(1L)).thenReturn(Collections.emptyList());
+        Sanction s = new Sanction(1L);
+        when(sanctionService.findByReservationId(1L)).thenReturn(List.of(s));
 
         mockMvc.perform(get("/api/sanctions/reservation/1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray());
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$[0].id").value(1));
     }
 
     @Test
@@ -169,5 +175,17 @@ class SanctionControllerTest {
     void shouldReturnForbiddenWithoutUser() throws Exception {
         mockMvc.perform(get("/api/sanctions/1"))
                 .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @DisplayName("GET /api/sanctions/company/{companyId} - Should return list")
+    @WithMockUser
+    void shouldFindByCompanyId() throws Exception {
+        Sanction domain = new Sanction(1L);
+        when(sanctionService.findByCompanyId(200L)).thenReturn(List.of(domain));
+
+        mockMvc.perform(get("/api/sanctions/company/200"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(1));
     }
 }

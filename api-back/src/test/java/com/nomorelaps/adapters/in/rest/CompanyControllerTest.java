@@ -8,6 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.Optional;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nomorelaps.adapters.in.api.CompanyRequest;
 import com.nomorelaps.business.interfaces.ICompanyService;
 import com.nomorelaps.domain.models.Company;
+import com.nomorelaps.infrastructure.security.SecurityService;
 
 /**
  * Integration tests for CompanyController - method by method.
@@ -39,8 +41,16 @@ class CompanyControllerTest {
     @MockBean
     private ICompanyService companyService;
 
+    @MockBean(name = "securityService")
+    private SecurityService securityService;
+
     @Autowired
     private ObjectMapper objectMapper;
+
+    @BeforeEach
+    void setUp() {
+        when(securityService.isCompanyOwner(any())).thenReturn(true);
+    }
 
     private CompanyRequest buildValidRequest() {
         CompanyRequest req = new CompanyRequest();

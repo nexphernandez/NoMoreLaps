@@ -15,9 +15,23 @@ import com.nomorelaps.domain.models.Company;
 
 import org.mapstruct.factory.Mappers;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.springframework.test.util.ReflectionTestUtils;
+
 class ParkingMapperTest {
 
     private final ParkingMapper parkingMapper = Mappers.getMapper(ParkingMapper.class);
+
+    @Mock
+    private CompanyMapper companyMapper;
+
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+        ReflectionTestUtils.setField(parkingMapper, "companyMapper", companyMapper);
+    }
 
     @Test
     @DisplayName("toDomainFromRequest - Should map request to domain")

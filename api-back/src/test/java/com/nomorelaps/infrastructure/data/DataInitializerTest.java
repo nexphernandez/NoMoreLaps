@@ -14,6 +14,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.nomorelaps.business.interfaces.*;
 import com.nomorelaps.domain.models.*;
@@ -31,6 +32,16 @@ class DataInitializerTest {
     private IParkingService parkingService;
     @Mock
     private IParkingSpotService parkingSpotService;
+    @Mock
+    private INotificationService notificationService;
+    @Mock
+    private IReservationService reservationService;
+    @Mock
+    private ISanctionService sanctionService;
+    @Mock
+    private IDynamicPriceService dynamicPriceService;
+    @Mock
+    private PasswordEncoder passwordEncoder;
 
     @InjectMocks
     private DataInitializer dataInitializer;
@@ -42,6 +53,10 @@ class DataInitializerTest {
         Role r2 = new Role(2L);
         r2.setName("COMPANY");
         when(roleService.findAll()).thenReturn(List.of(r1, r2));
+        
+        lenient().when(notificationService.findByCompanyId(anyLong())).thenReturn(Collections.emptyList());
+        lenient().when(reservationService.findByCompanyId(anyLong())).thenReturn(Collections.emptyList());
+        lenient().when(parkingService.findAll()).thenReturn(Collections.emptyList());
     }
 
     @Test
@@ -50,6 +65,7 @@ class DataInitializerTest {
         when(userService.findByEmail("test@test.com")).thenReturn(Optional.of(new User()));
         when(userService.findByEmail("company@test.com")).thenReturn(Optional.of(new User()));
         when(companyService.findAll()).thenReturn(List.of(new Company()));
+        reset(parkingService); 
         when(parkingService.findAll()).thenReturn(List.of(new Parking()));
 
         try {

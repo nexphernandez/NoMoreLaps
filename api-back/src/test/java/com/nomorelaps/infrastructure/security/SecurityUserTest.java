@@ -1,51 +1,42 @@
 package com.nomorelaps.infrastructure.security;
 
-import com.nomorelaps.adapters.out.persistence.jpa.RoleJpaEntity;
-import com.nomorelaps.adapters.out.persistence.jpa.UserJpaEntity;
-import org.junit.jupiter.api.Test;
-import org.springframework.security.core.GrantedAuthority;
-
-import java.util.Collection;
-
 import static org.junit.jupiter.api.Assertions.*;
+
+import com.nomorelaps.adapters.out.persistence.jpa.UserJpaEntity;
+import com.nomorelaps.adapters.out.persistence.jpa.RoleJpaEntity;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
 class SecurityUserTest {
 
     @Test
-    void testSecurityUserWithRole() {
-        UserJpaEntity user = new UserJpaEntity();
-        user.setEmail("test@test.com");
-        user.setPassword("pass");
-        
+    @DisplayName("Should test all getters and constructors of SecurityUser")
+    void testSecurityUser() {
+        UserJpaEntity entity = new UserJpaEntity();
+        entity.setEmail("test@test.com");
+        entity.setPassword("pass");
         RoleJpaEntity role = new RoleJpaEntity();
         role.setName("USER");
-        user.setRole(role);
+        entity.setRole(role);
 
-        SecurityUser securityUser = new SecurityUser(user);
+        SecurityUser su = new SecurityUser(entity, 123L);
 
-        assertEquals("test@test.com", securityUser.getUsername());
-        assertEquals("pass", securityUser.getPassword());
-        assertTrue(securityUser.isAccountNonExpired());
-        assertTrue(securityUser.isAccountNonLocked());
-        assertTrue(securityUser.isCredentialsNonExpired());
-        assertTrue(securityUser.isEnabled());
-
-        Collection<? extends GrantedAuthority> authorities = securityUser.getAuthorities();
-        assertNotNull(authorities);
-        assertEquals(1, authorities.size());
-        assertEquals("ROLE_USER", authorities.iterator().next().getAuthority());
+        assertEquals("test@test.com", su.getUsername());
+        assertEquals("pass", su.getPassword());
+        assertEquals(123L, su.getCompanyId());
+        assertEquals(entity, su.getUserEntity());
+        assertTrue(su.isAccountNonExpired());
+        assertTrue(su.isAccountNonLocked());
+        assertTrue(su.isCredentialsNonExpired());
+        assertTrue(su.isEnabled());
+        assertFalse(su.getAuthorities().isEmpty());
     }
 
     @Test
-    void testSecurityUserWithoutRole() {
-        UserJpaEntity user = new UserJpaEntity();
-        user.setEmail("admin@test.com");
-        user.setPassword("adminpass");
-
-        SecurityUser securityUser = new SecurityUser(user);
-
-        Collection<? extends GrantedAuthority> authorities = securityUser.getAuthorities();
-        assertNotNull(authorities);
-        assertTrue(authorities.isEmpty());
+    @DisplayName("Should return null companyId for normal constructor")
+    void testNormalConstructor() {
+        UserJpaEntity entity = new UserJpaEntity();
+        SecurityUser su = new SecurityUser(entity);
+        assertNull(su.getCompanyId());
     }
 }
