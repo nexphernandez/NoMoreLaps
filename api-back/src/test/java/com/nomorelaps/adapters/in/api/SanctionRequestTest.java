@@ -1,39 +1,75 @@
 package com.nomorelaps.adapters.in.api;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+/**
+ * Unit tests for SanctionRequest DTO.
+ * Uses meaningful names and granular tests to verify property mapping.
+ * 
+ * @author nexphernandez
+ * @version 1.0.0
+ */
 class SanctionRequestTest {
 
-    @Test
-    @DisplayName("Should test getters, setters and empty constructor for SanctionRequest")
-    void testGettersAndSetters() {
-        SanctionRequest dto = new SanctionRequest();
-        assertNotNull(dto);
+    private SanctionRequest sanctionRequest;
 
-        dto.setAmount(1.0);
-        assertEquals(1.0, dto.getAmount());
-        dto.setReason("dummy1");
-        assertEquals("dummy1", dto.getReason());
-        dto.setPaid(false);
-        assertEquals(false, dto.isPaid());
-        dto.setReservationId(1L);
-        assertEquals(1L, dto.getReservationId());
-        dto.setUserId(1L);
-        assertEquals(1L, dto.getUserId());
+    @BeforeEach
+    void setUp() {
+        sanctionRequest = new SanctionRequest();
     }
 
     @Test
-    @DisplayName("Should test parameterized constructor")
-    void testParameterizedConstructor() {
-        SanctionRequest dto = new SanctionRequest(50.0, "Late", true, 100L, 200L);
-        assertEquals(50.0, dto.getAmount());
-        assertEquals("Late", dto.getReason());
-        assertTrue(dto.isPaid());
-        assertEquals(100L, dto.getReservationId());
-        assertEquals(200L, dto.getUserId());
+    @DisplayName("Constructor - Should correctly map all provided fields")
+    void shouldInitializeWithParameterizedConstructor() {
+        SanctionRequest parameterizedRequest = new SanctionRequest(75.50, "Parking damage", true, 1000L, 5000L);
+
+        assertEquals(75.50, parameterizedRequest.getAmount(), "Amount should match constructor argument");
+        assertEquals("Parking damage", parameterizedRequest.getReason(), "Reason should match constructor argument");
+        assertTrue(parameterizedRequest.isPaid(), "Paid status should match constructor argument");
+        assertEquals(1000L, parameterizedRequest.getReservationId(), "Reservation ID should match constructor argument");
+        assertEquals(5000L, parameterizedRequest.getUserId(), "User ID should match constructor argument");
     }
 
+    @Test
+    @DisplayName("amount - Should set and get sanction amount")
+    void shouldSetAndGetAmount() {
+        sanctionRequest.setAmount(100.0);
+        assertEquals(100.0, sanctionRequest.getAmount());
+    }
 
+    @Test
+    @DisplayName("reason - Should set and get sanction reason")
+    void shouldSetAndGetReason() {
+        sanctionRequest.setReason("Expired time");
+        assertEquals("Expired time", sanctionRequest.getReason());
+    }
+
+    @Test
+    @DisplayName("isPaid - Should set and get payment status")
+    void shouldSetAndGetIsPaid() {
+        sanctionRequest.setPaid(true);
+        assertTrue(sanctionRequest.isPaid());
+        
+        sanctionRequest.setPaid(false);
+        assertFalse(sanctionRequest.isPaid());
+    }
+
+    @Test
+    @DisplayName("reservationId - Should set and get reservation reference")
+    void shouldSetAndGetReservationId() {
+        sanctionRequest.setReservationId(99L);
+        assertEquals(99L, sanctionRequest.getReservationId());
+    }
+
+    @Test
+    @DisplayName("userId - Should set and get user reference")
+    void shouldSetAndGetUserId() {
+        sanctionRequest.setUserId(88L);
+        assertEquals(88L, sanctionRequest.getUserId());
+    }
 }

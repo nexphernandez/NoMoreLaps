@@ -1,43 +1,96 @@
 package com.nomorelaps.adapters.in.api;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.time.LocalDateTime;
-
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+/**
+ * Unit tests for NotificationResponse DTO.
+ * Verifies constructors and individual property accessors.
+ * 
+ * @author nexphernandez
+ * @version 1.0.0
+ */
 class NotificationResponseTest {
 
+    private NotificationResponse response;
+    private LocalDateTime now;
+
+    @BeforeEach
+    void setUp() {
+        response = new NotificationResponse();
+        now = LocalDateTime.now();
+    }
+
     @Test
-    @DisplayName("Should test all constructors and getters/setters")
-    void testNotificationResponse() {
-        LocalDateTime now = LocalDateTime.now();
+    @DisplayName("Constructor(id) - Should initialize with ID")
+    void shouldInitializeWithIdConstructor() {
+        NotificationResponse idResponse = new NotificationResponse(100L);
+
+        assertEquals(100L, idResponse.getId(), "ID should match constructor argument");
+    }
+
+    @Test
+    @DisplayName("Full Constructor - Should initialize all fields correctly")
+    void shouldInitializeWithFullConstructor() {
+        NotificationResponse fullResponse = new NotificationResponse(1L, "System Alert", "INFO", true, 50L, now);
+
+        assertEquals(1L, fullResponse.getId());
+        assertEquals("System Alert", fullResponse.getMessage());
+        assertEquals("INFO", fullResponse.getType());
+        assertTrue(fullResponse.getIsRead());
+        assertEquals(50L, fullResponse.getCompanyId());
+        assertEquals(now, fullResponse.getCreatedAt());
+    }
+
+    @Test
+    @DisplayName("id - Should set and get ID")
+    void shouldSetAndGetId() {
+        response.setId(5L);
+        assertEquals(5L, response.getId());
+    }
+
+    @Test
+    @DisplayName("message - Should set and get message")
+    void shouldSetAndGetMessage() {
+        String msg = "New Notification";
+        response.setMessage(msg);
+        assertEquals(msg, response.getMessage());
+    }
+
+    @Test
+    @DisplayName("type - Should set and get type")
+    void shouldSetAndGetType() {
+        response.setType("WARNING");
+        assertEquals("WARNING", response.getType());
+    }
+
+    @Test
+    @DisplayName("isRead - Should set and get read status")
+    void shouldSetAndGetIsRead() {
+        response.setIsRead(true);
+        assertTrue(response.getIsRead());
         
-        NotificationResponse r1 = new NotificationResponse(1L, "Msg", "TYPE", true, 10L, now);
-        assertEquals(1L, r1.getId());
-        assertEquals("Msg", r1.getMessage());
-        assertEquals("TYPE", r1.getType());
-        assertTrue(r1.getIsRead());
-        assertEquals(10L, r1.getCompanyId());
-        assertEquals(now, r1.getCreatedAt());
+        response.setIsRead(false);
+        assertFalse(response.getIsRead());
+    }
 
-        NotificationResponse r2 = new NotificationResponse(2L);
-        assertEquals(2L, r2.getId());
+    @Test
+    @DisplayName("companyId - Should set and get company ID")
+    void shouldSetAndGetCompanyId() {
+        response.setCompanyId(200L);
+        assertEquals(200L, response.getCompanyId());
+    }
 
-        NotificationResponse r3 = new NotificationResponse();
-        r3.setId(3L);
-        r3.setMessage("New Msg");
-        r3.setType("NEW_TYPE");
-        r3.setIsRead(false);
-        r3.setCompanyId(20L);
-        r3.setCreatedAt(now.plusDays(1));
-
-        assertEquals(3L, r3.getId());
-        assertEquals("New Msg", r3.getMessage());
-        assertEquals("NEW_TYPE", r3.getType());
-        assertFalse(r3.getIsRead());
-        assertEquals(20L, r3.getCompanyId());
-        assertEquals(now.plusDays(1), r3.getCreatedAt());
+    @Test
+    @DisplayName("createdAt - Should set and get creation timestamp")
+    void shouldSetAndGetCreatedAt() {
+        response.setCreatedAt(now);
+        assertEquals(now, response.getCreatedAt());
     }
 }
