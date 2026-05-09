@@ -1,30 +1,46 @@
 package com.nomorelaps.adapters.in.api;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+/**
+ * Unit tests for RoleRequest DTO.
+ * Verifies that role metadata is correctly handled.
+ * 
+ * @author nexphernandez
+ * @version 1.0.0
+ */
 class RoleRequestTest {
 
-    @Test
-    @DisplayName("Should test getters, setters and empty constructor for RoleRequest")
-    void testGettersAndSetters() {
-        RoleRequest dto = new RoleRequest();
-        assertNotNull(dto);
+    private RoleRequest roleRequest;
 
-        dto.setName("dummy1");
-        assertEquals("dummy1", dto.getName());
-        dto.setDescription("dummy1");
-        assertEquals("dummy1", dto.getDescription());
+    @BeforeEach
+    void setUp() {
+        roleRequest = new RoleRequest();
     }
 
     @Test
-    @DisplayName("Should test parameterized constructor")
-    void testParameterizedConstructor() {
-        RoleRequest dto = new RoleRequest("Admin", "Admin desc");
-        assertEquals("Admin", dto.getName());
-        assertEquals("Admin desc", dto.getDescription());
+    @DisplayName("Constructor - Should correctly initialize name and description")
+    void shouldInitializeWithParameterizedConstructor() {
+        RoleRequest adminRole = new RoleRequest("ADMIN", "System administrator access");
+
+        assertEquals("ADMIN", adminRole.getName());
+        assertEquals("System administrator access", adminRole.getDescription());
     }
 
+    @Test
+    @DisplayName("name - Should set and get the role name")
+    void shouldSetAndGetName() {
+        roleRequest.setName("USER");
+        assertEquals("USER", roleRequest.getName());
+    }
 
+    @Test
+    @DisplayName("description - Should set and get the role description")
+    void shouldSetAndGetDescription() {
+        roleRequest.setDescription("Standard user privileges");
+        assertEquals("Standard user privileges", roleRequest.getDescription());
+    }
 }

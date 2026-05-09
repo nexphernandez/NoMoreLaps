@@ -1,35 +1,78 @@
 package com.nomorelaps.adapters.in.api;
 
-import static org.junit.jupiter.api.Assertions.*;
-
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-public class CompanyRequestTest {
-    
+/**
+ * Unit tests for CompanyRequest DTO.
+ * Verifies that company details are correctly handled via constructors and accessors.
+ * 
+ * @author nexphernandez
+ * @version 1.0.0
+ */
+class CompanyRequestTest {
+
+    private CompanyRequest companyRequest;
+
+    @BeforeEach
+    void setUp() {
+        companyRequest = new CompanyRequest();
+    }
+
     @Test
-    void testGettersAndSetters() {
-        CompanyRequest req = new CompanyRequest();
-        assertNotNull(req);
+    @DisplayName("Constructor - Should correctly initialize all fields")
+    void shouldInitializeWithFullConstructor() {
+        CompanyRequest fullRequest = new CompanyRequest("Parking Corp", "secret-api-key", "pass123", "555-0000", "info@parkingcorp.com", "B12345678");
 
-        req.setName("Test");
-        assertEquals("Test", req.getName());
+        assertEquals("Parking Corp", fullRequest.getName());
+        assertEquals("secret-api-key", fullRequest.getApiKey());
+        assertEquals("pass123", fullRequest.getPassword());
+        assertEquals("555-0000", fullRequest.getPhone());
+        assertEquals("info@parkingcorp.com", fullRequest.getEmail());
+        assertEquals("B12345678", fullRequest.getCif());
+    }
 
-        req.setApiKey("key");
-        assertEquals("key", req.getApiKey());
+    @Test
+    @DisplayName("name - Should set and get the company name")
+    void shouldSetAndGetName() {
+        companyRequest.setName("Central Parking");
+        assertEquals("Central Parking", companyRequest.getName());
+    }
 
-        req.setPassword("pass");
-        assertEquals("pass", req.getPassword());
+    @Test
+    @DisplayName("apiKey - Should set and get the API key")
+    void shouldSetAndGetApiKey() {
+        companyRequest.setApiKey("api-777-key");
+        assertEquals("api-777-key", companyRequest.getApiKey());
+    }
 
-        req.setPhone("123");
-        assertEquals("123", req.getPhone());
+    @Test
+    @DisplayName("password - Should set and get the password")
+    void shouldSetAndGetPassword() {
+        companyRequest.setPassword("securePassword!");
+        assertEquals("securePassword!", companyRequest.getPassword());
+    }
 
-        req.setEmail("email");
-        assertEquals("email", req.getEmail());
+    @Test
+    @DisplayName("phone - Should set and get the phone number")
+    void shouldSetAndGetPhone() {
+        companyRequest.setPhone("123-456-789");
+        assertEquals("123-456-789", companyRequest.getPhone());
+    }
 
-        req.setCif("cif");
-        assertEquals("cif", req.getCif());
-        
-        CompanyRequest r2 = new CompanyRequest("Test", "key", "pass", "123", "email", "cif");
-        assertEquals("Test", r2.getName());
+    @Test
+    @DisplayName("email - Should set and get the email")
+    void shouldSetAndGetEmail() {
+        companyRequest.setEmail("contact@central.com");
+        assertEquals("contact@central.com", companyRequest.getEmail());
+    }
+
+    @Test
+    @DisplayName("cif - Should set and get the CIF")
+    void shouldSetAndGetCif() {
+        companyRequest.setCif("A99999999");
+        assertEquals("A99999999", companyRequest.getCif());
     }
 }

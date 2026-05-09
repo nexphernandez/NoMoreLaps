@@ -1,177 +1,120 @@
 package com.nomorelaps.adapters.in.api;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import java.time.LocalDateTime;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import java.time.LocalDateTime;
 
+/**
+ * Unit tests for DynamicPriceResponse DTO.
+ * Verifies that dynamic pricing data is correctly mapped and logical equality is maintained.
+ * 
+ * @author nexphernandez
+ * @version 1.0.0
+ */
 class DynamicPriceResponseTest {
 
-    @Test
-    @DisplayName("Should test getters, setters and empty constructor for DynamicPriceResponse")
-    void testGettersAndSetters() {
-        DynamicPriceResponse dto = new DynamicPriceResponse();
-        assertNotNull(dto);
+    private DynamicPriceResponse dynamicPriceResponse;
+    private LocalDateTime now;
 
-        dto.setId(1L);
-        assertEquals(1L, dto.getId());
-        dto.setDayOfWeek(1);
-        assertEquals(1, dto.getDayOfWeek());
-        dto.setStartHour("dummy1");
-        assertEquals("dummy1", dto.getStartHour());
-        dto.setEndHour("dummy1");
-        assertEquals("dummy1", dto.getEndHour());
-        dto.setMinPrice(1.0);
-        assertEquals(1.0, dto.getMinPrice());
-        dto.setMaxPrice(1.0);
-        assertEquals(1.0, dto.getMaxPrice());
-        dto.setCreateAt(LocalDateTime.of(2026, 1, 1, 0, 0).plusDays(1));
-        assertEquals(LocalDateTime.of(2026, 1, 1, 0, 0).plusDays(1), dto.getCreateAt());
+    @BeforeEach
+    void setUp() {
+        dynamicPriceResponse = new DynamicPriceResponse();
+        now = LocalDateTime.now();
     }
 
     @Test
-    @DisplayName("Should test parameterized constructors for DynamicPriceResponse")
-    void testConstructors() {
-        DynamicPriceResponse dto1 = new DynamicPriceResponse(1L);
-        assertEquals(1L, dto1.getId());
-        assertEquals(0, dto1.getDayOfWeek());
-
-        LocalDateTime now = LocalDateTime.now();
-        DynamicPriceResponse dto2 = new DynamicPriceResponse(2L, 1, "08:00", "12:00", 1.0, 5.0, now);
-        assertEquals(2L, dto2.getId());
-        assertEquals(1, dto2.getDayOfWeek());
-        assertEquals("08:00", dto2.getStartHour());
-        assertEquals("12:00", dto2.getEndHour());
-        assertEquals(1.0, dto2.getMinPrice());
-        assertEquals(5.0, dto2.getMaxPrice());
-        assertEquals(now, dto2.getCreateAt());
+    @DisplayName("Constructor(id) - Should initialize with ID")
+    void shouldInitializeWithIdConstructor() {
+        DynamicPriceResponse idResponse = new DynamicPriceResponse(50L);
+        assertEquals(50L, idResponse.getId());
     }
 
+    @Test
+    @DisplayName("Full Constructor - Should correctly map all fields")
+    void shouldInitializeWithFullConstructor() {
+        DynamicPriceResponse fullResponse = new DynamicPriceResponse(1L, 1, "08:00", "18:00", 2.0, 4.0, now);
+
+        assertEquals(1L, fullResponse.getId());
+        assertEquals(1, fullResponse.getDayOfWeek());
+        assertEquals("08:00", fullResponse.getStartHour());
+        assertEquals("18:00", fullResponse.getEndHour());
+        assertEquals(2.0, fullResponse.getMinPrice());
+        assertEquals(4.0, fullResponse.getMaxPrice());
+        assertEquals(now, fullResponse.getCreateAt());
+    }
 
     @Test
-    @DisplayName("Should test equals and hashCode branches for DynamicPriceResponse")
-    void testEqualsAndHashCode() {
-        DynamicPriceResponse dto1 = new DynamicPriceResponse();
-        DynamicPriceResponse dto2 = new DynamicPriceResponse();
-        DynamicPriceResponse dto3 = new DynamicPriceResponse();
+    @DisplayName("id - Should set and get the ID")
+    void shouldSetAndGetId() {
+        dynamicPriceResponse.setId(10L);
+        assertEquals(10L, dynamicPriceResponse.getId());
+    }
 
-        dto1.setId(1L);
-        dto2.setId(1L);
-        dto3.setId(2L);
-        dto1.setDayOfWeek(1);
-        dto2.setDayOfWeek(1);
-        dto3.setDayOfWeek(2);
-        dto1.setStartHour("dummy1");
-        dto2.setStartHour("dummy1");
-        dto3.setStartHour("dummy2");
-        dto1.setEndHour("dummy1");
-        dto2.setEndHour("dummy1");
-        dto3.setEndHour("dummy2");
-        dto1.setMinPrice(1.0);
-        dto2.setMinPrice(1.0);
-        dto3.setMinPrice(2.0);
-        dto1.setMaxPrice(1.0);
-        dto2.setMaxPrice(1.0);
-        dto3.setMaxPrice(2.0);
-        dto1.setCreateAt(LocalDateTime.of(2026, 1, 1, 0, 0).plusDays(1));
-        dto2.setCreateAt(LocalDateTime.of(2026, 1, 1, 0, 0).plusDays(1));
-        dto3.setCreateAt(LocalDateTime.of(2026, 1, 1, 0, 0).plusDays(2));
+    @Test
+    @DisplayName("dayOfWeek - Should set and get the day")
+    void shouldSetAndGetDayOfWeek() {
+        dynamicPriceResponse.setDayOfWeek(3);
+        assertEquals(3, dynamicPriceResponse.getDayOfWeek());
+    }
 
-        assertEquals(dto1, dto1);
-        assertEquals(dto1, dto2);
-        assertNotEquals(dto1, dto3);
-        assertNotEquals(dto1, null);
-        assertNotEquals(dto1, new Object());
-        assertEquals(dto1.hashCode(), dto2.hashCode());
+    @Test
+    @DisplayName("startHour - Should set and get start hour")
+    void shouldSetAndGetStartHour() {
+        dynamicPriceResponse.setStartHour("10:00");
+        assertEquals("10:00", dynamicPriceResponse.getStartHour());
+    }
 
-        DynamicPriceResponse tempid = new DynamicPriceResponse();
-        tempid.setId(1L);
-        tempid.setDayOfWeek(1);
-        tempid.setStartHour("dummy1");
-        tempid.setEndHour("dummy1");
-        tempid.setMinPrice(1.0);
-        tempid.setMaxPrice(1.0);
-        tempid.setCreateAt(LocalDateTime.of(2026, 1, 1, 0, 0).plusDays(1));
-        tempid.setId(null);
-        dto1.equals(tempid);
-        tempid.equals(dto1);
-        tempid.setId(2L);
-        dto1.equals(tempid);
+    @Test
+    @DisplayName("endHour - Should set and get end hour")
+    void shouldSetAndGetEndHour() {
+        dynamicPriceResponse.setEndHour("22:00");
+        assertEquals("22:00", dynamicPriceResponse.getEndHour());
+    }
 
-        DynamicPriceResponse tempdayOfWeek = new DynamicPriceResponse();
-        tempdayOfWeek.setId(1L);
-        tempdayOfWeek.setDayOfWeek(1);
-        tempdayOfWeek.setStartHour("dummy1");
-        tempdayOfWeek.setEndHour("dummy1");
-        tempdayOfWeek.setMinPrice(1.0);
-        tempdayOfWeek.setMaxPrice(1.0);
-        tempdayOfWeek.setCreateAt(LocalDateTime.of(2026, 1, 1, 0, 0).plusDays(1));
-        tempdayOfWeek.setDayOfWeek(2);
-        dto1.equals(tempdayOfWeek);
+    @Test
+    @DisplayName("minPrice - Should set and get minimum price")
+    void shouldSetAndGetMinPrice() {
+        dynamicPriceResponse.setMinPrice(1.50);
+        assertEquals(1.50, dynamicPriceResponse.getMinPrice());
+    }
 
-        DynamicPriceResponse tempstartHour = new DynamicPriceResponse();
-        tempstartHour.setId(1L);
-        tempstartHour.setDayOfWeek(1);
-        tempstartHour.setStartHour("dummy1");
-        tempstartHour.setEndHour("dummy1");
-        tempstartHour.setMinPrice(1.0);
-        tempstartHour.setMaxPrice(1.0);
-        tempstartHour.setCreateAt(LocalDateTime.of(2026, 1, 1, 0, 0).plusDays(1));
-        tempstartHour.setStartHour(null);
-        dto1.equals(tempstartHour);
-        tempstartHour.equals(dto1);
-        tempstartHour.setStartHour("dummy2");
-        dto1.equals(tempstartHour);
+    @Test
+    @DisplayName("maxPrice - Should set and get maximum price")
+    void shouldSetAndGetMaxPrice() {
+        dynamicPriceResponse.setMaxPrice(5.50);
+        assertEquals(5.50, dynamicPriceResponse.getMaxPrice());
+    }
 
-        DynamicPriceResponse tempendHour = new DynamicPriceResponse();
-        tempendHour.setId(1L);
-        tempendHour.setDayOfWeek(1);
-        tempendHour.setStartHour("dummy1");
-        tempendHour.setEndHour("dummy1");
-        tempendHour.setMinPrice(1.0);
-        tempendHour.setMaxPrice(1.0);
-        tempendHour.setCreateAt(LocalDateTime.of(2026, 1, 1, 0, 0).plusDays(1));
-        tempendHour.setEndHour(null);
-        dto1.equals(tempendHour);
-        tempendHour.equals(dto1);
-        tempendHour.setEndHour("dummy2");
-        dto1.equals(tempendHour);
+    @Test
+    @DisplayName("createAt - Should set and get creation timestamp")
+    void shouldSetAndGetCreateAt() {
+        dynamicPriceResponse.setCreateAt(now);
+        assertEquals(now, dynamicPriceResponse.getCreateAt());
+    }
 
-        DynamicPriceResponse tempminPrice = new DynamicPriceResponse();
-        tempminPrice.setId(1L);
-        tempminPrice.setDayOfWeek(1);
-        tempminPrice.setStartHour("dummy1");
-        tempminPrice.setEndHour("dummy1");
-        tempminPrice.setMinPrice(1.0);
-        tempminPrice.setMaxPrice(1.0);
-        tempminPrice.setCreateAt(LocalDateTime.of(2026, 1, 1, 0, 0).plusDays(1));
-        tempminPrice.setMinPrice(2.0);
-        dto1.equals(tempminPrice);
+    @Test
+    @DisplayName("equals - Should be equal for same ID")
+    void shouldBeEqualForSameId() {
+        DynamicPriceResponse first = new DynamicPriceResponse(1L);
+        DynamicPriceResponse second = new DynamicPriceResponse(1L);
+        DynamicPriceResponse third = new DynamicPriceResponse(2L);
 
-        DynamicPriceResponse tempmaxPrice = new DynamicPriceResponse();
-        tempmaxPrice.setId(1L);
-        tempmaxPrice.setDayOfWeek(1);
-        tempmaxPrice.setStartHour("dummy1");
-        tempmaxPrice.setEndHour("dummy1");
-        tempmaxPrice.setMinPrice(1.0);
-        tempmaxPrice.setMaxPrice(1.0);
-        tempmaxPrice.setCreateAt(LocalDateTime.of(2026, 1, 1, 0, 0).plusDays(1));
-        tempmaxPrice.setMaxPrice(2.0);
-        dto1.equals(tempmaxPrice);
+        assertEquals(first, first, "Should be equal to itself");
+        assertEquals(first, second, "Should be equal if IDs match");
+        assertNotEquals(first, third, "Should not be equal if IDs differ");
+        assertNotEquals(first, null, "Should not be equal to null");
+        assertNotEquals(first, "different type", "Should return false for different class (instanceof test)");
+    }
 
-        DynamicPriceResponse tempcreateAt = new DynamicPriceResponse();
-        tempcreateAt.setId(1L);
-        tempcreateAt.setDayOfWeek(1);
-        tempcreateAt.setStartHour("dummy1");
-        tempcreateAt.setEndHour("dummy1");
-        tempcreateAt.setMinPrice(1.0);
-        tempcreateAt.setMaxPrice(1.0);
-        tempcreateAt.setCreateAt(LocalDateTime.of(2026, 1, 1, 0, 0).plusDays(1));
-        tempcreateAt.setCreateAt(null);
-        dto1.equals(tempcreateAt);
-        tempcreateAt.equals(dto1);
-        tempcreateAt.setCreateAt(LocalDateTime.of(2026, 1, 1, 0, 0).plusDays(2));
-        dto1.equals(tempcreateAt);
+    @Test
+    @DisplayName("hashCode - Should be consistent for same ID")
+    void shouldHaveConsistentHashCode() {
+        DynamicPriceResponse first = new DynamicPriceResponse(1L);
+        DynamicPriceResponse second = new DynamicPriceResponse(1L);
 
+        assertEquals(first.hashCode(), second.hashCode());
     }
 }

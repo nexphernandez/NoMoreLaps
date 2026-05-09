@@ -1,151 +1,104 @@
 package com.nomorelaps.adapters.in.api;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+/**
+ * Unit tests for SmartRecommendationRequest DTO.
+ * Verifies that recommendation parameters are correctly handled and equality is maintained.
+ * 
+ * @author nexphernandez
+ * @version 1.0.0
+ */
 class SmartRecommendationRequestTest {
 
-    @Test
-    @DisplayName("Should test getters, setters and empty constructor for SmartRecommendationRequest")
-    void testGettersAndSetters() {
-        SmartRecommendationRequest dto = new SmartRecommendationRequest();
-        assertNotNull(dto);
+    private SmartRecommendationRequest recommendationRequest;
 
-        dto.setDestinationText("dummy1");
-        assertEquals("dummy1", dto.getDestinationText());
-        dto.setLatitude(1.0);
-        assertEquals(1.0, dto.getLatitude());
-        dto.setLongitude(1.0);
-        assertEquals(1.0, dto.getLongitude());
-        dto.setStartTime("dummy1");
-        assertEquals("dummy1", dto.getStartTime());
-        dto.setDurationHours(1);
-        assertEquals(1, dto.getDurationHours());
-        dto.setRadiusKm(1.0);
-        assertEquals(1.0, dto.getRadiusKm());
+    @BeforeEach
+    void setUp() {
+        recommendationRequest = new SmartRecommendationRequest();
     }
 
     @Test
-    @DisplayName("Should test parameterized constructor")
-    void testParameterizedConstructor() {
-        SmartRecommendationRequest dto = new SmartRecommendationRequest("Madrid", 40.0, -3.0, "10:00", 2, 5.0);
-        assertEquals("Madrid", dto.getDestinationText());
-        assertEquals(40.0, dto.getLatitude());
-        assertEquals(-3.0, dto.getLongitude());
-        assertEquals("10:00", dto.getStartTime());
-        assertEquals(2, dto.getDurationHours());
-        assertEquals(5.0, dto.getRadiusKm());
+    @DisplayName("Constructor - Should correctly initialize all recommendation fields")
+    void shouldInitializeWithFullConstructor() {
+        SmartRecommendationRequest fullRequest = new SmartRecommendationRequest("Cinema", 40.0, -3.0, "2026-05-20T18:00:00", 3, 10.0);
+
+        assertEquals("Cinema", fullRequest.getDestinationText());
+        assertEquals(40.0, fullRequest.getLatitude());
+        assertEquals(-3.0, fullRequest.getLongitude());
+        assertEquals("2026-05-20T18:00:00", fullRequest.getStartTime());
+        assertEquals(3, fullRequest.getDurationHours());
+        assertEquals(10.0, fullRequest.getRadiusKm());
     }
 
+    @Test
+    @DisplayName("destinationText - Should set and get the destination name")
+    void shouldSetAndGetDestinationText() {
+        recommendationRequest.setDestinationText("Airport T4");
+        assertEquals("Airport T4", recommendationRequest.getDestinationText());
+    }
 
     @Test
-    @DisplayName("Should test equals and hashCode branches for SmartRecommendationRequest")
-    void testEqualsAndHashCode() {
-        SmartRecommendationRequest dto1 = new SmartRecommendationRequest();
-        SmartRecommendationRequest dto2 = new SmartRecommendationRequest();
-        SmartRecommendationRequest dto3 = new SmartRecommendationRequest();
+    @DisplayName("latitude - Should set and get latitude")
+    void shouldSetAndGetLatitude() {
+        recommendationRequest.setLatitude(40.4168);
+        assertEquals(40.4168, recommendationRequest.getLatitude());
+    }
 
-        dto1.setDestinationText("dummy1");
-        dto2.setDestinationText("dummy1");
-        dto3.setDestinationText("dummy2");
-        dto1.setLatitude(1.0);
-        dto2.setLatitude(1.0);
-        dto3.setLatitude(2.0);
-        dto1.setLongitude(1.0);
-        dto2.setLongitude(1.0);
-        dto3.setLongitude(2.0);
-        dto1.setStartTime("dummy1");
-        dto2.setStartTime("dummy1");
-        dto3.setStartTime("dummy2");
-        dto1.setDurationHours(1);
-        dto2.setDurationHours(1);
-        dto3.setDurationHours(2);
-        dto1.setRadiusKm(1.0);
-        dto2.setRadiusKm(1.0);
-        dto3.setRadiusKm(2.0);
+    @Test
+    @DisplayName("longitude - Should set and get longitude")
+    void shouldSetAndGetLongitude() {
+        recommendationRequest.setLongitude(-3.7038);
+        assertEquals(-3.7038, recommendationRequest.getLongitude());
+    }
 
-        assertEquals(dto1, dto1);
-        assertEquals(dto1, dto2);
-        assertNotEquals(dto1, dto3);
-        assertNotEquals(dto1, null);
-        assertNotEquals(dto1, new Object());
-        assertEquals(dto1.hashCode(), dto2.hashCode());
+    @Test
+    @DisplayName("startTime - Should set and get start time string")
+    void shouldSetAndGetStartTime() {
+        recommendationRequest.setStartTime("2026-12-31T23:59:59");
+        assertEquals("2026-12-31T23:59:59", recommendationRequest.getStartTime());
+    }
 
-        SmartRecommendationRequest tempdestinationText = new SmartRecommendationRequest();
-        tempdestinationText.setDestinationText("dummy1");
-        tempdestinationText.setLatitude(1.0);
-        tempdestinationText.setLongitude(1.0);
-        tempdestinationText.setStartTime("dummy1");
-        tempdestinationText.setDurationHours(1);
-        tempdestinationText.setRadiusKm(1.0);
-        tempdestinationText.setDestinationText(null);
-        dto1.equals(tempdestinationText);
-        tempdestinationText.equals(dto1);
-        tempdestinationText.setDestinationText("dummy2");
-        dto1.equals(tempdestinationText);
+    @Test
+    @DisplayName("durationHours - Should set and get duration")
+    void shouldSetAndGetDurationHours() {
+        recommendationRequest.setDurationHours(5);
+        assertEquals(5, recommendationRequest.getDurationHours());
+    }
 
-        SmartRecommendationRequest templatitude = new SmartRecommendationRequest();
-        templatitude.setDestinationText("dummy1");
-        templatitude.setLatitude(1.0);
-        templatitude.setLongitude(1.0);
-        templatitude.setStartTime("dummy1");
-        templatitude.setDurationHours(1);
-        templatitude.setRadiusKm(1.0);
-        templatitude.setLatitude(null);
-        dto1.equals(templatitude);
-        templatitude.equals(dto1);
-        templatitude.setLatitude(2.0);
-        dto1.equals(templatitude);
+    @Test
+    @DisplayName("radiusKm - Should set and get search radius")
+    void shouldSetAndGetRadiusKm() {
+        recommendationRequest.setRadiusKm(2.5);
+        assertEquals(2.5, recommendationRequest.getRadiusKm());
+    }
 
-        SmartRecommendationRequest templongitude = new SmartRecommendationRequest();
-        templongitude.setDestinationText("dummy1");
-        templongitude.setLatitude(1.0);
-        templongitude.setLongitude(1.0);
-        templongitude.setStartTime("dummy1");
-        templongitude.setDurationHours(1);
-        templongitude.setRadiusKm(1.0);
-        templongitude.setLongitude(null);
-        dto1.equals(templongitude);
-        templongitude.equals(dto1);
-        templongitude.setLongitude(2.0);
-        dto1.equals(templongitude);
+    @Test
+    @DisplayName("equals - Should be equal for same destination and start time")
+    void shouldBeEqualForKeyFields() {
+        SmartRecommendationRequest first = new SmartRecommendationRequest("Work", 1.0, 1.0, "10:00", 1, 1.0);
+        SmartRecommendationRequest second = new SmartRecommendationRequest("Work", 5.0, 5.0, "10:00", 9, 9.0);
+        SmartRecommendationRequest diffDest = new SmartRecommendationRequest("Home", 1.0, 1.0, "10:00", 1, 1.0);
+        SmartRecommendationRequest diffTime = new SmartRecommendationRequest("Work", 1.0, 1.0, "12:00", 1, 1.0);
 
-        SmartRecommendationRequest tempstartTime = new SmartRecommendationRequest();
-        tempstartTime.setDestinationText("dummy1");
-        tempstartTime.setLatitude(1.0);
-        tempstartTime.setLongitude(1.0);
-        tempstartTime.setStartTime("dummy1");
-        tempstartTime.setDurationHours(1);
-        tempstartTime.setRadiusKm(1.0);
-        tempstartTime.setStartTime(null);
-        dto1.equals(tempstartTime);
-        tempstartTime.equals(dto1);
-        tempstartTime.setStartTime("dummy2");
-        dto1.equals(tempstartTime);
+        assertEquals(first, first, "Should be equal to itself");
+        assertEquals(first, second, "Should be equal if destination and start time match");
+        assertNotEquals(first, diffDest);
+        assertNotEquals(first, diffTime);
+        assertNotEquals(first, null);
+        assertNotEquals(first, new Object(), "Should return false for different class (instanceof test)");
+    }
 
-        SmartRecommendationRequest tempdurationHours = new SmartRecommendationRequest();
-        tempdurationHours.setDestinationText("dummy1");
-        tempdurationHours.setLatitude(1.0);
-        tempdurationHours.setLongitude(1.0);
-        tempdurationHours.setStartTime("dummy1");
-        tempdurationHours.setDurationHours(1);
-        tempdurationHours.setRadiusKm(1.0);
-        tempdurationHours.setDurationHours(null);
-        dto1.equals(tempdurationHours);
-        tempdurationHours.equals(dto1);
-        tempdurationHours.setDurationHours(2);
-        dto1.equals(tempdurationHours);
+    @Test
+    @DisplayName("hashCode - Should be consistent for equal requests")
+    void shouldHaveConsistentHashCode() {
+        SmartRecommendationRequest first = new SmartRecommendationRequest("Work", 0.0, 0.0, "10:00", 0, 0.0);
+        SmartRecommendationRequest second = new SmartRecommendationRequest("Work", 1.0, 1.0, "10:00", 1, 1.0);
 
-        SmartRecommendationRequest tempradiusKm = new SmartRecommendationRequest();
-        tempradiusKm.setDestinationText("dummy1");
-        tempradiusKm.setLatitude(1.0);
-        tempradiusKm.setLongitude(1.0);
-        tempradiusKm.setStartTime("dummy1");
-        tempradiusKm.setDurationHours(1);
-        tempradiusKm.setRadiusKm(1.0);
-        tempradiusKm.setRadiusKm(2.0);
-        dto1.equals(tempradiusKm);
-
+        assertEquals(first.hashCode(), second.hashCode());
     }
 }

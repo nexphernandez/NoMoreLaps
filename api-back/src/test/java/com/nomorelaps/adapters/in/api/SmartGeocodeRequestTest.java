@@ -1,54 +1,62 @@
 package com.nomorelaps.adapters.in.api;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+/**
+ * Unit tests for SmartGeocodeRequest DTO.
+ * Verifies that geocoding queries are correctly handled and equality is maintained.
+ * 
+ * @author nexphernandez
+ * @version 1.0.0
+ */
 class SmartGeocodeRequestTest {
 
-    @Test
-    @DisplayName("Should test getters, setters and empty constructor for SmartGeocodeRequest")
-    void testGettersAndSetters() {
-        SmartGeocodeRequest dto = new SmartGeocodeRequest();
-        assertNotNull(dto);
+    private SmartGeocodeRequest geocodeRequest;
 
-        dto.setQuery("dummy1");
-        assertEquals("dummy1", dto.getQuery());
+    @BeforeEach
+    void setUp() {
+        geocodeRequest = new SmartGeocodeRequest();
     }
 
     @Test
-    @DisplayName("Should test parameterized constructor")
-    void testParameterizedConstructor() {
-        SmartGeocodeRequest dto = new SmartGeocodeRequest("Madrid");
-        assertEquals("Madrid", dto.getQuery());
+    @DisplayName("Constructor - Should correctly initialize the query string")
+    void shouldInitializeWithParameterizedConstructor() {
+        SmartGeocodeRequest madridRequest = new SmartGeocodeRequest("Calle Gran Via, Madrid");
+
+        assertEquals("Calle Gran Via, Madrid", madridRequest.getQuery());
     }
 
+    @Test
+    @DisplayName("query - Should set and get the search query")
+    void shouldSetAndGetQuery() {
+        geocodeRequest.setQuery("Barcelona Airport");
+        assertEquals("Barcelona Airport", geocodeRequest.getQuery());
+    }
 
     @Test
-    @DisplayName("Should test equals and hashCode branches for SmartGeocodeRequest")
-    void testEqualsAndHashCode() {
-        SmartGeocodeRequest dto1 = new SmartGeocodeRequest();
-        SmartGeocodeRequest dto2 = new SmartGeocodeRequest();
-        SmartGeocodeRequest dto3 = new SmartGeocodeRequest();
+    @DisplayName("equals - Should be equal for same query string")
+    void shouldBeEqualForSameQuery() {
+        SmartGeocodeRequest first = new SmartGeocodeRequest("Search A");
+        SmartGeocodeRequest second = new SmartGeocodeRequest("Search A");
+        SmartGeocodeRequest third = new SmartGeocodeRequest("Search B");
 
-        dto1.setQuery("dummy1");
-        dto2.setQuery("dummy1");
-        dto3.setQuery("dummy2");
+        assertEquals(first, first, "Should be equal to itself");
+        assertEquals(first, second, "Should be equal if queries match");
+        assertNotEquals(first, third, "Should not be equal if queries differ");
+        assertNotEquals(first, null, "Should not be equal to null");
+        assertNotEquals(first, "not a request", "Should return false for different class (instanceof test)");
+    }
 
-        assertEquals(dto1, dto1);
-        assertEquals(dto1, dto2);
-        assertNotEquals(dto1, dto3);
-        assertNotEquals(dto1, null);
-        assertNotEquals(dto1, new Object());
-        assertEquals(dto1.hashCode(), dto2.hashCode());
+    @Test
+    @DisplayName("hashCode - Should be consistent for same query")
+    void shouldHaveConsistentHashCode() {
+        SmartGeocodeRequest first = new SmartGeocodeRequest("Search A");
+        SmartGeocodeRequest second = new SmartGeocodeRequest("Search A");
 
-        SmartGeocodeRequest tempquery = new SmartGeocodeRequest();
-        tempquery.setQuery("dummy1");
-        tempquery.setQuery(null);
-        dto1.equals(tempquery);
-        tempquery.equals(dto1);
-        tempquery.setQuery("dummy2");
-        dto1.equals(tempquery);
-
+        assertEquals(first.hashCode(), second.hashCode());
     }
 }
