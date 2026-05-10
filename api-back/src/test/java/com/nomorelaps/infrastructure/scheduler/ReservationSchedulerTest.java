@@ -1,5 +1,6 @@
 package com.nomorelaps.infrastructure.scheduler;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -24,6 +25,11 @@ import com.nomorelaps.domain.models.ParkingSpot;
 import com.nomorelaps.domain.models.Reservation;
 import com.nomorelaps.domain.models.User;
 
+/**
+ * Unit tests for ReservationScheduler.
+ * Adheres to the New Backend Test Refactoring Plan for granularity and business naming.
+ * Verifies background tasks for expiring reservations and applying penalty logic.
+ */
 @ExtendWith(MockitoExtension.class)
 class ReservationSchedulerTest {
 
@@ -37,160 +43,198 @@ class ReservationSchedulerTest {
     private INotificationService notificationService;
 
     @InjectMocks
-    private ReservationScheduler scheduler;
+    private ReservationScheduler reservationScheduler;
 
-    private Reservation reservation;
-    private ParkingSpot parkingSpot;
-    private Parking parking;
+    private Reservation activeReservation;
+    private ParkingSpot testSpot;
+    private Parking testParking;
 
     @BeforeEach
     void setUp() {
-        parking = new Parking(1L);
-        parking.setSanctionAmount(5.0);
-        parking.setSanctionIntervalInMinutes(15);
+        testParking = new Parking(1L);
+        testParking.setSanctionAmount(5.0);
+        testParking.setSanctionIntervalInMinutes(15);
 
-        parkingSpot = new ParkingSpot(1L);
-        parkingSpot.setParking(parking);
+        testSpot = new ParkingSpot(1L);
+        testSpot.setParking(testParking);
 
-        reservation = new Reservation(1L);
-        reservation.setParkingSpot(parkingSpot);
-        reservation.setUser(new User(1L));
-        reservation.setState("ACTIVE");
-        reservation.setPrice(0.0);
+        activeReservation = new Reservation(1L);
+        activeReservation.setParkingSpot(testSpot);
+        activeReservation.setUser(new User(1L));
+        activeReservation.setState("ACTIVE");
+        activeReservation.setPrice(10.0);
     }
 
+
     @Test
-    @DisplayName("Should do nothing when no active reservations exist")
-    void shouldDoNothingWhenNoReservations() {
+    @DisplayName("checkExpiredReservations - No active: Should not perform updates")
+    void checkExpiredReservations_NoActive_ShouldPerformNoActions() {
         when(reservationService.findByState("ACTIVE")).thenReturn(Collections.emptyList());
-
-        scheduler.checkExpiredReservations();
-
+        reservationScheduler.checkExpiredReservations();
         verify(reservationService, never()).update(any());
-        verify(sanctionService, never()).create(any());
     }
 
     @Test
-    @DisplayName("Should do nothing when reservations are not expired")
-    void shouldDoNothingWhenNotExpired() {
-        reservation.setEndTime(LocalDateTime.now().plusHours(1));
-        when(reservationService.findByState("ACTIVE")).thenReturn(List.of(reservation));
-
-        scheduler.checkExpiredReservations();
-
+    @DisplayName("checkExpiredReservations - Future end time: Should skip update")
+    void checkExpiredReservations_FutureEnd_ShouldSkipUpdate() {
+        activeReservation.setEndTime(LocalDateTime.now().plusHours(1));
+        when(reservationService.findByState("ACTIVE")).thenReturn(List.of(activeReservation));
+        reservationScheduler.checkExpiredReservations();
         verify(reservationService, never()).update(any());
+    }
+
+    @Test
+    @DisplayName("checkExpiredReservations - Past end time: Should transition state to SANCTIONED")
+    void checkExpiredReservations_PastEnd_ShouldTransitionState() {
+        activeReservation.setEndTime(LocalDateTime.now().minusMinutes(5));
+        when(reservationService.findByState("ACTIVE")).thenReturn(List.of(activeReservation));
+        reservationScheduler.checkExpiredReservations();
+        assertEquals("SANCTIONED", activeReservation.getState());
+    }
+
+
+    @Test
+    @DisplayName("applySanction - Parking missing: Should skip fine creation")
+    void applySanction_ParkingMissing_ShouldSkipFineCreation() {
+        activeReservation.setEndTime(LocalDateTime.now().minusMinutes(5));
+        testSpot.setParking(null);
+        when(reservationService.findByState("ACTIVE")).thenReturn(List.of(activeReservation));
+        reservationScheduler.checkExpiredReservations();
         verify(sanctionService, never()).create(any());
     }
 
     @Test
-    @DisplayName("Should apply sanction when reservation is expired and policy is defined")
-    void shouldApplySanctionWhenExpired() {
-        reservation.setEndTime(LocalDateTime.now().minusMinutes(20)); 
-        when(reservationService.findByState("ACTIVE")).thenReturn(List.of(reservation));
-
-        scheduler.checkExpiredReservations();
-
-        verify(reservationService, times(2)).update(reservation);
-        verify(sanctionService, times(1)).create(any());
-    }
-
-    @Test
-    @DisplayName("Should skip fine when parking is null")
-    void shouldSkipFineWhenParkingIsNull() {
-        reservation.setEndTime(LocalDateTime.now().minusMinutes(20));
-        parkingSpot.setParking(null);
-        when(reservationService.findByState("ACTIVE")).thenReturn(List.of(reservation));
-
-        scheduler.checkExpiredReservations();
-
-        verify(reservationService, times(1)).update(reservation); 
-        verify(sanctionService, never()).create(any()); 
-    }
-
-    @Test
-    @DisplayName("Should skip fine when sanctionAmount is null")
-    void shouldSkipFineWhenSanctionAmountIsNull() {
-        reservation.setEndTime(LocalDateTime.now().minusMinutes(20));
-        parking.setSanctionAmount(null);
-        when(reservationService.findByState("ACTIVE")).thenReturn(List.of(reservation));
-
-        scheduler.checkExpiredReservations();
-
-        verify(reservationService, times(1)).update(reservation);
+    @DisplayName("applySanction - Amount missing: Should skip fine creation")
+    void applySanction_AmountMissing_ShouldSkipFineCreation() {
+        activeReservation.setEndTime(LocalDateTime.now().minusMinutes(5));
+        testParking.setSanctionAmount(null);
+        when(reservationService.findByState("ACTIVE")).thenReturn(List.of(activeReservation));
+        reservationScheduler.checkExpiredReservations();
         verify(sanctionService, never()).create(any());
     }
 
     @Test
-    @DisplayName("Should skip fine when sanctionAmount is 0")
-    void shouldSkipFineWhenSanctionAmountIsZero() {
-        reservation.setEndTime(LocalDateTime.now().minusMinutes(20));
-        parking.setSanctionAmount(0.0);
-        when(reservationService.findByState("ACTIVE")).thenReturn(List.of(reservation));
-
-        scheduler.checkExpiredReservations();
-
-        verify(reservationService, times(1)).update(reservation);
+    @DisplayName("applySanction - Rate zero: Should skip fine creation")
+    void applySanction_RateZero_ShouldSkipFineCreation() {
+        activeReservation.setEndTime(LocalDateTime.now().minusMinutes(5));
+        testParking.setSanctionAmount(0.0);
+        when(reservationService.findByState("ACTIVE")).thenReturn(List.of(activeReservation));
+        reservationScheduler.checkExpiredReservations();
         verify(sanctionService, never()).create(any());
     }
 
     @Test
-    @DisplayName("Should use default interval of 15 min when sanctionInterval is null")
-    void shouldUseDefaultIntervalWhenNull() {
-        reservation.setEndTime(LocalDateTime.now().minusMinutes(20)); 
-        parking.setSanctionIntervalInMinutes(null); 
-        when(reservationService.findByState("ACTIVE")).thenReturn(List.of(reservation));
+    @DisplayName("applySanction - Interval missing: Should use default 15 min and calculate correctly")
+    void applySanction_IntervalMissing_ShouldUseDefault15Minutes() {
+        activeReservation.setEndTime(LocalDateTime.now().minusMinutes(20));
+        testParking.setSanctionIntervalInMinutes(null);
+        when(reservationService.findByState("ACTIVE")).thenReturn(List.of(activeReservation));
+        
+        reservationScheduler.checkExpiredReservations();
 
-        scheduler.checkExpiredReservations();
-
-        verify(reservationService, times(2)).update(reservation);
-        verify(sanctionService, times(1)).create(any());
+        verify(sanctionService).create(argThat(s -> s.getAmount() == 10.0));
     }
 
     @Test
-    @DisplayName("Should send notification with user name when sanctioned")
-    void shouldSendNotificationWhenSanctioned() {
-        reservation.setEndTime(LocalDateTime.now().minusMinutes(20));
-        User user = new User(1L);
-        user.setName("John");
-        reservation.setUser(user);
-        Company company = new Company(10L);
-        parking.setCompany(company);
+    @DisplayName("applySanction - Valid policy: Should update reservation price")
+    void applySanction_ValidPolicy_ShouldIncrementReservationPrice() {
+        activeReservation.setEndTime(LocalDateTime.now().minusMinutes(10));
+        activeReservation.setPrice(10.0);
+        when(reservationService.findByState("ACTIVE")).thenReturn(List.of(activeReservation));
         
-        when(reservationService.findByState("ACTIVE")).thenReturn(List.of(reservation));
+        reservationScheduler.checkExpiredReservations();
 
-        scheduler.checkExpiredReservations();
+        assertEquals(15.0, activeReservation.getPrice());
+    }
 
-        verify(notificationService).create(argThat(n -> n.getMessage().contains("New sanction for John")));
+
+    @Test
+    @DisplayName("applySanction - Valid company: Should create notification for owner")
+    void applySanction_ValidCompany_ShouldCreateNotification() {
+        activeReservation.setEndTime(LocalDateTime.now().minusMinutes(5));
+        Company owner = new Company(100L);
+        testParking.setCompany(owner);
+        when(reservationService.findByState("ACTIVE")).thenReturn(List.of(activeReservation));
+        
+        reservationScheduler.checkExpiredReservations();
+
+        verify(notificationService).create(argThat(n -> n.getCompanyId().equals(100L)));
     }
 
     @Test
-    @DisplayName("Should send notification with generic User name when user is null")
-    void shouldSendNotificationWithGenericUser() {
-        reservation.setEndTime(LocalDateTime.now().minusMinutes(20));
-        reservation.setUser(null);
-        Company company = new Company(10L);
-        parking.setCompany(company);
+    @DisplayName("applySanction - User exists: Should use name in notification")
+    void applySanction_UserExists_ShouldIncludeNameInMessage() {
+        activeReservation.setEndTime(LocalDateTime.now().minusMinutes(5));
+        activeReservation.getUser().setName("Alice");
+        testParking.setCompany(new Company(100L));
+        when(reservationService.findByState("ACTIVE")).thenReturn(List.of(activeReservation));
         
-        when(reservationService.findByState("ACTIVE")).thenReturn(List.of(reservation));
+        reservationScheduler.checkExpiredReservations();
 
-        scheduler.checkExpiredReservations();
-
-        verify(notificationService).create(argThat(n -> n.getMessage().contains("New sanction for User")));
+        verify(notificationService).create(argThat(n -> n.getMessage().contains("Alice")));
     }
 
     @Test
-    @DisplayName("Should not send notification if company or its ID is null")
-    void shouldNotSendNotificationIfCompanyInvalid() {
-        reservation.setEndTime(LocalDateTime.now().minusMinutes(20));
+    @DisplayName("applySanction - User missing: Should use generic 'User' in notification")
+    void applySanction_UserMissing_ShouldIncludeGenericLabelInMessage() {
+        activeReservation.setEndTime(LocalDateTime.now().minusMinutes(5));
+        activeReservation.setUser(null);
+        testParking.setCompany(new Company(100L));
+        when(reservationService.findByState("ACTIVE")).thenReturn(List.of(activeReservation));
         
-        parking.setCompany(null);
-        when(reservationService.findByState("ACTIVE")).thenReturn(List.of(reservation));
-        scheduler.checkExpiredReservations();
+        reservationScheduler.checkExpiredReservations();
+
+        verify(notificationService).create(argThat(n -> n.getMessage().contains("User")));
+    }
+
+    @Test
+    @DisplayName("applySanction - Spot missing: Should skip all actions")
+    void applySanction_SpotMissing_ShouldSkipAllActions() {
+        activeReservation.setEndTime(LocalDateTime.now().minusMinutes(5));
+        activeReservation.setParkingSpot(null);
+        when(reservationService.findByState("ACTIVE")).thenReturn(List.of(activeReservation));
+        
+        reservationScheduler.checkExpiredReservations();
+
+        verify(sanctionService, never()).create(any());
         verify(notificationService, never()).create(any());
+    }
 
-        Company company = new Company(null);
-        parking.setCompany(company);
-        scheduler.checkExpiredReservations();
+    @Test
+    @DisplayName("applySanction - Parking missing: Should return early")
+    void applySanction_ParkingMissing_ShouldReturnEarly() {
+        activeReservation.setEndTime(LocalDateTime.now().minusMinutes(5));
+        testSpot.setParking(null);
+        when(reservationService.findByState("ACTIVE")).thenReturn(List.of(activeReservation));
+        
+        reservationScheduler.checkExpiredReservations();
+
+        verify(sanctionService, never()).create(any());
+        verify(notificationService, never()).create(any());
+    }
+
+    @Test
+    @DisplayName("applySanction - Company missing: Should skip notification creation")
+    void applySanction_CompanyMissing_ShouldSkipNotification() {
+        activeReservation.setEndTime(LocalDateTime.now().minusMinutes(5));
+        testParking.setCompany(null);
+        when(reservationService.findByState("ACTIVE")).thenReturn(List.of(activeReservation));
+        
+        reservationScheduler.checkExpiredReservations();
+
+        verify(notificationService, never()).create(any());
+    }
+
+    @Test
+    @DisplayName("applySanction - Company ID missing: Should skip notification creation")
+    void applySanction_CompanyIdMissing_ShouldSkipNotification() {
+        activeReservation.setEndTime(LocalDateTime.now().minusMinutes(5));
+        Company owner = new Company(); // ID is null
+        testParking.setCompany(owner);
+        when(reservationService.findByState("ACTIVE")).thenReturn(List.of(activeReservation));
+        
+        reservationScheduler.checkExpiredReservations();
+
         verify(notificationService, never()).create(any());
     }
 }

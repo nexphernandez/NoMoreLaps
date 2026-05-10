@@ -3,6 +3,8 @@ package com.nomorelaps.adapters.mapper;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.lang.reflect.Method;
+import java.util.Set;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -259,5 +261,14 @@ class ReservationMapperTest {
         Method spotMapper = mapper.getClass().getDeclaredMethod("reservationRequestToParkingSpot", ReservationRequest.class);
         spotMapper.setAccessible(true);
         assertNull(spotMapper.invoke(mapper, (ReservationRequest) null));
+    }
+
+    @Test
+    @DisplayName("Internal: sanctionSetToSanctionJpaEntitySet - Should handle null via reflection")
+    void shouldHandleNullInSanctionSetToSanctionJpaEntitySet() throws Exception {
+        Method method = mapper.getClass().getDeclaredMethod("sanctionSetToSanctionJpaEntitySet", Set.class);
+        method.setAccessible(true);
+
+        assertNull(method.invoke(mapper, (Set) null));
     }
 }
