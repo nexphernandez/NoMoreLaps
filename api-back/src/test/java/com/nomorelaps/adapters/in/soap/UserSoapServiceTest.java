@@ -1,115 +1,117 @@
 package com.nomorelaps.adapters.in.soap;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.List;
+import java.util.Optional;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
+
 import com.nomorelaps.adapters.in.api.UserResponse;
 import com.nomorelaps.adapters.mapper.UserMapper;
 import com.nomorelaps.business.interfaces.IUserService;
 import com.nomorelaps.domain.models.User;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
+/**
+ * Unit tests for UserSoapService.
+ * Validates the retrieval of user information via SOAP adapter.
+ * 
+ * @author nexphernandez
+ * @version 1.1.0
+ */
+@SpringBootTest
 class UserSoapServiceTest {
 
+    @MockitoBean
     private IUserService userService;
+
+    @MockitoSpyBean
     private UserMapper userMapper;
+
+    @Autowired
     private UserSoapService userSoapService;
+
+    private User sampleUser;
 
     @BeforeEach
     void setUp() {
-        userService = mock(IUserService.class);
-        userMapper = mock(UserMapper.class);
-        userSoapService = new UserSoapService(userService, userMapper);
+        sampleUser = new User(1L);
+        sampleUser.setName("John Doe");
+        sampleUser.setEmail("john@example.com");
     }
 
     @Test
-    @DisplayName("findAll - Should return list of user responses")
-    void shouldReturnListOfUserResponses() {
-        User user = new User(1L);
-        UserResponse response = new UserResponse();
-        response.setId(1L);
-
-        when(userService.findAll()).thenReturn(Collections.singletonList(user));
-        when(userMapper.toResponse(user)).thenReturn(response);
+    @DisplayName("findAll - Success: Should return list of all users")
+    void shouldReturnAllUsersSuccessfully() {
+        when(userService.findAll()).thenReturn(List.of(sampleUser));
 
         List<UserResponse> result = userSoapService.findAll();
 
         assertNotNull(result);
         assertEquals(1, result.size());
-        assertEquals(1L, result.get(0).getId());
-
-        verify(userService, times(1)).findAll();
-        verify(userMapper, times(1)).toResponse(user);
+        assertEquals("John Doe", result.get(0).getName());
+        verify(userService).findAll();
     }
 
     @Test
-    @DisplayName("findById - Should return user response when found")
-    void shouldReturnUserResponseWhenFound() {
-        User user = new User(1L);
-        UserResponse response = new UserResponse();
-        response.setId(1L);
-
-        when(userService.findById(1L)).thenReturn(Optional.of(user));
-        when(userMapper.toResponse(user)).thenReturn(response);
+    @DisplayName("findById - Success: Should return user details when found")
+    void shouldReturnUserByIdSuccessfully() {
+        when(userService.findById(1L)).thenReturn(Optional.of(sampleUser));
 
         UserResponse result = userSoapService.findById(1L);
 
         assertNotNull(result);
         assertEquals(1L, result.getId());
-
-        verify(userService, times(1)).findById(1L);
-        verify(userMapper, times(1)).toResponse(user);
+        assertEquals("john@example.com", result.getEmail());
+        verify(userService).findById(1L);
     }
 
     @Test
-    @DisplayName("findById - Should return null when not found")
-    void shouldReturnNullWhenNotFound() {
-        when(userService.findById(1L)).thenReturn(Optional.empty());
+    @DisplayName("findById - Failure: Should return null when user does not exist")
+    void shouldReturnNullWhenUserNotFound() {
+        when(userService.findById(99L)).thenReturn(Optional.empty());
 
-        UserResponse result = userSoapService.findById(1L);
+        UserResponse result = userSoapService.findById(99L);
 
         assertNull(result);
-
-        verify(userService, times(1)).findById(1L);
+        verify(userService).findById(99L);
         verify(userMapper, never()).toResponse(any());
     }
 
     @Test
-    @DisplayName("findByEmail - Should return user response when found")
-    void shouldReturnUserResponseWhenEmailFound() {
-        User user = new User(1L);
-        UserResponse response = new UserResponse();
-        response.setId(1L);
+    @DisplayName("findByEmail - Success: Should return user details when email exists")
+    void shouldReturnUserByEmailSuccessfully() {
+        when(userService.findByEmail("john@example.com")).thenReturn(Optional.of(sampleUser));
 
-        when(userService.findByEmail("test@test.com")).thenReturn(Optional.of(user));
-        when(userMapper.toResponse(user)).thenReturn(response);
-
-        UserResponse result = userSoapService.findByEmail("test@test.com");
+        UserResponse result = userSoapService.findByEmail("john@example.com");
 
         assertNotNull(result);
         assertEquals(1L, result.getId());
-
-        verify(userService, times(1)).findByEmail("test@test.com");
-        verify(userMapper, times(1)).toResponse(user);
+        assertEquals("John Doe", result.getName());
+        verify(userService).findByEmail("john@example.com");
     }
 
     @Test
-    @DisplayName("findByEmail - Should return null when not found")
+    @DisplayName("findByEmail - Failure: Should return null when email does not exist")
     void shouldReturnNullWhenEmailNotFound() {
-        when(userService.findByEmail("test@test.com")).thenReturn(Optional.empty());
+        when(userService.findByEmail("ghost@example.com")).thenReturn(Optional.empty());
 
-        UserResponse result = userSoapService.findByEmail("test@test.com");
+        UserResponse result = userSoapService.findByEmail("ghost@example.com");
 
         assertNull(result);
-
-        verify(userService, times(1)).findByEmail("test@test.com");
+        verify(userService).findByEmail("ghost@example.com");
         verify(userMapper, never()).toResponse(any());
     }
 }

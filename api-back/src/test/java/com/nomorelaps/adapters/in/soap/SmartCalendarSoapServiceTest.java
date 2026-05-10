@@ -1,72 +1,91 @@
 package com.nomorelaps.adapters.in.soap;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+
 import com.nomorelaps.adapters.in.api.SmartGeocodeRequest;
 import com.nomorelaps.adapters.in.api.SmartGeocodeResponse;
 import com.nomorelaps.adapters.in.api.SmartRecommendationRequest;
 import com.nomorelaps.adapters.in.api.SmartRecommendationResponse;
 import com.nomorelaps.business.SmartCalendarService;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
+/**
+ * Unit tests for SmartCalendarSoapService.
+ * Validates geocoding and recommendation operations via SOAP adapter.
+ * 
+ * @author nexphernandez
+ * @version 1.1.0
+ */
+@SpringBootTest
 class SmartCalendarSoapServiceTest {
 
+    @MockitoBean
     private SmartCalendarService smartCalendarService;
+
+    @Autowired
     private SmartCalendarSoapService smartCalendarSoapService;
+
+    private SmartGeocodeRequest validGeocodeRequest;
+    private SmartRecommendationRequest validRecommendRequest;
 
     @BeforeEach
     void setUp() {
-        smartCalendarService = mock(SmartCalendarService.class);
-        smartCalendarSoapService = new SmartCalendarSoapService(smartCalendarService);
+        validGeocodeRequest = new SmartGeocodeRequest();
+        validGeocodeRequest.setQuery("Madrid, Spain");
+
+        validRecommendRequest = new SmartRecommendationRequest();
+        validRecommendRequest.setLatitude(40.4168);
+        validRecommendRequest.setLongitude(-3.7038);
     }
 
     @Test
-    @DisplayName("geocode - Should return response")
-    void shouldReturnGeocode() {
-        SmartGeocodeRequest request = new SmartGeocodeRequest();
-        request.setQuery("Madrid");
-
+    @DisplayName("geocode - Success: Should return coordinates for a valid query")
+    void shouldGeocodeSuccessfully() {
         SmartGeocodeResponse response = new SmartGeocodeResponse();
-        response.setLatitude(40.0);
+        response.setLatitude(40.4168);
+        response.setLongitude(-3.7038);
+        when(smartCalendarService.geocode("Madrid, Spain")).thenReturn(response);
 
-        when(smartCalendarService.geocode("Madrid")).thenReturn(response);
-
-        SmartGeocodeResponse result = smartCalendarSoapService.geocode(request);
+        SmartGeocodeResponse result = smartCalendarSoapService.geocode(validGeocodeRequest);
 
         assertNotNull(result);
-        assertEquals(40.0, result.getLatitude());
-        verify(smartCalendarService, times(1)).geocode("Madrid");
+        assertEquals(40.4168, result.getLatitude());
+        verify(smartCalendarService).geocode("Madrid, Spain");
     }
 
     @Test
-    @DisplayName("geocode - Should throw exception on null input")
-    void shouldThrowOnNullGeocodeInput() {
+    @DisplayName("geocode - Failure: Should throw exception when query is missing")
+    void shouldThrowExceptionWhenGeocodeQueryIsNull() {
+        SmartGeocodeRequest invalidRequest = new SmartGeocodeRequest();
         assertThrows(IllegalArgumentException.class, () -> smartCalendarSoapService.geocode(null));
-        
-        SmartGeocodeRequest request = new SmartGeocodeRequest();
-        assertThrows(IllegalArgumentException.class, () -> smartCalendarSoapService.geocode(request));
+        assertThrows(IllegalArgumentException.class, () -> smartCalendarSoapService.geocode(invalidRequest));
     }
 
     @Test
-    @DisplayName("recommend - Should return response")
-    void shouldReturnRecommend() {
-        SmartRecommendationRequest request = new SmartRecommendationRequest();
+    @DisplayName("recommend - Success: Should return recommendations for a valid request")
+    void shouldRecommendSuccessfully() {
         SmartRecommendationResponse response = new SmartRecommendationResponse();
-        
-        when(smartCalendarService.recommend(request)).thenReturn(response);
+        when(smartCalendarService.recommend(validRecommendRequest)).thenReturn(response);
 
-        SmartRecommendationResponse result = smartCalendarSoapService.recommend(request);
+        SmartRecommendationResponse result = smartCalendarSoapService.recommend(validRecommendRequest);
 
         assertNotNull(result);
-        verify(smartCalendarService, times(1)).recommend(request);
+        verify(smartCalendarService).recommend(validRecommendRequest);
     }
 
     @Test
-    @DisplayName("recommend - Should throw exception on null input")
-    void shouldThrowOnNullRecommendInput() {
+    @DisplayName("recommend - Failure: Should throw exception when request is null")
+    void shouldThrowExceptionWhenRecommendRequestIsNull() {
         assertThrows(IllegalArgumentException.class, () -> smartCalendarSoapService.recommend(null));
     }
 }
