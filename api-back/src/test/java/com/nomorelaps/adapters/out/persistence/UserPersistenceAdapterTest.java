@@ -1,7 +1,7 @@
 package com.nomorelaps.adapters.out.persistence;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.util.Optional;
 
@@ -18,6 +18,10 @@ import com.nomorelaps.adapters.out.persistence.jpa.UserJpaEntity;
 import com.nomorelaps.adapters.out.persistence.repository.UserJpaRepository;
 import com.nomorelaps.domain.models.User;
 
+/**
+ * Unit tests for UserPersistenceAdapter.
+ * Verifies persistence logic for User, including mapping and repository interaction.
+ */
 @ExtendWith(MockitoExtension.class)
 class UserPersistenceAdapterTest {
 
@@ -30,45 +34,91 @@ class UserPersistenceAdapterTest {
     @InjectMocks
     private UserPersistenceAdapter adapter;
 
-    private User user;
-    private UserJpaEntity entity;
+    private User testUser;
+    private UserJpaEntity testEntity;
 
     @BeforeEach
     void setUp() {
-        user = new User(1L);
-        entity = new UserJpaEntity();
-        entity.setId(1L);
+        testUser = new User(1L);
+        testUser.setEmail("test@test.com");
+        testEntity = new UserJpaEntity();
+        testEntity.setId(1L);
+        testEntity.setEmail("test@test.com");
     }
 
     @Test
-    @DisplayName("findByEmail - Should return user when found")
-    void shouldReturnUserByEmail() {
-        when(repository.findByEmail("test@test.com")).thenReturn(Optional.of(entity));
-        when(userMapper.toDomain(entity)).thenReturn(user);
+    @DisplayName("save - Should map to entity, save and return domain")
+    void shouldSaveUser() {
+        when(userMapper.toJpaEntity(testUser)).thenReturn(testEntity);
+        when(repository.save(testEntity)).thenReturn(testEntity);
+        when(userMapper.toDomain(testEntity)).thenReturn(testUser);
 
-        Optional<User> result = adapter.findByEmail("test@test.com");
+        User result = adapter.save(testUser);
+
+        assertNotNull(result);
+        assertEquals(1L, result.getId());
+        verify(repository).save(testEntity);
+    }
+
+    @Test
+    @DisplayName("findByEmail - Should return domain object when email exists")
+    void shouldReturnUserWhenEmailExists() {
+        String email = "test@test.com";
+        when(repository.findByEmail(email)).thenReturn(Optional.of(testEntity));
+        when(userMapper.toDomain(testEntity)).thenReturn(testUser);
+
+        Optional<User> result = adapter.findByEmail(email);
 
         assertTrue(result.isPresent());
         assertEquals(1L, result.get().getId());
     }
 
     @Test
-    @DisplayName("existsByEmail - Should return boolean")
-    void shouldCheckEmailExistence() {
-        when(repository.existsByEmail("test@test.com")).thenReturn(true);
-        assertTrue(adapter.existsByEmail("test@test.com"));
+    @DisplayName("findByEmail - Should return empty when email does not exist")
+    void shouldReturnEmptyWhenEmailDoesNotExist() {
+        String email = "notfound@test.com";
+        when(repository.findByEmail(email)).thenReturn(Optional.empty());
+
+        Optional<User> result = adapter.findByEmail(email);
+
+        assertTrue(result.isEmpty());
     }
 
     @Test
-    @DisplayName("save - Should delegate to repository and mapper")
-    void shouldSaveUser() {
-        when(userMapper.toJpaEntity(user)).thenReturn(entity);
-        when(repository.save(entity)).thenReturn(entity);
-        when(userMapper.toDomain(entity)).thenReturn(user);
+    @DisplayName("existsByEmail - Should return true when email exists")
+    void shouldReturnTrueWhenEmailExists() {
+        String email = "exists@test.com";
+        when(repository.existsByEmail(email)).thenReturn(true);
 
-        User result = adapter.save(user);
+        assertTrue(adapter.existsByEmail(email));
+    }
 
-        assertNotNull(result);
-        assertEquals(1L, result.getId());
+    @Test
+    @DisplayName("existsByEmail - Should return false when email does not exist")
+    void shouldReturnFalseWhenEmailDoesNotExist() {
+        String email = "new@test.com";
+        when(repository.existsByEmail(email)).thenReturn(false);
+
+        assertFalse(adapter.existsByEmail(email));
+    }
+
+    @Test
+    @DisplayName("findById - Should return domain object when ID exists")
+    void shouldReturnUserWhenIdExists() {
+        when(repository.findById(1L)).thenReturn(Optional.of(testEntity));
+        when(userMapper.toDomain(testEntity)).thenReturn(testUser);
+
+        Optional<User> result = adapter.findById(1L);
+
+        assertTrue(result.isPresent());
+        assertEquals(1L, result.get().getId());
+    }
+
+    @Test
+    @DisplayName("deleteById - Should call repository delete")
+    void shouldDeleteUserById() {
+        Long id = 10L;
+        adapter.deleteById(id);
+        verify(repository).deleteById(id);
     }
 }

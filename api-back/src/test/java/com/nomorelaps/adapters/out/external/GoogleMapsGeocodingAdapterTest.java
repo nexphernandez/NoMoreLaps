@@ -22,6 +22,10 @@ import com.nomorelaps.adapters.in.api.SmartGeocodeResponse;
 import com.nomorelaps.business.interfaces.IParkingService;
 import com.nomorelaps.domain.models.Parking;
 
+/**
+ * Unit tests for GoogleMapsGeocodingAdapter.
+ * Verifies external API interaction and local fallback logic for geocoding queries.
+ */
 @ExtendWith(MockitoExtension.class)
 class GoogleMapsGeocodingAdapterTest {
 
@@ -34,121 +38,122 @@ class GoogleMapsGeocodingAdapterTest {
     @InjectMocks
     private GoogleMapsGeocodingAdapter adapter;
 
-    private Parking localParking;
+    private Parking testParking;
 
     @BeforeEach
     void setUp() {
         ReflectionTestUtils.setField(adapter, "restTemplate", restTemplate);
         
-        localParking = new Parking(1L);
-        localParking.setAddress("Local Street 1");
-        localParking.setLatitude(40.0);
-        localParking.setLongitude(-3.0);
+        testParking = new Parking(1L);
+        testParking.setAddress("Calle Mayor 1");
+        testParking.setLatitude(40.4167);
+        testParking.setLongitude(-3.7033);
     }
 
     @Test
-    @DisplayName("Should fallback to local when API key is null")
-    void shouldFallbackWhenKeyIsNull() {
-        ReflectionTestUtils.setField(adapter, "googleMapsApiKey", null);
-        when(parkingService.searchByNameOrAddress("query")).thenReturn(List.of(localParking));
-
-        SmartGeocodeResponse response = adapter.geocode("query");
-
-        assertEquals("Local Street 1", response.getFormattedAddress());
-        assertEquals(40.0, response.getLatitude());
-        assertEquals(-3.0, response.getLongitude());
-        verify(restTemplate, never()).getForObject(anyString(), eq(Map.class));
-    }
-
-    @Test
-    @DisplayName("Should fallback to local when API key is blank")
-    void shouldFallbackWhenKeyIsBlank() {
-        ReflectionTestUtils.setField(adapter, "googleMapsApiKey", "   ");
-        when(parkingService.searchByNameOrAddress("query")).thenReturn(List.of(localParking));
-
-        SmartGeocodeResponse response = adapter.geocode("query");
-
-        assertEquals("Local Street 1", response.getFormattedAddress());
-    }
-
-    @Test
-    @DisplayName("Should parse successful API response")
-    void shouldParseSuccessfulResponse() {
-        ReflectionTestUtils.setField(adapter, "googleMapsApiKey", "fake-key");
+    @DisplayName("geocode - Should return API result when API key is valid and response is successful")
+    void shouldReturnApiResultWhenKeyIsValid() {
+        ReflectionTestUtils.setField(adapter, "googleMapsApiKey", "valid-api-key");
         
-        Map<String, Object> location = Map.of("lat", 41.0, "lng", -4.0);
+        Map<String, Object> location = Map.of("lat", 41.3851, "lng", 2.1734);
         Map<String, Object> geometry = Map.of("location", location);
         Map<String, Object> result = Map.of(
-            "formatted_address", "API Street 2",
+            "formatted_address", "Barcelona, Spain",
             "geometry", geometry
         );
         Map<String, Object> apiResponse = Map.of("results", List.of(result));
 
         when(restTemplate.getForObject(anyString(), eq(Map.class))).thenReturn(apiResponse);
 
+        SmartGeocodeResponse response = adapter.geocode("Barcelona");
+
+        assertNotNull(response);
+        assertEquals("Barcelona, Spain", response.getFormattedAddress());
+        assertEquals(41.3851, response.getLatitude());
+        assertEquals(2.1734, response.getLongitude());
+    }
+
+    @Test
+    @DisplayName("geocode - Should fallback to local search when API key is missing")
+    void shouldFallbackWhenApiKeyIsMissing() {
+        ReflectionTestUtils.setField(adapter, "googleMapsApiKey", null);
+        when(parkingService.searchByNameOrAddress("Madrid")).thenReturn(List.of(testParking));
+
         SmartGeocodeResponse response = adapter.geocode("Madrid");
 
-        assertEquals("API Street 2", response.getFormattedAddress());
-        assertEquals(41.0, response.getLatitude());
-        assertEquals(-4.0, response.getLongitude());
+        assertNotNull(response);
+        assertEquals("Calle Mayor 1", response.getFormattedAddress());
+        verify(restTemplate, never()).getForObject(anyString(), any());
     }
 
     @Test
-    @DisplayName("Should fallback when API response is null")
-    void shouldFallbackWhenResponseNull() {
-        ReflectionTestUtils.setField(adapter, "googleMapsApiKey", "fake-key");
+    @DisplayName("geocode - Should fallback to local search when API key is blank")
+    void shouldFallbackWhenApiKeyIsBlank() {
+        ReflectionTestUtils.setField(adapter, "googleMapsApiKey", "  ");
+        when(parkingService.searchByNameOrAddress("Madrid")).thenReturn(List.of(testParking));
+
+        SmartGeocodeResponse response = adapter.geocode("Madrid");
+
+        assertNotNull(response);
+        assertEquals("Calle Mayor 1", response.getFormattedAddress());
+    }
+
+    @Test
+    @DisplayName("geocode - Should fallback to local search when API response is null")
+    void shouldFallbackWhenApiResponseIsNull() {
+        ReflectionTestUtils.setField(adapter, "googleMapsApiKey", "some-key");
         when(restTemplate.getForObject(anyString(), eq(Map.class))).thenReturn(null);
-        when(parkingService.searchByNameOrAddress("query")).thenReturn(List.of(localParking));
+        when(parkingService.searchByNameOrAddress("Madrid")).thenReturn(List.of(testParking));
 
-        SmartGeocodeResponse response = adapter.geocode("query");
+        SmartGeocodeResponse response = adapter.geocode("Madrid");
 
-        assertEquals("Local Street 1", response.getFormattedAddress());
+        assertEquals("Calle Mayor 1", response.getFormattedAddress());
     }
 
     @Test
-    @DisplayName("Should fallback when API response has no results key")
-    void shouldFallbackWhenNoResultsKey() {
-        ReflectionTestUtils.setField(adapter, "googleMapsApiKey", "fake-key");
-        when(restTemplate.getForObject(anyString(), eq(Map.class))).thenReturn(Collections.emptyMap());
-        when(parkingService.searchByNameOrAddress("query")).thenReturn(List.of(localParking));
-
-        SmartGeocodeResponse response = adapter.geocode("query");
-
-        assertEquals("Local Street 1", response.getFormattedAddress());
-    }
-
-    @Test
-    @DisplayName("Should fallback when API response results are empty")
-    void shouldFallbackWhenResultsEmpty() {
-        ReflectionTestUtils.setField(adapter, "googleMapsApiKey", "fake-key");
+    @DisplayName("geocode - Should fallback to local search when API results are empty")
+    void shouldFallbackWhenApiResultsAreEmpty() {
+        ReflectionTestUtils.setField(adapter, "googleMapsApiKey", "some-key");
         Map<String, Object> apiResponse = Map.of("results", Collections.emptyList());
         when(restTemplate.getForObject(anyString(), eq(Map.class))).thenReturn(apiResponse);
-        when(parkingService.searchByNameOrAddress("query")).thenReturn(List.of(localParking));
+        when(parkingService.searchByNameOrAddress("Madrid")).thenReturn(List.of(testParking));
 
-        SmartGeocodeResponse response = adapter.geocode("query");
+        SmartGeocodeResponse response = adapter.geocode("Madrid");
 
-        assertEquals("Local Street 1", response.getFormattedAddress());
+        assertEquals("Calle Mayor 1", response.getFormattedAddress());
     }
 
     @Test
-    @DisplayName("Should fallback when API throws exception")
-    void shouldFallbackWhenExceptionThrown() {
-        ReflectionTestUtils.setField(adapter, "googleMapsApiKey", "fake-key");
-        when(restTemplate.getForObject(anyString(), eq(Map.class))).thenThrow(new RuntimeException("API down"));
-        when(parkingService.searchByNameOrAddress("query")).thenReturn(List.of(localParking));
+    @DisplayName("geocode - Should fallback to local search when API results are missing in response")
+    void shouldFallbackWhenResultsAreMissing() {
+        ReflectionTestUtils.setField(adapter, "googleMapsApiKey", "some-key");
+        when(restTemplate.getForObject(anyString(), eq(Map.class))).thenReturn(Collections.emptyMap());
+        when(parkingService.searchByNameOrAddress("Madrid")).thenReturn(List.of(testParking));
 
-        SmartGeocodeResponse response = adapter.geocode("query");
+        SmartGeocodeResponse response = adapter.geocode("Madrid");
 
-        assertEquals("Local Street 1", response.getFormattedAddress());
+        assertEquals("Calle Mayor 1", response.getFormattedAddress());
     }
 
     @Test
-    @DisplayName("Should throw exception when local fallback is empty")
-    void shouldThrowExceptionWhenFallbackEmpty() {
+    @DisplayName("geocode - Should fallback to local search when API call throws exception")
+    void shouldFallbackWhenApiThrowsException() {
+        ReflectionTestUtils.setField(adapter, "googleMapsApiKey", "some-key");
+        when(restTemplate.getForObject(anyString(), eq(Map.class))).thenThrow(new RuntimeException("API Error"));
+        when(parkingService.searchByNameOrAddress("Madrid")).thenReturn(List.of(testParking));
+
+        SmartGeocodeResponse response = adapter.geocode("Madrid");
+
+        assertEquals("Calle Mayor 1", response.getFormattedAddress());
+    }
+
+    @Test
+    @DisplayName("geocode - Should throw exception when both API and local search fail")
+    void shouldThrowExceptionWhenBothFail() {
         ReflectionTestUtils.setField(adapter, "googleMapsApiKey", null);
-        when(parkingService.searchByNameOrAddress("query")).thenReturn(Collections.emptyList());
+        when(parkingService.searchByNameOrAddress("Unknown")).thenReturn(Collections.emptyList());
 
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> adapter.geocode("query"));
+        Exception ex = assertThrows(IllegalArgumentException.class, () -> adapter.geocode("Unknown"));
         assertEquals("Destination could not be resolved locally or via API.", ex.getMessage());
     }
 }

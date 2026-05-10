@@ -6,6 +6,7 @@ import static org.mockito.Mockito.*;
 import java.util.List;
 import java.util.Optional;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,6 +19,10 @@ import com.nomorelaps.adapters.out.persistence.jpa.NotificationJpaEntity;
 import com.nomorelaps.adapters.out.persistence.repository.NotificationJpaRepository;
 import com.nomorelaps.domain.models.Notification;
 
+/**
+ * Unit tests for NotificationPersistenceAdapter.
+ * Verifies persistence logic for Notification, including mapping and repository interaction.
+ */
 @ExtendWith(MockitoExtension.class)
 class NotificationPersistenceAdapterTest {
 
@@ -30,12 +35,35 @@ class NotificationPersistenceAdapterTest {
     @InjectMocks
     private NotificationPersistenceAdapter adapter;
 
+    private Notification testNotification;
+    private NotificationJpaEntity testEntity;
+
+    @BeforeEach
+    void setUp() {
+        testNotification = new Notification(1L);
+        testEntity = new NotificationJpaEntity();
+        testEntity.setId(1L);
+    }
+
+    @Test
+    @DisplayName("save - Should map to entity, save and return domain")
+    void shouldSaveNotification() {
+        when(mapper.toJpaEntity(testNotification)).thenReturn(testEntity);
+        when(repository.save(testEntity)).thenReturn(testEntity);
+        when(mapper.toDomain(testEntity)).thenReturn(testNotification);
+
+        Notification result = adapter.save(testNotification);
+
+        assertNotNull(result);
+        assertEquals(1L, result.getId());
+        verify(repository).save(testEntity);
+    }
+
     @Test
     @DisplayName("findById - Should return domain object when found")
-    void shouldFindById() {
-        NotificationJpaEntity entity = new NotificationJpaEntity();
-        when(repository.findById(1L)).thenReturn(Optional.of(entity));
-        when(mapper.toDomain(entity)).thenReturn(new Notification(1L));
+    void shouldReturnNotificationWhenIdExists() {
+        when(repository.findById(1L)).thenReturn(Optional.of(testEntity));
+        when(mapper.toDomain(testEntity)).thenReturn(testNotification);
 
         Optional<Notification> result = adapter.findById(1L);
 
@@ -44,22 +72,45 @@ class NotificationPersistenceAdapterTest {
     }
 
     @Test
-    @DisplayName("findAll - Should return list of domain objects")
-    void shouldFindAll() {
-        NotificationJpaEntity entity = new NotificationJpaEntity();
-        when(repository.findAll()).thenReturn(List.of(entity));
-        when(mapper.toDomain(entity)).thenReturn(new Notification(1L));
+    @DisplayName("findById - Should return empty when not found")
+    void shouldReturnEmptyWhenIdDoesNotExist() {
+        when(repository.findById(99L)).thenReturn(Optional.empty());
 
-        List<Notification> results = adapter.findAll();
+        Optional<Notification> result = adapter.findById(99L);
 
-        assertEquals(1, results.size());
-        verify(repository).findAll();
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    @DisplayName("findByCompanyId - Should return list of notifications")
+    void shouldReturnNotificationsByCompanyId() {
+        Long companyId = 10L;
+        when(repository.findByCompanyIdOrderByCreatedAtDesc(companyId)).thenReturn(List.of(testEntity));
+        when(mapper.toDomain(testEntity)).thenReturn(testNotification);
+
+        List<Notification> result = adapter.findByCompanyId(companyId);
+
+        assertFalse(result.isEmpty());
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    @DisplayName("findAll - Should return all domain objects")
+    void shouldReturnAllNotifications() {
+        when(repository.findAll()).thenReturn(List.of(testEntity));
+        when(mapper.toDomain(testEntity)).thenReturn(testNotification);
+
+        List<Notification> result = adapter.findAll();
+
+        assertFalse(result.isEmpty());
+        assertEquals(1, result.size());
     }
 
     @Test
     @DisplayName("deleteById - Should call repository delete")
-    void shouldDeleteById() {
-        adapter.deleteById(10L);
-        verify(repository).deleteById(10L);
+    void shouldDeleteNotificationById() {
+        Long id = 10L;
+        adapter.deleteById(id);
+        verify(repository).deleteById(id);
     }
 }

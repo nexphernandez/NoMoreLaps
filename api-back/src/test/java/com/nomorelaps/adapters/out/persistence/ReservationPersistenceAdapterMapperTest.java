@@ -47,8 +47,8 @@ class ReservationPersistenceAdapterMapperTest {
         assertNull(result.getUser());
         assertNull(result.getParkingSpot());
 
-        domain.setUser(new User()); 
-        domain.setParkingSpot(new ParkingSpot()); 
+        domain.setUser(new User());
+        domain.setParkingSpot(new ParkingSpot());
         result = adapter.toEntity(domain);
         assertNull(result.getUser());
         assertNull(result.getParkingSpot());
@@ -67,7 +67,6 @@ class ReservationPersistenceAdapterMapperTest {
         assertNull(result.getUser());
         assertNull(result.getParkingSpot());
 
-        
         ParkingSpotJpaEntity spotEntity = new ParkingSpotJpaEntity();
         spotEntity.setId(2L);
         spotEntity.setParking(null);

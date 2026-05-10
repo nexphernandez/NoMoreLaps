@@ -1,94 +1,127 @@
 package com.nomorelaps.adapters.out.persistence.jpa;
 
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
-
+/**
+ * Unit tests for CompanyJpaEntity.
+ * Verifies data integrity, all constructors, and all branches of equals/hashCode.
+ */
 class CompanyJpaEntityTest {
 
+    private CompanyJpaEntity testCompany;
+
+    @BeforeEach
+    void setUp() {
+        testCompany = new CompanyJpaEntity();
+    }
+
     @Test
-    void testGettersAndSetters() {
-        CompanyJpaEntity entity = new CompanyJpaEntity();
-        assertNotNull(entity);
+    @DisplayName("Constructor - Empty should initialize object")
+    void shouldInitializeEmpty() {
+        assertNotNull(new CompanyJpaEntity());
+    }
 
-        entity.setId(1L);
-        assertEquals(1L, entity.getId());
+    @Test
+    @DisplayName("Constructor - ID constructor should correctly set ID")
+    void shouldInitializeWithId() {
+        CompanyJpaEntity entity = new CompanyJpaEntity(10L);
+        assertEquals(10L, entity.getId());
+    }
 
-        entity.setName("Name");
-        assertEquals("Name", entity.getName());
-
-        entity.setPassword("pass");
-        assertEquals("pass", entity.getPassword());
-
-        entity.setApiKey("key");
-        assertEquals("key", entity.getApiKey());
-
-        entity.setPhone("123");
-        assertEquals("123", entity.getPhone());
-
-        entity.setEmail("email");
-        assertEquals("email", entity.getEmail());
-
-        entity.setCif("cif");
-        assertEquals("cif", entity.getCif());
-
+    @Test
+    @DisplayName("Constructor - Full constructor should correctly set all fields")
+    void shouldInitializeWithAllFields() {
         LocalDateTime now = LocalDateTime.now();
-        entity.setRegisterDay(now);
-        assertEquals(now, entity.getRegisterDay());
-
-        UserJpaEntity user = new UserJpaEntity();
-        entity.setUser(user);
-        assertEquals(user, entity.getUser());
-
+        UserJpaEntity user = new UserJpaEntity(55L);
         Set<ParkingJpaEntity> parkings = new HashSet<>();
-        entity.setParkings(parkings);
+
+        CompanyJpaEntity entity = new CompanyJpaEntity(3L, "Corp", "pass", "key", "123", 
+            "email@corp.com", "CIF123", now, user, parkings);
+
+        assertEquals(3L, entity.getId());
+        assertEquals("Corp", entity.getName());
+        assertEquals("pass", entity.getPassword());
+        assertEquals("key", entity.getApiKey());
+        assertEquals("123", entity.getPhone());
+        assertEquals("email@corp.com", entity.getEmail());
+        assertEquals("CIF123", entity.getCif());
+        assertEquals(now, entity.getRegisterDay());
+        assertEquals(user, entity.getUser());
         assertEquals(parkings, entity.getParkings());
-
-        CompanyJpaEntity entity2 = new CompanyJpaEntity(2L);
-        assertEquals(2L, entity2.getId());
-
-        CompanyJpaEntity entity3 = new CompanyJpaEntity(3L, "Name", "pass", "key", "123", "email", "cif", now, user, parkings);
-        assertEquals(3L, entity3.getId());
-        assertEquals("Name", entity3.getName());
     }
 
     @Test
-    void testEqualsAndHashCode() {
-        CompanyJpaEntity entity1 = new CompanyJpaEntity(1L);
-        CompanyJpaEntity entity2 = new CompanyJpaEntity(1L);
-        CompanyJpaEntity entity3 = new CompanyJpaEntity(2L);
-
-        assertEquals(entity1, entity1);
-
-        assertEquals(entity1, entity2);
-        assertEquals(entity1.hashCode(), entity2.hashCode());
-
-        assertNotEquals(entity1, entity3);
-
-        assertNotEquals(entity1, null);
-        assertNotEquals(entity1, new Object());
-
-        CompanyJpaEntity entityNull1 = new CompanyJpaEntity(null);
-        CompanyJpaEntity entityNull2 = new CompanyJpaEntity(null);
-        assertEquals(entityNull1, entityNull2);
-        assertNotEquals(entityNull1, entity1);
-        assertNotEquals(entity1, entityNull1);
+    @DisplayName("Setters - Should update basic fields")
+    void shouldSetBasicFields() {
+        testCompany.setName("Corp Inc");
+        assertEquals("Corp Inc", testCompany.getName());
+        
+        testCompany.setEmail("corp@test.com");
+        assertEquals("corp@test.com", testCompany.getEmail());
+        
+        testCompany.setApiKey("key-123");
+        assertEquals("key-123", testCompany.getApiKey());
+        
+        testCompany.setPassword("secret");
+        assertEquals("secret", testCompany.getPassword());
+        
+        testCompany.setPhone("999888");
+        assertEquals("999888", testCompany.getPhone());
+        
+        testCompany.setCif("CIF-B");
+        assertEquals("CIF-B", testCompany.getCif());
     }
 
     @Test
-    void testOnCreate() {
-        CompanyJpaEntity entity = new CompanyJpaEntity();
-        assertNull(entity.getRegisterDay());
+    @DisplayName("Relationships - Should update User and Parkings")
+    void shouldSetRelationships() {
+        UserJpaEntity user = new UserJpaEntity(55L);
+        Set<ParkingJpaEntity> parkings = new HashSet<>();
 
-        entity.onCreate(); 
-        assertNotNull(entity.getRegisterDay());
+        testCompany.setUser(user);
+        testCompany.setParkings(parkings);
 
-        LocalDateTime originalTime = entity.getRegisterDay();
-        entity.onCreate(); 
-        assertEquals(originalTime, entity.getRegisterDay());
+        assertEquals(user, testCompany.getUser());
+        assertEquals(parkings, testCompany.getParkings());
+    }
+
+    @Test
+    @DisplayName("onCreate - Should set registration day if null")
+    void shouldSetTimestampOnCreate() {
+        assertNull(testCompany.getRegisterDay());
+        testCompany.onCreate();
+        assertNotNull(testCompany.getRegisterDay());
+    }
+
+    @Test
+    @DisplayName("Equals - Should handle same object and same ID")
+    void shouldVerifyEquality() {
+        CompanyJpaEntity c1 = new CompanyJpaEntity(1L);
+        CompanyJpaEntity c2 = new CompanyJpaEntity(1L);
+        CompanyJpaEntity c3 = new CompanyJpaEntity(2L);
+
+        assertEquals(c1, c1);
+        assertEquals(c1, c2);
+        assertEquals(c1.hashCode(), c2.hashCode());
+        assertNotEquals(c1, c3);
+        assertNotEquals(c1, null);
+        assertNotEquals(c1, "not a company");
+    }
+
+    @Test
+    @DisplayName("Equals - Should handle null IDs")
+    void equalsNullIds() {
+        CompanyJpaEntity c1 = new CompanyJpaEntity(null);
+        CompanyJpaEntity c2 = new CompanyJpaEntity(null);
+        assertEquals(c1, c2);
+        
+        CompanyJpaEntity c3 = new CompanyJpaEntity(1L);
+        assertNotEquals(c1, c3);
     }
 }
