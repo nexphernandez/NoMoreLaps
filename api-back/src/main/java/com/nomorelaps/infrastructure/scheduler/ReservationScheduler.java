@@ -15,6 +15,7 @@ import com.nomorelaps.business.interfaces.INotificationService;
 import com.nomorelaps.domain.models.Reservation;
 import com.nomorelaps.domain.models.Sanction;
 import com.nomorelaps.domain.models.Notification;
+import com.nomorelaps.domain.models.Parking;
 
 /**
  * Background task to monitor and manage reservation lifecycles.
@@ -67,7 +68,10 @@ public class ReservationScheduler {
         reservation.setState("SANCTIONED");
         reservationService.update(reservation);
 
-        com.nomorelaps.domain.models.Parking parking = reservation.getParkingSpot().getParking();
+        if (reservation.getParkingSpot() == null) {
+            return;
+        }
+        Parking parking = reservation.getParkingSpot().getParking();
         Double rate = (parking != null && parking.getSanctionAmount() != null) ? parking.getSanctionAmount() : 0.0;
         Integer interval = (parking != null && parking.getSanctionIntervalInMinutes() != null) ? parking.getSanctionIntervalInMinutes() : 15;
 
@@ -95,7 +99,7 @@ public class ReservationScheduler {
         
         System.out.println("Applied dynamic sanction of " + totalAmount + "€ to user for reservation " + reservation.getId());
 
-        if (parking != null && parking.getCompany() != null && parking.getCompany().getId() != null) {
+        if (parking.getCompany() != null && parking.getCompany().getId() != null) {
             Notification notification = new Notification();
             notification.setCompanyId(parking.getCompany().getId());
             notification.setType("SANCTION");

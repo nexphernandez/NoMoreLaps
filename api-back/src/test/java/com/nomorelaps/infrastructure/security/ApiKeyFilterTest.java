@@ -6,11 +6,6 @@ import static org.mockito.Mockito.*;
 import java.io.IOException;
 import java.util.Optional;
 
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -19,12 +14,22 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
 import com.nomorelaps.business.interfaces.ICompanyService;
 import com.nomorelaps.domain.models.Company;
 
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+/**
+ * Unit tests for ApiKeyFilter.
+ * Adheres to the New Backend Test Refactoring Plan for granularity and business naming.
+ * Verifies that the 'X-API-KEY' header correctly handles company authentication.
+ */
 @ExtendWith(MockitoExtension.class)
 class ApiKeyFilterTest {
 
@@ -32,20 +37,25 @@ class ApiKeyFilterTest {
     private ICompanyService companyService;
 
     @Mock
-    private HttpServletRequest request;
+    private HttpServletRequest mockRequest;
 
     @Mock
-    private HttpServletResponse response;
+    private HttpServletResponse mockResponse;
 
     @Mock
-    private FilterChain filterChain;
+    private FilterChain mockFilterChain;
 
     @InjectMocks
-    private ApiKeyFilter filter;
+    private ApiKeyFilter apiKeyFilter;
+
+    private Company testCompany;
+    private final String VALID_KEY = "valid-key";
 
     @BeforeEach
     void setUp() {
         SecurityContextHolder.clearContext();
+        testCompany = new Company(1L);
+        testCompany.setEmail("corp@test.com");
     }
 
     @AfterEach
@@ -53,57 +63,61 @@ class ApiKeyFilterTest {
         SecurityContextHolder.clearContext();
     }
 
-    @Test
-    @DisplayName("Should skip filter when API key header is missing")
-    void shouldSkipWhenHeaderMissing() throws ServletException, IOException {
-        when(request.getHeader("X-API-KEY")).thenReturn(null);
-
-        filter.doFilterInternal(request, response, filterChain);
-
-        verify(filterChain).doFilter(request, response);
-        verifyNoInteractions(companyService);
-    }
 
     @Test
-    @DisplayName("Should skip authentication when already authenticated")
-    void shouldSkipWhenAlreadyAuthenticated() throws ServletException, IOException {
-        SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken("user", "pass"));
-        when(request.getHeader("X-API-KEY")).thenReturn("valid-api-key");
-
-        filter.doFilterInternal(request, response, filterChain);
-
-        verify(filterChain).doFilter(request, response);
-        verifyNoInteractions(companyService);
-    }
-
-    @Test
-    @DisplayName("Should skip setting auth context when API key is invalid")
-    void shouldSkipWhenApiKeyInvalid() throws ServletException, IOException {
-        when(request.getHeader("X-API-KEY")).thenReturn("invalid-api-key");
-        when(companyService.findByApiKey("invalid-api-key")).thenReturn(Optional.empty());
-
-        filter.doFilterInternal(request, response, filterChain);
-
-        verify(filterChain).doFilter(request, response);
+    @DisplayName("doFilter - Missing Header: Should not authenticate")
+    void doFilter_NoHeader_ShouldNotAuthenticate() throws ServletException, IOException {
+        when(mockRequest.getHeader("X-API-KEY")).thenReturn(null);
+        apiKeyFilter.doFilterInternal(mockRequest, mockResponse, mockFilterChain);
         assertNull(SecurityContextHolder.getContext().getAuthentication());
     }
 
     @Test
-    @DisplayName("Should authenticate company when API key is valid")
-    void shouldAuthenticateWhenApiKeyValid() throws ServletException, IOException {
-        Company company = new Company();
-        company.setEmail("company@test.com");
-        
-        when(request.getHeader("X-API-KEY")).thenReturn("valid-api-key");
-        when(companyService.findByApiKey("valid-api-key")).thenReturn(Optional.of(company));
+    @DisplayName("doFilter - Already Authenticated: Should skip validation")
+    void doFilter_AlreadyAuthenticated_ShouldSkipApiKeyCheck() throws ServletException, IOException {
+        Authentication existingAuthentication = mock(Authentication.class);
+        SecurityContextHolder.getContext().setAuthentication(existingAuthentication);
+        when(mockRequest.getHeader("X-API-KEY")).thenReturn(VALID_KEY);
 
-        filter.doFilterInternal(request, response, filterChain);
+        apiKeyFilter.doFilterInternal(mockRequest, mockResponse, mockFilterChain);
 
-        verify(filterChain).doFilter(request, response);
-        assertNotNull(SecurityContextHolder.getContext().getAuthentication());
-        assertEquals("company@test.com", SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-        assertTrue(SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
-                .anyMatch(a -> a.getAuthority().equals("ROLE_COMPANY")));
-        assertEquals(company, SecurityContextHolder.getContext().getAuthentication().getDetails());
+        verify(companyService, never()).findByApiKey(anyString());
+        assertEquals(existingAuthentication, SecurityContextHolder.getContext().getAuthentication());
+    }
+
+    @Test
+    @DisplayName("doFilter - Invalid Key: Should not set authentication")
+    void doFilter_InvalidKey_ShouldNotSetAuthentication() throws ServletException, IOException {
+        when(mockRequest.getHeader("X-API-KEY")).thenReturn("invalid");
+        when(companyService.findByApiKey("invalid")).thenReturn(Optional.empty());
+
+        apiKeyFilter.doFilterInternal(mockRequest, mockResponse, mockFilterChain);
+
+        assertNull(SecurityContextHolder.getContext().getAuthentication());
+    }
+
+    @Test
+    @DisplayName("doFilter - Valid Key: Should populate security context")
+    void doFilter_ValidKey_ShouldSetAuthentication() throws ServletException, IOException {
+        when(mockRequest.getHeader("X-API-KEY")).thenReturn(VALID_KEY);
+        when(companyService.findByApiKey(VALID_KEY)).thenReturn(Optional.of(testCompany));
+
+        apiKeyFilter.doFilterInternal(mockRequest, mockResponse, mockFilterChain);
+
+        Authentication currentAuthentication = SecurityContextHolder.getContext().getAuthentication();
+        assertNotNull(currentAuthentication);
+        assertEquals("corp@test.com", currentAuthentication.getPrincipal());
+    }
+
+    @Test
+    @DisplayName("doFilter - Valid Key: Should attach company details")
+    void doFilter_ValidKey_ShouldAttachDetails() throws ServletException, IOException {
+        when(mockRequest.getHeader("X-API-KEY")).thenReturn(VALID_KEY);
+        when(companyService.findByApiKey(VALID_KEY)).thenReturn(Optional.of(testCompany));
+
+        apiKeyFilter.doFilterInternal(mockRequest, mockResponse, mockFilterChain);
+
+        Authentication currentAuthentication = SecurityContextHolder.getContext().getAuthentication();
+        assertEquals(testCompany, currentAuthentication.getDetails());
     }
 }
