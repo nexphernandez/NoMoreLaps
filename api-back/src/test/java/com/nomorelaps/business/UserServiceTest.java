@@ -22,10 +22,9 @@ import com.nomorelaps.adapters.out.persistence.interfaces.IUserPersistenceAdapte
 import com.nomorelaps.domain.models.User;
 
 /**
- * Unit tests for UserService covering all business methods.
- *
- * @author nexphernandez
- * @version 1.0.0
+ * Unit tests for UserService.
+ * Verifies user registration with password encoding, partial profile updates,
+ * and secure password change logic.
  */
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
@@ -48,7 +47,6 @@ class UserServiceTest {
         testUser.setEmail("alice@test.com");
         testUser.setPassword("plainPassword");
     }
-
 
     @Test
     @DisplayName("create - Should encode password and save user successfully")
@@ -93,7 +91,6 @@ class UserServiceTest {
         verify(persistencePort, never()).save(any());
     }
 
-
     @Test
     @DisplayName("findById - Should return user when found")
     void shouldFindUserById() {
@@ -115,7 +112,6 @@ class UserServiceTest {
         assertFalse(result.isPresent());
     }
 
-
     @Test
     @DisplayName("findByEmail - Should return user by email")
     void shouldFindUserByEmail() {
@@ -126,7 +122,6 @@ class UserServiceTest {
         assertTrue(result.isPresent());
         assertEquals(1L, result.get().getId());
     }
-
 
     @Test
     @DisplayName("findAll - Should return all users")
@@ -139,7 +134,6 @@ class UserServiceTest {
 
         assertEquals(2, result.size());
     }
-
 
     @Test
     @DisplayName("update - Should update name and email when provided")
@@ -192,7 +186,6 @@ class UserServiceTest {
 
         assertThrows(IllegalArgumentException.class, () -> userService.update(updates));
     }
-
 
     @Test
     @DisplayName("deleteById - Should call persistence deleteById")
@@ -284,9 +277,7 @@ class UserServiceTest {
     void shouldThrowWhenUserNotFoundOnChangePassword() {
         when(persistencePort.findById(99L)).thenReturn(Optional.empty());
 
-        assertThrows(IllegalArgumentException.class, () -> 
-            userService.changePassword(99L, "old", "new")
-        );
+        assertThrows(IllegalArgumentException.class, () -> userService.changePassword(99L, "old", "new"));
     }
 
     @Test
@@ -295,10 +286,7 @@ class UserServiceTest {
         when(persistencePort.findById(1L)).thenReturn(Optional.of(testUser));
         when(passwordEncoder.matches("wrongPass", "plainPassword")).thenReturn(false);
 
-        assertThrows(IllegalArgumentException.class, () -> 
-            userService.changePassword(1L, "wrongPass", "newPass")
-        );
+        assertThrows(IllegalArgumentException.class, () -> userService.changePassword(1L, "wrongPass", "newPass"));
         verify(persistencePort, never()).save(any());
     }
 }
-

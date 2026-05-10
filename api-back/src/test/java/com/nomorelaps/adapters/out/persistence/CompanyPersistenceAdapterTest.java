@@ -15,11 +15,15 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.nomorelaps.adapters.mapper.CompanyMapper;
 import com.nomorelaps.adapters.out.persistence.jpa.CompanyJpaEntity;
+import com.nomorelaps.adapters.out.persistence.jpa.UserJpaEntity;
 import com.nomorelaps.adapters.out.persistence.repository.CompanyJpaRepository;
 import com.nomorelaps.domain.models.Company;
 import com.nomorelaps.domain.models.User;
-import com.nomorelaps.adapters.out.persistence.jpa.UserJpaEntity;
 
+/**
+ * Unit tests for CompanyPersistenceAdapter.
+ * Verifies persistence logic for Company, including mapping and repository interaction.
+ */
 @ExtendWith(MockitoExtension.class)
 class CompanyPersistenceAdapterTest {
 
@@ -32,73 +36,95 @@ class CompanyPersistenceAdapterTest {
     @InjectMocks
     private CompanyPersistenceAdapter adapter;
 
-    private Company company;
-    private CompanyJpaEntity entity;
+    private Company testCompany;
+    private CompanyJpaEntity testEntity;
 
     @BeforeEach
     void setUp() {
-        company = new Company(1L);
-        entity = new CompanyJpaEntity();
-        entity.setId(1L);
+        testCompany = new Company(1L);
+        testEntity = new CompanyJpaEntity();
+        testEntity.setId(1L);
     }
 
     @Test
-    @DisplayName("findByEmail - Should return company")
-    void shouldReturnByEmail() {
-        when(repository.findByEmail("corp@test.com")).thenReturn(Optional.of(entity));
-        when(mapper.toDomain(entity)).thenReturn(company);
+    @DisplayName("findByEmail - Should return company when email exists")
+    void shouldReturnCompanyWhenEmailExists() {
+        String email = "corp@test.com";
+        when(repository.findByEmail(email)).thenReturn(Optional.of(testEntity));
+        when(mapper.toDomain(testEntity)).thenReturn(testCompany);
 
-        Optional<Company> result = adapter.findByEmail("corp@test.com");
+        Optional<Company> result = adapter.findByEmail(email);
 
         assertTrue(result.isPresent());
         assertEquals(1L, result.get().getId());
     }
 
     @Test
-    @DisplayName("findByApiKey - Should return company")
-    void shouldReturnByApiKey() {
-        when(repository.findByApiKey("api-key")).thenReturn(Optional.of(entity));
-        when(mapper.toDomain(entity)).thenReturn(company);
+    @DisplayName("findByEmail - Should return empty when email does not exist")
+    void shouldReturnEmptyWhenEmailDoesNotExist() {
+        String email = "notfound@test.com";
+        when(repository.findByEmail(email)).thenReturn(Optional.empty());
 
-        Optional<Company> result = adapter.findByApiKey("api-key");
+        Optional<Company> result = adapter.findByEmail(email);
+
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    @DisplayName("findByApiKey - Should return company when API key exists")
+    void shouldReturnCompanyWhenApiKeyExists() {
+        String apiKey = "valid-key";
+        when(repository.findByApiKey(apiKey)).thenReturn(Optional.of(testEntity));
+        when(mapper.toDomain(testEntity)).thenReturn(testCompany);
+
+        Optional<Company> result = adapter.findByApiKey(apiKey);
 
         assertTrue(result.isPresent());
+        assertEquals(1L, result.get().getId());
     }
 
     @Test
-    @DisplayName("toEntity - Should handle null user")
+    @DisplayName("findByApiKey - Should return empty when API key does not exist")
+    void shouldReturnEmptyWhenApiKeyDoesNotExist() {
+        String apiKey = "invalid-key";
+        when(repository.findByApiKey(apiKey)).thenReturn(Optional.empty());
+
+        Optional<Company> result = adapter.findByApiKey(apiKey);
+
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    @DisplayName("toEntity - Should handle domain company with null User")
     void toEntityShouldHandleNullUser() {
-        Company domain = new Company(1L);
-        domain.setUser(null);
-        when(mapper.toJpaEntity(domain)).thenReturn(new CompanyJpaEntity());
+        testCompany.setUser(null);
+        when(mapper.toJpaEntity(testCompany)).thenReturn(new CompanyJpaEntity());
 
-        CompanyJpaEntity result = adapter.toEntity(domain);
+        CompanyJpaEntity result = adapter.toEntity(testCompany);
 
         assertNotNull(result);
         assertNull(result.getUser());
     }
 
     @Test
-    @DisplayName("toEntity - Should handle user with null ID")
+    @DisplayName("toEntity - Should handle domain company with User having null ID")
     void toEntityShouldHandleUserWithNullId() {
-        Company domain = new Company(1L);
-        domain.setUser(new User());
-        when(mapper.toJpaEntity(domain)).thenReturn(new CompanyJpaEntity());
+        testCompany.setUser(new User()); // ID is null
+        when(mapper.toJpaEntity(testCompany)).thenReturn(new CompanyJpaEntity());
 
-        CompanyJpaEntity result = adapter.toEntity(domain);
+        CompanyJpaEntity result = adapter.toEntity(testCompany);
 
         assertNotNull(result);
         assertNull(result.getUser());
     }
 
     @Test
-    @DisplayName("toEntity - Should map user with valid ID")
+    @DisplayName("toEntity - Should map User with valid ID to UserJpaEntity")
     void toEntityShouldMapUserWithId() {
-        Company domain = new Company(1L);
-        domain.setUser(new User(10L));
-        when(mapper.toJpaEntity(domain)).thenReturn(new CompanyJpaEntity());
+        testCompany.setUser(new User(10L));
+        when(mapper.toJpaEntity(testCompany)).thenReturn(new CompanyJpaEntity());
 
-        CompanyJpaEntity result = adapter.toEntity(domain);
+        CompanyJpaEntity result = adapter.toEntity(testCompany);
 
         assertNotNull(result);
         assertNotNull(result.getUser());
@@ -106,41 +132,38 @@ class CompanyPersistenceAdapterTest {
     }
 
     @Test
-    @DisplayName("toDomain - Should handle null user")
+    @DisplayName("toDomain - Should handle JPA entity with null User")
     void toDomainShouldHandleNullUser() {
-        CompanyJpaEntity entity = new CompanyJpaEntity();
-        entity.setUser(null);
-        when(mapper.toDomain(entity)).thenReturn(new Company(1L));
+        testEntity.setUser(null);
+        when(mapper.toDomain(testEntity)).thenReturn(new Company(1L));
 
-        Company result = adapter.toDomain(entity);
+        Company result = adapter.toDomain(testEntity);
 
         assertNotNull(result);
         assertNull(result.getUser());
     }
 
     @Test
-    @DisplayName("toDomain - Should handle user with null ID")
+    @DisplayName("toDomain - Should handle JPA entity with User having null ID")
     void toDomainShouldHandleUserWithNullId() {
-        CompanyJpaEntity entity = new CompanyJpaEntity();
-        entity.setUser(new UserJpaEntity()); 
-        when(mapper.toDomain(entity)).thenReturn(new Company(1L));
+        testEntity.setUser(new UserJpaEntity()); // ID is null
+        when(mapper.toDomain(testEntity)).thenReturn(new Company(1L));
 
-        Company result = adapter.toDomain(entity);
+        Company result = adapter.toDomain(testEntity);
 
         assertNotNull(result);
         assertNull(result.getUser());
     }
 
     @Test
-    @DisplayName("toDomain - Should map user with valid ID")
+    @DisplayName("toDomain - Should map UserJpaEntity with valid ID to domain User")
     void toDomainShouldMapUserWithId() {
-        CompanyJpaEntity entity = new CompanyJpaEntity();
         UserJpaEntity userEntity = new UserJpaEntity();
         userEntity.setId(10L);
-        entity.setUser(userEntity);
-        when(mapper.toDomain(entity)).thenReturn(new Company(1L));
+        testEntity.setUser(userEntity);
+        when(mapper.toDomain(testEntity)).thenReturn(new Company(1L));
 
-        Company result = adapter.toDomain(entity);
+        Company result = adapter.toDomain(testEntity);
 
         assertNotNull(result);
         assertNotNull(result.getUser());

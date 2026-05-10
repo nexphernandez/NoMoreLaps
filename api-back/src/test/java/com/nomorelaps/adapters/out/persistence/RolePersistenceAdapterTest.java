@@ -1,9 +1,7 @@
 package com.nomorelaps.adapters.out.persistence;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.util.Collections;
 import java.util.List;
@@ -22,6 +20,10 @@ import com.nomorelaps.adapters.out.persistence.jpa.RoleJpaEntity;
 import com.nomorelaps.adapters.out.persistence.repository.RoleJpaRepository;
 import com.nomorelaps.domain.models.Role;
 
+/**
+ * Unit tests for RolePersistenceAdapter.
+ * Verifies persistence logic for Role, including mapping and repository interaction.
+ */
 @ExtendWith(MockitoExtension.class)
 class RolePersistenceAdapterTest {
 
@@ -34,21 +36,37 @@ class RolePersistenceAdapterTest {
     @InjectMocks
     private RolePersistenceAdapter adapter;
 
-    private Role role;
-    private RoleJpaEntity entity;
+    private Role testRole;
+    private RoleJpaEntity testEntity;
 
     @BeforeEach
     void setUp() {
-        role = new Role(1L);
-        entity = new RoleJpaEntity();
-        entity.setId(1L);
+        testRole = new Role(1L);
+        testRole.setName("ADMIN");
+        testEntity = new RoleJpaEntity();
+        testEntity.setId(1L);
+        testEntity.setName("ADMIN");
     }
 
     @Test
-    @DisplayName("findById - Should delegate and map")
-    void shouldFindById() {
-        when(repository.findById(1L)).thenReturn(Optional.of(entity));
-        when(mapper.toDomain(entity)).thenReturn(role);
+    @DisplayName("save - Should map to entity, save and return domain")
+    void shouldSaveRole() {
+        when(mapper.toJpaEntity(testRole)).thenReturn(testEntity);
+        when(repository.save(testEntity)).thenReturn(testEntity);
+        when(mapper.toDomain(testEntity)).thenReturn(testRole);
+
+        Role result = adapter.save(testRole);
+
+        assertNotNull(result);
+        assertEquals(1L, result.getId());
+        verify(repository).save(testEntity);
+    }
+
+    @Test
+    @DisplayName("findById - Should return domain object when found")
+    void shouldReturnRoleWhenIdExists() {
+        when(repository.findById(1L)).thenReturn(Optional.of(testEntity));
+        when(mapper.toDomain(testEntity)).thenReturn(testRole);
 
         Optional<Role> result = adapter.findById(1L);
 
@@ -57,36 +75,32 @@ class RolePersistenceAdapterTest {
     }
 
     @Test
-    @DisplayName("deleteById - Should call repository deleteById")
-    void shouldDeleteById() {
-        adapter.deleteById(1L);
-        verify(repository, times(1)).deleteById(1L);
+    @DisplayName("findById - Should return empty when not found")
+    void shouldReturnEmptyWhenIdDoesNotExist() {
+        when(repository.findById(99L)).thenReturn(Optional.empty());
+
+        Optional<Role> result = adapter.findById(99L);
+
+        assertTrue(result.isEmpty());
     }
 
     @Test
-    @DisplayName("save - Should map to entity, save, and map back")
-    void shouldSave() {
-        when(mapper.toJpaEntity(role)).thenReturn(entity);
-        when(repository.save(entity)).thenReturn(entity);
-        when(mapper.toDomain(entity)).thenReturn(role);
+    @DisplayName("findAll - Should return list of domain objects")
+    void shouldReturnAllRoles() {
+        when(repository.findAll()).thenReturn(List.of(testEntity));
+        when(mapper.toDomain(testEntity)).thenReturn(testRole);
 
-        Role savedRole = adapter.save(role);
+        List<Role> result = adapter.findAll();
 
-        assertNotNull(savedRole);
-        assertEquals(1L, savedRole.getId());
+        assertFalse(result.isEmpty());
+        assertEquals(1, result.size());
     }
 
     @Test
-    @DisplayName("findAll - Should return mapped domain list")
-    void shouldFindAll() {
-        when(repository.findAll()).thenReturn(Collections.singletonList(entity));
-        when(mapper.toDomain(entity)).thenReturn(role);
-
-        List<Role> roles = adapter.findAll();
-
-        assertNotNull(roles);
-        assertEquals(1, roles.size());
-        assertEquals(1L, roles.get(0).getId());
+    @DisplayName("deleteById - Should call repository delete")
+    void shouldDeleteRoleById() {
+        Long id = 10L;
+        adapter.deleteById(id);
+        verify(repository).deleteById(id);
     }
 }
-
