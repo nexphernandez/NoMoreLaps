@@ -255,4 +255,18 @@ class CompanyServiceTest {
 
         assertFalse(result.isPresent());
     }
+
+    @Test
+    @DisplayName("create - Should generate API key when it is an empty string")
+    void shouldGenerateApiKeyWhenEmptyString() {
+        testCompany.setApiKey("");
+        when(persistencePort.findByEmail(testCompany.getEmail())).thenReturn(Optional.empty());
+        when(persistencePort.save(any(Company.class))).thenAnswer(i -> i.getArguments()[0]);
+
+        Company result = companyService.create(testCompany);
+
+        assertNotNull(result.getApiKey());
+        assertTrue(result.getApiKey().startsWith("nml_live_"));
+        assertNotEquals("", result.getApiKey());
+    }
 }
