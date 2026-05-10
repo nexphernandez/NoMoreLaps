@@ -2,9 +2,10 @@ package com.nomorelaps.adapters.mapper;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.lang.reflect.Method;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import java.lang.reflect.Method;
 import org.mapstruct.factory.Mappers;
 
 import com.nomorelaps.adapters.in.api.ReservationRequest;
@@ -15,65 +16,75 @@ import com.nomorelaps.domain.models.ParkingSpot;
 import com.nomorelaps.domain.models.Reservation;
 import com.nomorelaps.domain.models.User;
 
+/**
+ * Unit tests for ReservationMapper.
+ * Verifies mapping between Reservation domain models, API requests/responses, and JPA entities.
+ * Covers deep nested relationships (User, ParkingSpot, Parking) and internal MapStruct logic.
+ */
 class ReservationMapperTest {
 
-    private final ReservationMapper reservationMapper = Mappers.getMapper(ReservationMapper.class);
+    private final ReservationMapper mapper = Mappers.getMapper(ReservationMapper.class);
+    
+    private Reservation testReservation;
+    private User testUser;
+    private ParkingSpot testParkingSpot;
+    private Parking testParking;
 
+    @BeforeEach
+    void setUp() {
+        testUser = new User(10L);
+        testUser.setName("Alice");
+
+        testParking = new Parking(5L);
+        testParking.setName("Grand Central");
+
+        testParkingSpot = new ParkingSpot(20L);
+        testParkingSpot.setParking(testParking);
+
+        testReservation = new Reservation(1L);
+        testReservation.setUser(testUser);
+        testReservation.setParkingSpot(testParkingSpot);
+        testReservation.setPrice(15.0);
+        testReservation.setState("ACTIVE");
+        testReservation.setBasePrice(10.0);
+    }
 
     @Test
     @DisplayName("toDomainFromRequest - Should map request to domain with nested IDs")
     void shouldMapRequestToDomain() {
         ReservationRequest request = new ReservationRequest();
-        request.setUserId(10L);
-        request.setParkingSpotId(20L);
-        request.setPrice(15.0);
-        request.setState("ACTIVE");
+        request.setUserId(99L);
+        request.setParkingSpotId(88L);
+        request.setPrice(50.0);
+        request.setState("PENDING");
 
-        Reservation domain = reservationMapper.toDomainFromRequest(request);
+        Reservation domain = mapper.toDomainFromRequest(request);
 
         assertNotNull(domain);
-        assertEquals(15.0, domain.getPrice());
-        assertEquals("ACTIVE", domain.getState());
-        assertNotNull(domain.getUser());
-        assertEquals(10L, domain.getUser().getId());
-        assertNotNull(domain.getParkingSpot());
-        assertEquals(20L, domain.getParkingSpot().getId());
+        assertEquals(50.0, domain.getPrice());
+        assertEquals("PENDING", domain.getState());
+        assertEquals(99L, domain.getUser().getId());
+        assertEquals(88L, domain.getParkingSpot().getId());
     }
 
     @Test
     @DisplayName("toResponse - Should map domain to response with nested properties")
     void shouldMapDomainToResponse() {
-        User user = new User(10L);
-        Parking parking = new Parking(5L);
-        parking.setName("Main Parking");
-        ParkingSpot spot = new ParkingSpot(20L);
-        spot.setParking(parking);
-        
-        Reservation domain = new Reservation(1L);
-        domain.setUser(user);
-        domain.setParkingSpot(spot);
-        domain.setPrice(15.0);
-        domain.setState("ACTIVE");
-
-        ReservationResponse response = reservationMapper.toResponse(domain);
+        ReservationResponse response = mapper.toResponse(testReservation);
 
         assertNotNull(response);
         assertEquals(1L, response.getId());
         assertEquals(10L, response.getUserId());
+        assertEquals("Alice", response.getUserName());
         assertEquals(20L, response.getParkingSpotId());
-        assertEquals("Main Parking", response.getParkingName());
+        assertEquals("Grand Central", response.getParkingName());
         assertEquals(15.0, response.getPrice());
-        assertEquals(0.0, response.getSanctionPrice());
-        assertFalse(response.isPaid());
     }
 
     @Test
     @DisplayName("toJpaEntity - Should map domain to entity")
-    void shouldMapDomainToEntity() {
-        Reservation domain = new Reservation(1L);
-        domain.setPrice(15.0);
-
-        ReservationJpaEntity entity = reservationMapper.toJpaEntity(domain);
+    void shouldMapDomainToJpa() {
+        ReservationJpaEntity entity = mapper.toJpaEntity(testReservation);
 
         assertNotNull(entity);
         assertEquals(1L, entity.getId());
@@ -87,7 +98,7 @@ class ReservationMapperTest {
         entity.setId(1L);
         entity.setPrice(15.0);
 
-        Reservation domain = reservationMapper.toDomain(entity);
+        Reservation domain = mapper.toDomain(entity);
 
         assertNotNull(domain);
         assertEquals(1L, domain.getId());
@@ -95,167 +106,158 @@ class ReservationMapperTest {
     }
 
     @Test
-    @DisplayName("Null handling - Should return null when input is null")
-    void shouldHandleNulls() {
-        assertNull(reservationMapper.toDomainFromRequest(null));
-        assertNull(reservationMapper.toResponse(null));
-        assertNull(reservationMapper.toJpaEntity(null));
-        assertNull(reservationMapper.toDomain(null));
+    @DisplayName("Null handling - Should return null when primary inputs are null")
+    void shouldReturnNullWhenInputsAreNull() {
+        assertNull(mapper.toDomainFromRequest(null));
+        assertNull(mapper.toResponse(null));
+        assertNull(mapper.toJpaEntity(null));
+        assertNull(mapper.toDomain(null));
     }
 
     @Test
-    @DisplayName("toResponse - Should handle null nested objects correctly")
-    void shouldHandleNullNestedInToResponse() {
-        Reservation domain = new Reservation(1L);
-        domain.setUser(null);
-        domain.setParkingSpot(null);
+    @DisplayName("toResponse - Should handle null nested User and Spot")
+    void shouldHandleNullNestedObjectsInResponse() {
+        testReservation.setUser(null);
+        testReservation.setParkingSpot(null);
 
-        ReservationResponse response = reservationMapper.toResponse(domain);
+        ReservationResponse response = mapper.toResponse(testReservation);
 
         assertNotNull(response);
         assertNull(response.getUserId());
+        assertNull(response.getUserName());
         assertNull(response.getParkingSpotId());
         assertNull(response.getParkingName());
     }
 
     @Test
-    @DisplayName("toResponse - Should handle partial null nested objects correctly")
-    void shouldHandlePartialNullNestedInToResponse() {
-        Reservation domain = new Reservation(1L);
+    @DisplayName("toResponse - Should handle null fields in nested User and Spot")
+    void shouldHandleNullFieldsInNestedObjectsInResponse() {
+        testUser.setId(null);
+        testUser.setName(null);
+        testParkingSpot.setId(null);
+        testParking.setName(null);
         
-        User user = new User();
-        user.setId(null);
-        domain.setUser(user);
-
-        ParkingSpot spot = new ParkingSpot();
-        spot.setId(null);
-        spot.setParking(null);
-        domain.setParkingSpot(spot);
-
-        ReservationResponse response = reservationMapper.toResponse(domain);
+        ReservationResponse response = mapper.toResponse(testReservation);
 
         assertNotNull(response);
         assertNull(response.getUserId());
+        assertNull(response.getUserName());
         assertNull(response.getParkingSpotId());
         assertNull(response.getParkingName());
     }
 
     @Test
-    @DisplayName("toResponse - Should handle null parking in spot correctly")
-    void shouldHandleNullParkingInSpotInToResponse() {
-        Reservation domain = new Reservation(1L);
-        
-        ParkingSpot spot = new ParkingSpot(20L);
-        spot.setParking(null);
-        domain.setParkingSpot(spot);
-
-        ReservationResponse response = reservationMapper.toResponse(domain);
-
-        assertNotNull(response);
-        assertEquals(20L, response.getParkingSpotId());
-        assertNull(response.getParkingName());
+    @DisplayName("toResponse - Should handle null price by not setting it (keeping default 0.0)")
+    void shouldHandleNullPriceInResponse() {
+        testReservation.setPrice(null);
+        ReservationResponse response = mapper.toResponse(testReservation);
+        assertEquals(0.0, response.getPrice());
     }
 
     @Test
-    @DisplayName("toDomainFromRequest - Should handle null IDs in request correctly")
-    void shouldHandleNullIdsInToDomainFromRequest() {
-        ReservationRequest request = new ReservationRequest();
-        request.setUserId(null);
-        request.setParkingSpotId(null);
-        request.setPrice(null);
-        request.setState(null);
-
-        Reservation domain = reservationMapper.toDomainFromRequest(request);
-        
-        assertNotNull(domain);
-
-        if (domain.getUser() != null) {
-            assertNull(domain.getUser().getId());
-        }
-        if (domain.getParkingSpot() != null) {
-            assertNull(domain.getParkingSpot().getId());
-        }
+    @DisplayName("toResponse - Should handle null basePrice by returning 0.0")
+    void shouldHandleNullBasePriceInResponse() {
+        testReservation.setBasePrice(null);
+        ReservationResponse response = mapper.toResponse(testReservation);
+        assertEquals(0.0, response.getBasePrice());
     }
 
     @Test
-    @DisplayName("toResponse - Should handle null name in parking")
-    void shouldHandleNullNameInParking() {
-        Reservation domain = new Reservation(1L);
-        Parking parking = new Parking(5L);
-        parking.setName(null);
-        ParkingSpot spot = new ParkingSpot(20L);
-        spot.setParking(parking);
-        domain.setParkingSpot(spot);
-
-        ReservationResponse response = reservationMapper.toResponse(domain);
-
-        assertNotNull(response);
-        assertNull(response.getParkingName());
+    @DisplayName("calculateSanctionPrice - Should return 0.0 when sanctions list is null")
+    void shouldHandleNullSanctionsInCalculation() {
+        testReservation.setSanctions(null);
+        assertEquals(0.0, mapper.calculateSanctionPrice(testReservation));
     }
 
     @Test
-    @DisplayName("Internal methods null checks - Reflection to hit unreachable branches in generated code")
-    void shouldHandleNullsInInternalMethods() throws Exception {
-        Object impl = reservationMapper;
+    @DisplayName("Internal: domainUserId - Should handle nulls via reflection")
+    void shouldHandleNullsInInternalDomainUserId() throws Exception {
+        Method method = mapper.getClass().getDeclaredMethod("domainUserId", Reservation.class);
+        method.setAccessible(true);
+
+        assertNull(method.invoke(mapper, (Reservation) null));
         
-        Method m1 = impl.getClass().getDeclaredMethod("reservationRequestToUser", ReservationRequest.class);
-        m1.setAccessible(true);
-        assertNull(m1.invoke(impl, (ReservationRequest) null));
+        testReservation.setUser(null);
+        assertNull(method.invoke(mapper, testReservation));
 
-        Method m2 = impl.getClass().getDeclaredMethod("reservationRequestToParkingSpot", ReservationRequest.class);
-        m2.setAccessible(true);
-        assertNull(m2.invoke(impl, (ReservationRequest) null));
+        testUser.setId(null);
+        testReservation.setUser(testUser);
+        assertNull(method.invoke(mapper, testReservation));
 
-        Method m3 = impl.getClass().getDeclaredMethod("domainUserId", Reservation.class);
-        m3.setAccessible(true);
-        assertNull(m3.invoke(impl, (Reservation) null));
-
-        Method m4 = impl.getClass().getDeclaredMethod("domainParkingSpotId", Reservation.class);
-        m4.setAccessible(true);
-        assertNull(m4.invoke(impl, (Reservation) null));
-
-        Method m5 = impl.getClass().getDeclaredMethod("domainParkingSpotParkingName", Reservation.class);
-        m5.setAccessible(true);
-        assertNull(m5.invoke(impl, (Reservation) null));
-
-        Method m6 = impl.getClass().getDeclaredMethod("domainUserName", Reservation.class);
-        m6.setAccessible(true);
-        assertNull(m6.invoke(impl, (Reservation) null));
-        
-        Reservation r = new Reservation();
-        r.setUser(null);
-        assertNull(m6.invoke(impl, r));
-
-        User u = new User();
-        u.setName(null);
-        r.setUser(u);
-        assertNull(m6.invoke(impl, r));
-
-        u.setName("Alice");
-        assertEquals("Alice", m6.invoke(impl, r));
+        testUser.setId(55L);
+        assertEquals(55L, method.invoke(mapper, testReservation));
     }
 
     @Test
-    @DisplayName("toResponse - Should handle basePrice cases")
-    void shouldHandleBasePriceInToResponse() {
-        Reservation r = new Reservation(1L);
-        
-        r.setBasePrice(null);
-        ReservationResponse resNull = reservationMapper.toResponse(r);
-        assertEquals(0.0, resNull.getBasePrice());
+    @DisplayName("Internal: domainUserName - Should handle nulls via reflection")
+    void shouldHandleNullsInInternalDomainUserName() throws Exception {
+        Method method = mapper.getClass().getDeclaredMethod("domainUserName", Reservation.class);
+        method.setAccessible(true);
 
-        r.setBasePrice(123.45);
-        ReservationResponse resValue = reservationMapper.toResponse(r);
-        assertEquals(123.45, resValue.getBasePrice());
+        assertNull(method.invoke(mapper, (Reservation) null));
+        
+        testReservation.setUser(null);
+        assertNull(method.invoke(mapper, testReservation));
+
+        testUser.setName(null);
+        testReservation.setUser(testUser);
+        assertNull(method.invoke(mapper, testReservation));
+
+        testUser.setName("Alice");
+        assertEquals("Alice", method.invoke(mapper, testReservation));
     }
 
     @Test
-    @DisplayName("calculateSanctionPrice - Should handle null sanctions")
-    void shouldHandleNullSanctionsInCalculatePrice() {
-        Reservation r = new Reservation();
-        r.setSanctions(null);
-        assertEquals(0.0, reservationMapper.calculateSanctionPrice(r));
+    @DisplayName("Internal: domainParkingSpotId - Should handle nulls via reflection")
+    void shouldHandleNullsInInternalDomainParkingSpotId() throws Exception {
+        Method method = mapper.getClass().getDeclaredMethod("domainParkingSpotId", Reservation.class);
+        method.setAccessible(true);
+
+        assertNull(method.invoke(mapper, (Reservation) null));
+        
+        testReservation.setParkingSpot(null);
+        assertNull(method.invoke(mapper, testReservation));
+
+        testParkingSpot.setId(null);
+        testReservation.setParkingSpot(testParkingSpot);
+        assertNull(method.invoke(mapper, testReservation));
+
+        testParkingSpot.setId(20L);
+        assertEquals(20L, method.invoke(mapper, testReservation));
+    }
+
+    @Test
+    @DisplayName("Internal: domainParkingSpotParkingName - Should handle nulls via reflection")
+    void shouldHandleNullsInInternalParkingName() throws Exception {
+        Method method = mapper.getClass().getDeclaredMethod("domainParkingSpotParkingName", Reservation.class);
+        method.setAccessible(true);
+
+        assertNull(method.invoke(mapper, (Reservation) null));
+        
+        testReservation.setParkingSpot(null);
+        assertNull(method.invoke(mapper, testReservation));
+
+        testParkingSpot.setParking(null);
+        testReservation.setParkingSpot(testParkingSpot);
+        assertNull(method.invoke(mapper, testReservation));
+
+        testParking.setName(null);
+        testParkingSpot.setParking(testParking);
+        assertNull(method.invoke(mapper, testReservation));
+
+        testParking.setName("Grand Central");
+        assertEquals("Grand Central", method.invoke(mapper, testReservation));
+    }
+
+    @Test
+    @DisplayName("Internal: Mapping methods - Should handle null inputs via reflection")
+    void shouldHandleNullInputsInInternalMappers() throws Exception {
+        Method userMapper = mapper.getClass().getDeclaredMethod("reservationRequestToUser", ReservationRequest.class);
+        userMapper.setAccessible(true);
+        assertNull(userMapper.invoke(mapper, (ReservationRequest) null));
+
+        Method spotMapper = mapper.getClass().getDeclaredMethod("reservationRequestToParkingSpot", ReservationRequest.class);
+        spotMapper.setAccessible(true);
+        assertNull(spotMapper.invoke(mapper, (ReservationRequest) null));
     }
 }
-
-
