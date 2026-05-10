@@ -6,84 +6,219 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+/**
+ * Unit tests for User domain model.
+ * Verifies data integrity and all branches of equals/hashCode with extreme granularity
+ * as per the New Backend Test Refactoring Plan.
+ */
 class UserTest {
 
+    private User testUser;
+
+    @BeforeEach
+    void setUp() {
+        testUser = new User(1L);
+    }
+
+
     @Test
-    @DisplayName("User - Constructors and Getters/Setters should work")
-    void testUserConstructorsAndAccessors() {
-        // Empty constructor
-        User user1 = new User();
-        assertNull(user1.getId());
+    @DisplayName("Constructor - Empty: Should initialize with default values")
+    void shouldInitializeWithDefaultValuesUsingEmptyConstructor() {
+        User user = new User();
+        assertNull(user.getId());
+        assertNotNull(user.getCompanies());
+        assertNotNull(user.getReservations());
+        assertNotNull(user.getSanctions());
+    }
 
-        // ID constructor
-        User user2 = new User(1L);
-        assertEquals(1L, user2.getId());
+    @Test
+    @DisplayName("Constructor - ID: Should initialize with specified identifier")
+    void shouldInitializeWithIdUsingIdConstructor() {
+        User user = new User(5L);
+        assertEquals(5L, user.getId());
+    }
 
-        // Basic profile data constructor
+    @Test
+    @DisplayName("Constructor - Profile: Should initialize basic profile correctly")
+    void shouldInitializeProfileCorrectlyUsingProfileConstructor() {
         LocalDateTime now = LocalDateTime.now();
-        User user3 = new User(1L, "Alice", "alice@test.com", "pass", true, "avatar.png", "+34600", now);
-        assertEquals(1L, user3.getId());
-        assertEquals("Alice", user3.getName());
-        assertEquals("alice@test.com", user3.getEmail());
-        assertEquals("pass", user3.getPassword());
-        assertTrue(user3.isCalendarEnable());
-        assertEquals("avatar.png", user3.getAvatar());
-        assertEquals("+34600", user3.getPhone());
-        assertEquals(now, user3.getCreateAt());
+        User user = new User(1L, "Alice", "alice@test.com", "pass", true, "avatar", "123", now);
+        
+        assertEquals(1L, user.getId());
+        assertEquals("Alice", user.getName());
+        assertEquals("alice@test.com", user.getEmail());
+        assertEquals("pass", user.getPassword());
+        assertTrue(user.isCalendarEnable());
+        assertEquals("avatar", user.getAvatar());
+        assertEquals("123", user.getPhone());
+        assertEquals(now, user.getCreateAt());
+    }
 
-        // Full parameters constructor
+    @Test
+    @DisplayName("Constructor - Full: Should initialize all fields correctly")
+    void shouldInitializeAllFieldsUsingFullConstructor() {
+        LocalDateTime now = LocalDateTime.now();
         Role role = new Role(1L);
         Set<Company> companies = new HashSet<>();
         Set<Reservation> reservations = new HashSet<>();
         Set<Sanction> sanctions = new HashSet<>();
-        User user4 = new User(1L, "Alice", "alice@test.com", "pass", true, "avatar.png", "+34600", now, role, companies, reservations, sanctions);
-        assertEquals(role, user4.getRole());
-        assertEquals(companies, user4.getCompanies());
-        assertEquals(reservations, user4.getReservations());
-        assertEquals(sanctions, user4.getSanctions());
+        
+        User user = new User(1L, "Alice", "alice@test.com", "pass", true, "avatar", "123", now, role, companies, reservations, sanctions);
+        
+        assertEquals(1L, user.getId());
+        assertEquals(role, user.getRole());
+        assertEquals(companies, user.getCompanies());
+        assertEquals(reservations, user.getReservations());
+        assertEquals(sanctions, user.getSanctions());
+    }
 
-        // Setters
-        user1.setId(2L);
-        user1.setName("Bob");
-        user1.setEmail("bob@test.com");
-        user1.setPassword("newpass");
-        user1.setCalendarEnable(false);
-        user1.setAvatar("bob.png");
-        user1.setPhone("+34700");
-        user1.setCreateAt(now);
-        user1.setRole(role);
-        user1.setCompanies(companies);
-        user1.setReservations(reservations);
-        user1.setSanctions(sanctions);
 
-        assertEquals(2L, user1.getId());
-        assertEquals("Bob", user1.getName());
-        assertEquals("bob@test.com", user1.getEmail());
-        assertEquals("newpass", user1.getPassword());
-        assertFalse(user1.isCalendarEnable());
-        assertEquals("bob.png", user1.getAvatar());
-        assertEquals("+34700", user1.getPhone());
-        assertEquals(now, user1.getCreateAt());
-        assertEquals(role, user1.getRole());
+    @Test
+    @DisplayName("Getter/Setter - Name: Should preserve string identity")
+    void shouldSetAndGetName() {
+        testUser.setName("Bob");
+        assertEquals("Bob", testUser.getName());
     }
 
     @Test
-    @DisplayName("User - Equals and HashCode")
-    void testUserEquals() {
-        User u1 = new User(1L);
-        User u2 = new User(1L);
-        User u3 = new User(2L);
-        User uNull = null;
-        Object other = new Object();
+    @DisplayName("Getter/Setter - Email: Should preserve mail address")
+    void shouldSetAndGetEmail() {
+        testUser.setEmail("bob@test.com");
+        assertEquals("bob@test.com", testUser.getEmail());
+    }
 
+    @Test
+    @DisplayName("Getter/Setter - Password: Should preserve credential hash")
+    void shouldSetAndGetPassword() {
+        testUser.setPassword("secret");
+        assertEquals("secret", testUser.getPassword());
+    }
+
+    @Test
+    @DisplayName("Getter/Setter - CalendarEnable: Should preserve boolean flag")
+    void shouldSetAndGetCalendarEnable() {
+        testUser.setCalendarEnable(true);
+        assertTrue(testUser.isCalendarEnable());
+    }
+
+    @Test
+    @DisplayName("Getter/Setter - Avatar: Should preserve profile image URL")
+    void shouldSetAndGetAvatar() {
+        testUser.setAvatar("profile.jpg");
+        assertEquals("profile.jpg", testUser.getAvatar());
+    }
+
+    @Test
+    @DisplayName("Getter/Setter - Phone: Should preserve contact number")
+    void shouldSetAndGetPhone() {
+        testUser.setPhone("555123");
+        assertEquals("555123", testUser.getPhone());
+    }
+
+    @Test
+    @DisplayName("Getter/Setter - CreateAt: Should preserve timestamp")
+    void shouldSetAndGetCreateAt() {
+        LocalDateTime now = LocalDateTime.now();
+        testUser.setCreateAt(now);
+        assertEquals(now, testUser.getCreateAt());
+    }
+
+    @Test
+    @DisplayName("Getter/Setter - Role: Should preserve relationship")
+    void shouldSetAndGetRole() {
+        Role role = new Role(1L);
+        testUser.setRole(role);
+        assertEquals(role, testUser.getRole());
+    }
+
+    @Test
+    @DisplayName("Getter/Setter - Collections: Should preserve related entities")
+    void shouldSetAndGetCollections() {
+        Set<Company> companies = new HashSet<>();
+        Set<Reservation> reservations = new HashSet<>();
+        Set<Sanction> sanctions = new HashSet<>();
+        testUser.setCompanies(companies);
+        testUser.setReservations(reservations);
+        testUser.setSanctions(sanctions);
+        assertEquals(companies, testUser.getCompanies());
+        assertEquals(reservations, testUser.getReservations());
+        assertEquals(sanctions, testUser.getSanctions());
+    }
+
+
+    @Test
+    @DisplayName("equals - Same instance: Should return true")
+    void equals_ShouldReturnTrueForSameInstance() {
+        assertEquals(testUser, testUser);
+    }
+
+    @Test
+    @DisplayName("equals - Null comparison: Should return false")
+    void equals_ShouldReturnFalseForNull() {
+        assertNotEquals(testUser, null);
+    }
+
+    @Test
+    @DisplayName("equals - Different class: Should return false")
+    void equals_ShouldReturnFalseForDifferentType() {
+        assertNotEquals(testUser, "Some String");
+    }
+
+    @Test
+    @DisplayName("equals - Same ID: Should return true")
+    void equals_ShouldReturnTrueForSameId() {
+        User other = new User(1L);
+        assertEquals(testUser, other);
+    }
+
+    @Test
+    @DisplayName("equals - Different ID: Should return false")
+    void equals_ShouldReturnFalseForDifferentId() {
+        User other = new User(2L);
+        assertNotEquals(testUser, other);
+    }
+
+    @Test
+    @DisplayName("equals - Both IDs null: Should return true")
+    void equals_ShouldReturnTrueForBothIdsNull() {
+        User u1 = new User();
+        User u2 = new User();
         assertEquals(u1, u2);
+    }
+
+    @Test
+    @DisplayName("equals - One ID null, other not: Should return false")
+    void equals_ShouldReturnFalseWhenOneIdIsNull() {
+        User u1 = new User(1L);
+        User u2 = new User();
+        assertNotEquals(u1, u2);
+        assertNotEquals(u2, u1);
+    }
+
+
+    @Test
+    @DisplayName("hashCode - Same ID: Should produce identical code")
+    void hashCode_ShouldBeSameForSameId() {
+        User other = new User(1L);
+        assertEquals(testUser.hashCode(), other.hashCode());
+    }
+
+    @Test
+    @DisplayName("hashCode - Different ID: Should produce different code")
+    void hashCode_ShouldBeDifferentForDifferentId() {
+        User other = new User(2L);
+        assertNotEquals(testUser.hashCode(), other.hashCode());
+    }
+
+    @Test
+    @DisplayName("hashCode - Null ID: Should produce stable code")
+    void hashCode_ShouldBeStableForNullId() {
+        User u1 = new User();
+        User u2 = new User();
         assertEquals(u1.hashCode(), u2.hashCode());
-        assertNotEquals(u1, u3);
-        assertNotEquals(u1, uNull);
-        assertNotEquals(u1, other);
-        assertEquals(u1, u1);
     }
 }

@@ -16,13 +16,13 @@ public class ReservationRequest {
     
     private LocalDateTime startTime;
     private LocalDateTime endTime;
-    @NotNull(message = "El precio es obligatorio")
-    private double price;
-    @NotBlank(message = "El estado no puede estar vacío")
+    @NotNull(message = "Price is mandatory")
+    private Double price;
+    @NotBlank(message = "Status cannot be empty")
     private String state;
-    @NotNull(message = "El ID de usuario es obligatorio")
+    @NotNull(message = "User ID is mandatory")
     private Long userId;
-    @NotNull(message = "El ID de plaza es obligatorio")
+    @NotNull(message = "Spot ID is mandatory")
     private Long parkingSpotId;
 
     /**
@@ -41,7 +41,7 @@ public class ReservationRequest {
      * @param parkingSpotId parking spot id
      */
     public ReservationRequest( LocalDateTime startTime, LocalDateTime endTime, 
-    double price, String state, Long userId, Long parkingSpotId) {
+    Double price, String state, Long userId, Long parkingSpotId) {
         this.startTime = startTime;
         this.endTime = endTime;
         this.price = price;
@@ -66,11 +66,11 @@ public class ReservationRequest {
         this.endTime = endTime;
     }
 
-    public double getPrice() {
+    public Double getPrice() {
         return this.price;
     }
 
-    public void setPrice(double price) {
+    public void setPrice(Double price) {
         this.price = price;
     }
 

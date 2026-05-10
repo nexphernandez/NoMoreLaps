@@ -22,6 +22,10 @@ import com.nomorelaps.adapters.out.persistence.repository.ParkingSpotJpaReposito
 import com.nomorelaps.domain.models.Parking;
 import com.nomorelaps.domain.models.ParkingSpot;
 
+/**
+ * Unit tests for ParkingSpotPersistenceAdapter.
+ * Verifies persistence logic for ParkingSpot, including relationship preservation during updates.
+ */
 @ExtendWith(MockitoExtension.class)
 class ParkingSpotPersistenceAdapterTest {
 
@@ -34,105 +38,109 @@ class ParkingSpotPersistenceAdapterTest {
     @InjectMocks
     private ParkingSpotPersistenceAdapter adapter;
 
-    private ParkingSpot spot;
-    private ParkingSpotJpaEntity entity;
+    private ParkingSpot testSpot;
+    private ParkingSpotJpaEntity testEntity;
 
     @BeforeEach
     void setUp() {
-        spot = new ParkingSpot(1L);
-        entity = new ParkingSpotJpaEntity();
-        entity.setId(1L);
+        testSpot = new ParkingSpot(1L);
+        testEntity = new ParkingSpotJpaEntity();
+        testEntity.setId(1L);
     }
 
     @Test
-    @DisplayName("findByParkingId - Should return list")
+    @DisplayName("findByParkingId - Should return list of parking spots")
     void shouldReturnByParkingId() {
-        when(repository.findByParkingId(1L)).thenReturn(List.of(entity));
-        when(mapper.toDomain(entity)).thenReturn(spot);
+        Long parkingId = 10L;
+        when(repository.findByParkingId(parkingId)).thenReturn(List.of(testEntity));
+        when(mapper.toDomain(testEntity)).thenReturn(testSpot);
 
-        List<ParkingSpot> result = adapter.findByParkingId(1L);
+        List<ParkingSpot> result = adapter.findByParkingId(parkingId);
 
+        assertFalse(result.isEmpty());
         assertEquals(1, result.size());
     }
 
     @Test
-    @DisplayName("findByParkingIdAndStateTrue - Should return list")
+    @DisplayName("findByParkingIdAndStateTrue - Should return list of available spots")
     void shouldReturnAvailableByParkingId() {
-        when(repository.findByParkingIdAndStateTrue(1L)).thenReturn(List.of(entity));
-        when(mapper.toDomain(entity)).thenReturn(spot);
+        Long parkingId = 10L;
+        when(repository.findByParkingIdAndStateTrue(parkingId)).thenReturn(List.of(testEntity));
+        when(mapper.toDomain(testEntity)).thenReturn(testSpot);
 
-        List<ParkingSpot> result = adapter.findByParkingIdAndStateTrue(1L);
+        List<ParkingSpot> result = adapter.findByParkingIdAndStateTrue(parkingId);
 
+        assertFalse(result.isEmpty());
         assertEquals(1, result.size());
     }
 
     @Test
-    @DisplayName("toEntity - Should preserve parking reference from domain")
-    void shouldPreserveParkingFromDomain() {
-        spot.setParking(new Parking(10L));
-        when(mapper.toJpaEntity(spot)).thenReturn(entity);
-        
-        // Save calls toEntity
-        when(repository.save(any())).thenReturn(entity);
-        when(mapper.toDomain(entity)).thenReturn(spot);
-        
-        adapter.save(spot);
-        assertNotNull(entity.getParking());
-        assertEquals(10L, entity.getParking().getId());
+    @DisplayName("toEntity - Should map Parking with valid ID to ParkingJpaEntity")
+    void toEntityShouldMapParkingWithId() {
+        testSpot.setParking(new Parking(55L));
+        when(mapper.toJpaEntity(testSpot)).thenReturn(testEntity);
+
+        ParkingSpotJpaEntity result = adapter.toEntity(testSpot);
+
+        assertNotNull(result);
+        assertNotNull(result.getParking());
+        assertEquals(55L, result.getParking().getId());
     }
 
     @Test
-    @DisplayName("toEntity - Should preserve parking reference from database if missing in domain")
-    void shouldPreserveParkingFromDb() {
-        spot.setParking(null); // Explicitly null
-        when(mapper.toJpaEntity(spot)).thenReturn(entity);
+    @DisplayName("toEntity - Should preserve Parking from existing entity when domain parking is null")
+    void toEntityShouldPreserveExistingParkingFromDb() {
+        testSpot.setParking(null); 
+        when(mapper.toJpaEntity(testSpot)).thenReturn(testEntity);
         
-        ParkingSpotJpaEntity existing = new ParkingSpotJpaEntity();
-        existing.setParking(new ParkingJpaEntity(20L));
-        when(repository.findById(1L)).thenReturn(Optional.of(existing));
-        
-        when(repository.save(any())).thenReturn(entity);
-        when(mapper.toDomain(entity)).thenReturn(spot);
-        
-        adapter.save(spot);
-        assertNotNull(entity.getParking());
-        assertEquals(20L, entity.getParking().getId());
+        ParkingSpotJpaEntity existingEntity = new ParkingSpotJpaEntity();
+        existingEntity.setParking(new ParkingJpaEntity(99L));
+        when(repository.findById(1L)).thenReturn(Optional.of(existingEntity));
+
+        ParkingSpotJpaEntity result = adapter.toEntity(testSpot);
+
+        assertNotNull(result);
+        assertNotNull(result.getParking());
+        assertEquals(99L, result.getParking().getId());
     }
 
     @Test
-    @DisplayName("toEntity - Should skip parking lookup when both parking and id are null")
-    void shouldHandleNullParkingAndNullId() {
+    @DisplayName("toEntity - Should handle null Parking and null spot ID")
+    void toEntityShouldHandleNullIdAndNullParking() {
         ParkingSpot spotNoId = new ParkingSpot();
         spotNoId.setId(null);
         spotNoId.setParking(null);
 
         ParkingSpotJpaEntity entityNoParking = new ParkingSpotJpaEntity();
         when(mapper.toJpaEntity(spotNoId)).thenReturn(entityNoParking);
-        when(repository.save(any())).thenReturn(entityNoParking);
-        when(mapper.toDomain(entityNoParking)).thenReturn(spotNoId);
 
-        ParkingSpot saved = adapter.save(spotNoId);
-        assertNotNull(saved);
-        assertNull(entityNoParking.getParking());
+        ParkingSpotJpaEntity result = adapter.toEntity(spotNoId);
+
+        assertNotNull(result);
+        assertNull(result.getParking());
     }
 
     @Test
-    @DisplayName("toEntity - Should skip parking when parking ID is null")
-    void shouldHandleNullParkingId() {
-        // Arrange
-        spot.setParking(new Parking()); // ID is null
-        when(mapper.toJpaEntity(spot)).thenReturn(entity);
-        when(repository.save(any())).thenReturn(entity);
-        when(mapper.toDomain(entity)).thenReturn(spot);
+    @DisplayName("toEntity - Should handle Parking with null ID")
+    void toEntityShouldHandleParkingWithNullId() {
+        testSpot.setParking(new Parking()); 
+        when(mapper.toJpaEntity(testSpot)).thenReturn(testEntity);
+        when(repository.findById(1L)).thenReturn(Optional.empty());
 
-        // Act
-        adapter.save(spot);
+        ParkingSpotJpaEntity result = adapter.toEntity(testSpot);
 
-        // Assert
-        // Since spot has an ID (1L from setUp), it will go to the 'else if' 
-        // and try to find existing parking in DB. In this test, findById(1L) 
-        // is not stubbed to return anything, so it won't set parking.
-        assertNull(entity.getParking());
+        assertNotNull(result);
+        assertNull(result.getParking());
+    }
+
+    @Test
+    @DisplayName("toDomain - Should map entity to domain via mapper")
+    void toDomainShouldMapViaMapper() {
+        when(mapper.toDomain(testEntity)).thenReturn(testSpot);
+
+        ParkingSpot result = adapter.toDomain(testEntity);
+
+        assertNotNull(result);
+        assertEquals(1L, result.getId());
     }
 }
-

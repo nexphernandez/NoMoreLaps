@@ -5,6 +5,7 @@ import InputField from '../../components/InputField';
 import ScreenContainer from '../../components/ScreenContainer';
 import Typography from '../../components/Typography';
 import { useTheme } from '../../context/ThemeContext';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 interface EditProfileViewProps {
   name: string;
@@ -38,8 +39,8 @@ const EditProfileView: React.FC<EditProfileViewProps> = ({
                 </Typography>
               </View>
             )}
-            <View style={[styles.cameraIcon, { backgroundColor: theme.background, borderColor: theme.border }]}>
-              <Typography style={{ fontSize: 14 }}>📷</Typography>
+            <View style={[styles.cameraIcon, { backgroundColor: theme.primary, borderColor: '#FFF' }]}>
+              <MaterialCommunityIcons name="camera" size={16} color="#FFF" />
             </View>
           </TouchableOpacity>
           <Typography variant="h2" style={{marginTop: 16}}>{name}</Typography>
@@ -110,7 +111,12 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 1,
+    borderWidth: 2,
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    shadowOffset: { width: 0, height: 2 },
   },
   form: { gap: 20, marginBottom: 40 },
 });

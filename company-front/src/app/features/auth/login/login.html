@@ -1,0 +1,48 @@
+<div class="login-container">
+  <div class="login-card glass-card">
+    <div class="login-header">
+      <h1 class="gradient-text">NoMoreLaps</h1>
+      <p class="subtitle">Company Portal</p>
+    </div>
+
+    <form class="login-form" [formGroup]="loginForm" (ngSubmit)="onLogin()">
+      <app-input 
+        label="Email Address" 
+        placeholder="example@company.com"
+        type="email"
+        formControlName="email"
+        [error]="getFieldError('email')"
+      ></app-input>
+
+      <app-input 
+        label="Password" 
+        placeholder="••••••••"
+        type="password"
+        formControlName="password"
+        [error]="getFieldError('password')"
+      ></app-input>
+
+      @if (errorMessage) {
+        <div class="error-container">
+          <p class="error-text">{{ errorMessage }}</p>
+        </div>
+      }
+
+      <div class="form-footer">
+        <a href="#" class="forgot-password">Forgot password?</a>
+      </div>
+
+      <app-button 
+        text="Sign In" 
+        customClass="w-full"
+        [loading]="loading"
+        type="submit"
+      ></app-button>
+
+      <div class="register-prompt">
+        <span>Don't have an account?</span>
+        <a routerLink="/register" class="register-link">Register now</a>
+      </div>
+    </form>
+  </div>
+</div>

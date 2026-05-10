@@ -32,6 +32,9 @@ public interface SanctionMapper {
      * @param domain The business domain object.
      * @return The response DTO for the API.
      */
+    @Mapping(target = "userId", source = "user.id")
+    @Mapping(target = "userName", source = "user.name")
+    @Mapping(target = "parkingName", source = "reservation.parkingSpot.parking.name")
     SanctionResponse toResponse(Sanction domain);
 
     /**

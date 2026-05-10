@@ -1,6 +1,6 @@
 package com.nomorelaps.adapters.in.rest;
 
-
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -65,6 +65,7 @@ public class CompanyController {
      * @return The found company or 404 if not found.
      */
     @GetMapping("/{id}")
+    @PreAuthorize("@securityService.isCompanyOwner(#id)")
     @Operation(summary = "Find company by ID", description = "Retrieves company details by its unique identifier.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Company found"),
@@ -120,6 +121,7 @@ public class CompanyController {
      * @return The updated company.
      */
     @PutMapping("/{id}")
+    @PreAuthorize("@securityService.isCompanyOwner(#id)")
     @Operation(summary = "Update an existing company", description = "Updates company information based on details provided in the request body.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Company updated successfully"),
@@ -147,5 +149,23 @@ public class CompanyController {
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         companyService.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * Regenerates the API key for a company.
+     *
+     * @param id The company ID.
+     * @return The updated company with the new API key.
+     */
+    @PostMapping("/{id}/regenerate-api-key")
+    @PreAuthorize("@securityService.isCompanyOwner(#id)")
+    @Operation(summary = "Regenerate API Key", description = "Generates a new API key for the company, invalidating the previous one.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "API Key regenerated successfully"),
+            @ApiResponse(responseCode = "404", description = "Company not found")
+    })
+    public ResponseEntity<CompanyResponse> regenerateApiKey(@PathVariable Long id) {
+        Company updated = companyService.regenerateApiKey(id);
+        return ResponseEntity.ok(companyMapper.toResponse(updated));
     }
 }

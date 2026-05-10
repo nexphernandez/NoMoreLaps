@@ -1,99 +1,95 @@
 package com.nomorelaps.adapters.in.api;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import java.util.ArrayList;
+import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+/**
+ * Unit tests for SmartRecommendationResponse DTO.
+ * Verifies that recommendation suggestions are correctly mapped and logical equality is maintained.
+ * 
+ * @author nexphernandez
+ * @version 1.0.0
+ */
 class SmartRecommendationResponseTest {
 
-    @Test
-    @DisplayName("Should test getters, setters and empty constructor for SmartRecommendationResponse")
-    void testGettersAndSetters() {
-        SmartRecommendationResponse dto = new SmartRecommendationResponse();
-        assertNotNull(dto);
+    private SmartRecommendationResponse recommendationResponse;
 
-        dto.setDestinationText("dummy1");
-        assertEquals("dummy1", dto.getDestinationText());
-        dto.setLatitude(1.0);
-        assertEquals(1.0, dto.getLatitude());
-        dto.setLongitude(1.0);
-        assertEquals(1.0, dto.getLongitude());
-        dto.setSuggestions(new java.util.ArrayList<>());
-        assertEquals(new java.util.ArrayList<>(), dto.getSuggestions());
+    @BeforeEach
+    void setUp() {
+        recommendationResponse = new SmartRecommendationResponse();
     }
 
     @Test
-    @DisplayName("Should test equals and hashCode branches for SmartRecommendationResponse")
-    void testEqualsAndHashCode() {
-        SmartRecommendationResponse dto1 = new SmartRecommendationResponse();
-        SmartRecommendationResponse dto2 = new SmartRecommendationResponse();
-        SmartRecommendationResponse dto3 = new SmartRecommendationResponse();
+    @DisplayName("Constructor - Should correctly initialize all response fields")
+    void shouldInitializeWithFullConstructor() {
+        List<SmartRecommendationItemResponse> suggestions = new ArrayList<>();
+        
+        SmartRecommendationResponse response = new SmartRecommendationResponse("Mall", 40.5, -3.8, suggestions);
 
-        dto1.setDestinationText("dummy1");
-        dto2.setDestinationText("dummy1");
-        dto3.setDestinationText("dummy2");
-        dto1.setLatitude(1.0);
-        dto2.setLatitude(1.0);
-        dto3.setLatitude(2.0);
-        dto1.setLongitude(1.0);
-        dto2.setLongitude(1.0);
-        dto3.setLongitude(2.0);
-        dto1.setSuggestions(new java.util.ArrayList<>());
-        dto2.setSuggestions(new java.util.ArrayList<>());
-        dto3.setSuggestions(new java.util.ArrayList<>());
+        assertEquals("Mall", response.getDestinationText());
+        assertEquals(40.5, response.getLatitude());
+        assertEquals(-3.8, response.getLongitude());
+        assertEquals(suggestions, response.getSuggestions());
+    }
 
-        // Base checks
-        assertEquals(dto1, dto1);
-        assertEquals(dto1, dto2);
-        assertNotEquals(dto1, dto3);
-        assertNotEquals(dto1, null);
-        assertNotEquals(dto1, new Object());
-        assertEquals(dto1.hashCode(), dto2.hashCode());
+    @Test
+    @DisplayName("destinationText - Should set and get the destination name")
+    void shouldSetAndGetDestinationText() {
+        recommendationResponse.setDestinationText("Gran Via, 1");
+        assertEquals("Gran Via, 1", recommendationResponse.getDestinationText());
+    }
 
-        // Branch coverage for each field
-        SmartRecommendationResponse tempdestinationText = new SmartRecommendationResponse();
-        tempdestinationText.setDestinationText("dummy1");
-        tempdestinationText.setLatitude(1.0);
-        tempdestinationText.setLongitude(1.0);
-        tempdestinationText.setSuggestions(new java.util.ArrayList<>());
-        tempdestinationText.setDestinationText(null);
-        dto1.equals(tempdestinationText);
-        tempdestinationText.equals(dto1);
-        tempdestinationText.setDestinationText("dummy2");
-        dto1.equals(tempdestinationText);
+    @Test
+    @DisplayName("latitude - Should set and get the latitude")
+    void shouldSetAndGetLatitude() {
+        recommendationResponse.setLatitude(40.4168);
+        assertEquals(40.4168, recommendationResponse.getLatitude());
+    }
 
-        SmartRecommendationResponse templatitude = new SmartRecommendationResponse();
-        templatitude.setDestinationText("dummy1");
-        templatitude.setLatitude(1.0);
-        templatitude.setLongitude(1.0);
-        templatitude.setSuggestions(new java.util.ArrayList<>());
-        templatitude.setLatitude(null);
-        dto1.equals(templatitude);
-        templatitude.equals(dto1);
-        templatitude.setLatitude(2.0);
-        dto1.equals(templatitude);
+    @Test
+    @DisplayName("longitude - Should set and get the longitude")
+    void shouldSetAndGetLongitude() {
+        recommendationResponse.setLongitude(-3.7038);
+        assertEquals(-3.7038, recommendationResponse.getLongitude());
+    }
 
-        SmartRecommendationResponse templongitude = new SmartRecommendationResponse();
-        templongitude.setDestinationText("dummy1");
-        templongitude.setLatitude(1.0);
-        templongitude.setLongitude(1.0);
-        templongitude.setSuggestions(new java.util.ArrayList<>());
-        templongitude.setLongitude(null);
-        dto1.equals(templongitude);
-        templongitude.equals(dto1);
-        templongitude.setLongitude(2.0);
-        dto1.equals(templongitude);
+    @Test
+    @DisplayName("suggestions - Should set and get the list of items")
+    void shouldSetAndGetSuggestions() {
+        List<SmartRecommendationItemResponse> list = new ArrayList<>();
+        recommendationResponse.setSuggestions(list);
+        assertEquals(list, recommendationResponse.getSuggestions());
+    }
 
-        SmartRecommendationResponse tempsuggestions = new SmartRecommendationResponse();
-        tempsuggestions.setDestinationText("dummy1");
-        tempsuggestions.setLatitude(1.0);
-        tempsuggestions.setLongitude(1.0);
-        tempsuggestions.setSuggestions(new java.util.ArrayList<>());
-        tempsuggestions.setSuggestions(null);
-        dto1.equals(tempsuggestions);
-        tempsuggestions.equals(dto1);
-        tempsuggestions.setSuggestions(new java.util.ArrayList<>());
-        dto1.equals(tempsuggestions);
+    @Test
+    @DisplayName("equals - Should be equal for identical coordinate and text context")
+    void shouldBeEqualForIdenticalContext() {
+        SmartRecommendationResponse first = new SmartRecommendationResponse("Point A", 1.0, 1.0, new ArrayList<>());
+        SmartRecommendationResponse second = new SmartRecommendationResponse("Point A", 1.0, 1.0, null);
+        SmartRecommendationResponse diffText = new SmartRecommendationResponse("Point B", 1.0, 1.0, new ArrayList<>());
+        SmartRecommendationResponse diffLat = new SmartRecommendationResponse("Point A", 2.0, 1.0, new ArrayList<>());
+        SmartRecommendationResponse diffLon = new SmartRecommendationResponse("Point A", 1.0, 2.0, new ArrayList<>());
 
+        assertEquals(first, first, "Should be equal to itself");
+        assertEquals(first, second, "Should be equal if text and coordinates match (ignoring suggestions)");
+        assertNotEquals(first, diffText, "Should not be equal if destinationText differs");
+        assertNotEquals(first, diffLat, "Should not be equal if latitude differs");
+        assertNotEquals(first, diffLon, "Should not be equal if longitude differs");
+        assertNotEquals(first, null, "Should not be equal to null");
+        assertNotEquals(first, "not a response", "Should return false for different class (instanceof test)");
+    }
+
+    @Test
+    @DisplayName("hashCode - Should be consistent for equal responses")
+    void shouldHaveConsistentHashCode() {
+        SmartRecommendationResponse first = new SmartRecommendationResponse("Point A", 1.0, 1.0, new ArrayList<>());
+        SmartRecommendationResponse second = new SmartRecommendationResponse("Point A", 1.0, 1.0, null);
+
+        assertEquals(first.hashCode(), second.hashCode());
     }
 }

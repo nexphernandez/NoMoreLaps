@@ -1,0 +1,72 @@
+<div class="register-container">
+  <div class="register-card glass-card">
+    <div class="register-header">
+      <h1 class="gradient-text">NoMoreLaps</h1>
+      <p class="subtitle">Create Company Account</p>
+    </div>
+
+    <form class="register-form" [formGroup]="registerForm" (ngSubmit)="onRegister()">
+      <app-input 
+        label="Company Name" 
+        placeholder="My Parking Ltd."
+        type="text"
+        formControlName="name"
+        [error]="getFieldError('name')"
+      ></app-input>
+
+      <app-input 
+        label="Company Tax ID (CIF)" 
+        placeholder="A12345678"
+        type="text"
+        formControlName="cif"
+        [error]="getFieldError('cif')"
+      ></app-input>
+
+      <app-input 
+        label="Corporate Email" 
+        placeholder="contact@company.com"
+        type="email"
+        formControlName="email"
+        [error]="getFieldError('email')"
+      ></app-input>
+
+      <div class="password-row">
+        <app-input 
+          label="Password" 
+          placeholder="••••••••"
+          type="password"
+          formControlName="password"
+          [error]="getFieldError('password')"
+        ></app-input>
+        
+        <app-input 
+          label="Confirm Password" 
+          placeholder="••••••••"
+          type="password"
+          formControlName="confirmPassword"
+          [error]="getFieldError('confirmPassword')"
+        ></app-input>
+      </div>
+
+      @if (errorMessage) {
+        <div class="error-container">
+          <p class="error-text">{{ errorMessage }}</p>
+        </div>
+      }
+
+
+
+      <app-button 
+        text="Create Account" 
+        customClass="w-full"
+        [loading]="loading"
+        type="submit"
+      ></app-button>
+
+      <div class="login-prompt">
+        <span>Already have an account?</span>
+        <a routerLink="/login" class="login-link">Sign in</a>
+      </div>
+    </form>
+  </div>
+</div>

@@ -20,6 +20,10 @@ import com.nomorelaps.adapters.out.persistence.repository.DynamicPriceJpaReposit
 import com.nomorelaps.domain.models.DynamicPrice;
 import com.nomorelaps.domain.models.Parking;
 
+/**
+ * Unit tests for DynamicPricePersistenceAdapter.
+ * Verifies persistence logic for DynamicPrice, including mapping and repository interaction.
+ */
 @ExtendWith(MockitoExtension.class)
 class DynamicPricePersistenceAdapterTest {
 
@@ -32,85 +36,102 @@ class DynamicPricePersistenceAdapterTest {
     @InjectMocks
     private DynamicPricePersistenceAdapter adapter;
 
-    private DynamicPrice price;
-    private DynamicPriceJpaEntity entity;
+    private DynamicPrice testPrice;
+    private DynamicPriceJpaEntity testEntity;
 
     @BeforeEach
     void setUp() {
-        price = new DynamicPrice(1L);
-        entity = new DynamicPriceJpaEntity();
-        entity.setId(1L);
+        testPrice = new DynamicPrice(1L);
+        testEntity = new DynamicPriceJpaEntity();
+        testEntity.setId(1L);
     }
 
     @Test
-    @DisplayName("findByParkingId - Should return list")
+    @DisplayName("findByParkingId - Should return list of dynamic prices")
     void shouldReturnByParkingId() {
-        when(repository.findByParkingId(1L)).thenReturn(List.of(entity));
-        when(mapper.toDomain(entity)).thenReturn(price);
+        Long parkingId = 100L;
+        when(repository.findByParkingId(parkingId)).thenReturn(List.of(testEntity));
+        when(mapper.toDomain(testEntity)).thenReturn(testPrice);
 
-        List<DynamicPrice> result = adapter.findByParkingId(1L);
+        List<DynamicPrice> result = adapter.findByParkingId(parkingId);
 
-        assertEquals(1, result.size());
-    }
-
-    @Test
-    @DisplayName("save - Should map parking in toEntity")
-    void shouldSaveWithParking() {
-        // Arrange
-        Parking parking = new Parking(10L);
-        price.setParking(parking);
-
-        when(mapper.toJpaEntity(price)).thenReturn(entity);
-        when(repository.save(entity)).thenReturn(entity);
-        when(mapper.toDomain(entity)).thenReturn(price);
-
-        // Act
-        adapter.save(price);
-
-        // Assert
-        assertNotNull(entity.getParking());
-        assertEquals(10L, entity.getParking().getId());
-    }
-
-    @Test
-    @DisplayName("toDomain - Should map parking from entity")
-    void shouldMapParkingToDomain() {
-        // Arrange
-        ParkingJpaEntity parkingEntity = new ParkingJpaEntity(10L);
-        entity.setParking(parkingEntity);
-
-        when(repository.findByParkingId(1L)).thenReturn(List.of(entity));
-        when(mapper.toDomain(entity)).thenReturn(price);
-
-        // Act
-        List<DynamicPrice> result = adapter.findByParkingId(1L);
-
-        // Assert
         assertFalse(result.isEmpty());
-        assertNotNull(result.get(0).getParking());
-        assertEquals(10L, result.get(0).getParking().getId());
+        assertEquals(1, result.size());
+        assertEquals(1L, result.get(0).getId());
     }
 
     @Test
-    @DisplayName("toEntity/toDomain - Should handle null parking or null parking ID")
-    void shouldHandleNullParkingOrId() {
-        // Case 1: Parking is null (already tested, but grouping here)
-        price.setParking(null);
-        entity.setParking(null);
-        when(mapper.toJpaEntity(price)).thenReturn(entity);
-        when(repository.save(entity)).thenReturn(entity);
-        when(mapper.toDomain(entity)).thenReturn(price);
-        
-        adapter.save(price);
-        assertNull(entity.getParking());
+    @DisplayName("findByParkingId - Should return empty list when no prices found")
+    void shouldReturnEmptyListWhenNoPricesFound() {
+        Long parkingId = 999L;
+        when(repository.findByParkingId(parkingId)).thenReturn(List.of());
 
-        // Case 2: Parking is NOT null but ID IS null (The missing branch)
-        Parking parkingNoId = new Parking();
-        parkingNoId.setId(null);
-        price.setParking(parkingNoId);
-        
-        adapter.save(price);
-        assertNull(entity.getParking(), "Should not map parking if ID is null");
+        List<DynamicPrice> result = adapter.findByParkingId(parkingId);
+
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    @DisplayName("toEntity - Should map User with valid ID to UserJpaEntity")
+    void toEntityShouldMapParkingWithId() {
+        Parking parking = new Parking(10L);
+        testPrice.setParking(parking);
+        when(mapper.toJpaEntity(testPrice)).thenReturn(testEntity);
+
+        DynamicPriceJpaEntity result = adapter.toEntity(testPrice);
+
+        assertNotNull(result);
+        assertNotNull(result.getParking());
+        assertEquals(10L, result.getParking().getId());
+    }
+
+    @Test
+    @DisplayName("toEntity - Should handle null parking")
+    void toEntityShouldHandleNullParking() {
+        testPrice.setParking(null);
+        when(mapper.toJpaEntity(testPrice)).thenReturn(testEntity);
+
+        DynamicPriceJpaEntity result = adapter.toEntity(testPrice);
+
+        assertNotNull(result);
+        assertNull(result.getParking());
+    }
+
+    @Test
+    @DisplayName("toEntity - Should handle parking with null ID")
+    void toEntityShouldHandleParkingWithNullId() {
+        testPrice.setParking(new Parking()); // ID is null
+        when(mapper.toJpaEntity(testPrice)).thenReturn(testEntity);
+
+        DynamicPriceJpaEntity result = adapter.toEntity(testPrice);
+
+        assertNotNull(result);
+        assertNull(result.getParking());
+    }
+
+    @Test
+    @DisplayName("toDomain - Should map ParkingJpaEntity with valid ID to domain Parking")
+    void toDomainShouldMapParkingWithId() {
+        ParkingJpaEntity parkingEntity = new ParkingJpaEntity(20L);
+        testEntity.setParking(parkingEntity);
+        when(mapper.toDomain(testEntity)).thenReturn(testPrice);
+
+        DynamicPrice result = adapter.toDomain(testEntity);
+
+        assertNotNull(result);
+        assertNotNull(result.getParking());
+        assertEquals(20L, result.getParking().getId());
+    }
+
+    @Test
+    @DisplayName("toDomain - Should handle JPA entity with null Parking")
+    void toDomainShouldHandleNullParking() {
+        testEntity.setParking(null);
+        when(mapper.toDomain(testEntity)).thenReturn(testPrice);
+
+        DynamicPrice result = adapter.toDomain(testEntity);
+
+        assertNotNull(result);
+        assertNull(result.getParking());
     }
 }
-

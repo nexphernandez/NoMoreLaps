@@ -2,18 +2,32 @@ package com.nomorelaps.adapters.mapper;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mapstruct.factory.Mappers;
 
 import com.nomorelaps.adapters.in.api.CompanyRequest;
 import com.nomorelaps.adapters.in.api.CompanyResponse;
 import com.nomorelaps.adapters.out.persistence.jpa.CompanyJpaEntity;
 import com.nomorelaps.domain.models.Company;
 
+/**
+ * Unit tests for CompanyMapper.
+ * Verifies mapping between Company domain models, API requests/responses, and JPA entities.
+ */
 class CompanyMapperTest {
 
-    private final CompanyMapper companyMapper = org.mapstruct.factory.Mappers.getMapper(CompanyMapper.class);
+    private final CompanyMapper mapper = Mappers.getMapper(CompanyMapper.class);
+    private Company testCompany;
 
+    @BeforeEach
+    void setUp() {
+        testCompany = new Company(1L);
+        testCompany.setName("Original Corp");
+        testCompany.setEmail("info@corp.com");
+        testCompany.setCif("B12345678");
+    }
 
     @Test
     @DisplayName("toDomainFromRequest - Should map request to domain")
@@ -23,7 +37,7 @@ class CompanyMapperTest {
         request.setEmail("corp@x.com");
         request.setCif("B12345678");
 
-        Company domain = companyMapper.toDomainFromRequest(request);
+        Company domain = mapper.toDomainFromRequest(request);
 
         assertNotNull(domain);
         assertEquals("Corp X", domain.getName());
@@ -34,27 +48,21 @@ class CompanyMapperTest {
     @Test
     @DisplayName("toResponse - Should map domain to response")
     void shouldMapDomainToResponse() {
-        Company domain = new Company(1L);
-        domain.setName("Corp X");
-
-        CompanyResponse response = companyMapper.toResponse(domain);
+        CompanyResponse response = mapper.toResponse(testCompany);
 
         assertNotNull(response);
         assertEquals(1L, response.getId());
-        assertEquals("Corp X", response.getName());
+        assertEquals("Original Corp", response.getName());
     }
 
     @Test
     @DisplayName("toJpaEntity - Should map domain to entity")
     void shouldMapDomainToEntity() {
-        Company domain = new Company(1L);
-        domain.setName("Corp X");
-
-        CompanyJpaEntity entity = companyMapper.toJpaEntity(domain);
+        CompanyJpaEntity entity = mapper.toJpaEntity(testCompany);
 
         assertNotNull(entity);
         assertEquals(1L, entity.getId());
-        assertEquals("Corp X", entity.getName());
+        assertEquals("Original Corp", entity.getName());
     }
 
     @Test
@@ -64,7 +72,7 @@ class CompanyMapperTest {
         entity.setId(1L);
         entity.setName("Corp X");
 
-        Company domain = companyMapper.toDomain(entity);
+        Company domain = mapper.toDomain(entity);
 
         assertNotNull(domain);
         assertEquals(1L, domain.getId());
@@ -72,12 +80,26 @@ class CompanyMapperTest {
     }
 
     @Test
-    @DisplayName("Null handling - Should return null when input is null")
-    void shouldHandleNulls() {
-        assertNull(companyMapper.toDomainFromRequest(null));
-        assertNull(companyMapper.toResponse(null));
-        assertNull(companyMapper.toJpaEntity(null));
-        assertNull(companyMapper.toDomain(null));
+    @DisplayName("toDomainFromRequest - Should return null when input is null")
+    void shouldReturnNullWhenRequestIsNull() {
+        assertNull(mapper.toDomainFromRequest(null));
+    }
+
+    @Test
+    @DisplayName("toResponse - Should return null when input is null")
+    void shouldReturnNullWhenDomainIsNullForResponse() {
+        assertNull(mapper.toResponse(null));
+    }
+
+    @Test
+    @DisplayName("toJpaEntity - Should return null when input is null")
+    void shouldReturnNullWhenDomainIsNullForJpa() {
+        assertNull(mapper.toJpaEntity(null));
+    }
+
+    @Test
+    @DisplayName("toDomain - Should return null when input is null")
+    void shouldReturnNullWhenJpaIsNull() {
+        assertNull(mapper.toDomain(null));
     }
 }
-

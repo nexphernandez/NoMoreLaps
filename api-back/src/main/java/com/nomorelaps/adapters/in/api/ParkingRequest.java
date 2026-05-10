@@ -14,18 +14,22 @@ import jakarta.validation.constraints.NotNull;
  */
 public class ParkingRequest {
 
-    @NotBlank(message = "La dirección no puede estar vacía")
+    @NotBlank(message = "Address cannot be empty")
     private String address;
     
-    @NotBlank(message = "El nombre no puede estar vacío")
+    @NotBlank(message = "Name cannot be empty")
     private String name;
-    @NotNull(message = "La latitud es obligatoria")
+    @NotNull(message = "Latitude is mandatory")
     private Double latitude;
-    @NotNull(message = "La longitud es obligatoria")
+    @NotNull(message = "Longitude is mandatory")
     private Double longitude;
     private LocalDateTime openingTime;
     private LocalDateTime closingTime;
     private Double pricePerHour;
+    private Long companyId;
+    private Double sanctionAmount;
+    private Integer sanctionIntervalInMinutes;
+    private Integer totalSpots;
 
     /**
      * Empty constructor
@@ -41,9 +45,14 @@ public class ParkingRequest {
      * @param longitude of the parking
      * @param openingTime of the parking that day
      * @param closingTime of the parking that day
+     * @param pricePerHour price per hour
+     * @param companyId company owner id
+     * @param sanctionAmount sanction amount
+     * @param sanctionInterval sanction interval
      */
     public ParkingRequest(String address, String name, Double latitude, Double longitude, 
-                          LocalDateTime openingTime, LocalDateTime closingTime, Double pricePerHour) {
+                          LocalDateTime openingTime, LocalDateTime closingTime, Double pricePerHour,
+                          Long companyId, Double sanctionAmount, Integer sanctionInterval) {
         this.address = address;
         this.name = name;
         this.latitude = latitude;
@@ -51,6 +60,9 @@ public class ParkingRequest {
         this.openingTime = openingTime;
         this.closingTime = closingTime;
         this.pricePerHour = pricePerHour;
+        this.companyId = companyId;
+        this.sanctionAmount = sanctionAmount;
+        this.sanctionIntervalInMinutes = sanctionInterval;
     }
 
     public String getAddress() {
@@ -107,6 +119,38 @@ public class ParkingRequest {
 
     public void setPricePerHour(Double pricePerHour) {
         this.pricePerHour = pricePerHour;
+    }
+
+    public Long getCompanyId() {
+        return companyId;
+    }
+
+    public void setCompanyId(Long companyId) {
+        this.companyId = companyId;
+    }
+
+    public Double getSanctionAmount() {
+        return sanctionAmount;
+    }
+
+    public void setSanctionAmount(Double sanctionAmount) {
+        this.sanctionAmount = sanctionAmount;
+    }
+
+    public Integer getSanctionIntervalInMinutes() {
+        return sanctionIntervalInMinutes;
+    }
+
+    public void setSanctionIntervalInMinutes(Integer sanctionIntervalInMinutes) {
+        this.sanctionIntervalInMinutes = sanctionIntervalInMinutes;
+    }
+
+    public Integer getTotalSpots() {
+        return totalSpots;
+    }
+
+    public void setTotalSpots(Integer totalSpots) {
+        this.totalSpots = totalSpots;
     }
 
 }

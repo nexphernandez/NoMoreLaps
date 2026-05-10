@@ -58,4 +58,13 @@ public interface IUserService {
      * @param id The user ID.
      */
     void deleteById(Long id);
+
+    /**
+     * Changes the user's password after validating the current one.
+     * 
+     * @param userId          The user ID.
+     * @param currentPassword The current password.
+     * @param newPassword     The new password.
+     */
+    void changePassword(Long userId, String currentPassword, String newPassword);
 }

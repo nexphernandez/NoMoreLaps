@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Set;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -35,10 +36,16 @@ public class ReservationJpaEntity {
     private LocalDateTime endTime;
 
     @Column(name = "total_price")
-    private double price;
+    private Double price;
 
     @Column(name = "status")
     private String state;
+
+    @Column(name = "base_price")
+    private Double basePrice;
+
+    @Column(name = "paid")
+    private boolean paid = false;
 
     @Column(name = "created_at")
     private LocalDateTime creationTime;
@@ -51,7 +58,7 @@ public class ReservationJpaEntity {
     @JoinColumn(name = "user_id")
     private UserJpaEntity user;
 
-    @OneToMany(mappedBy = "reservation")
+    @OneToMany(mappedBy = "reservation", cascade = CascadeType.ALL)
     private Set<SanctionJpaEntity> sanctions;
 
     /**
@@ -82,7 +89,7 @@ public class ReservationJpaEntity {
      * @param user         reservation user
      * @param sanctions    reservation sanctions
      */
-    public ReservationJpaEntity(Long id, LocalDateTime startTime, LocalDateTime endTime, double price, String state,
+    public ReservationJpaEntity(Long id, LocalDateTime startTime, LocalDateTime endTime, Double price, String state,
             LocalDateTime creationTime, ParkingSpotJpaEntity parkingSpot, UserJpaEntity user,
             Set<SanctionJpaEntity> sanctions) {
         this.id = id;
@@ -120,11 +127,11 @@ public class ReservationJpaEntity {
         this.endTime = endTime;
     }
 
-    public double getPrice() {
+    public Double getPrice() {
         return this.price;
     }
 
-    public void setPrice(double price) {
+    public void setPrice(Double price) {
         this.price = price;
     }
 
@@ -142,6 +149,22 @@ public class ReservationJpaEntity {
 
     public void setCreationTime(LocalDateTime creationTime) {
         this.creationTime = creationTime;
+    }
+
+    public Double getBasePrice() {
+        return basePrice;
+    }
+
+    public void setBasePrice(Double basePrice) {
+        this.basePrice = basePrice;
+    }
+
+    public boolean isPaid() {
+        return paid;
+    }
+
+    public void setPaid(boolean paid) {
+        this.paid = paid;
     }
 
     public ParkingSpotJpaEntity getParkingSpot() {

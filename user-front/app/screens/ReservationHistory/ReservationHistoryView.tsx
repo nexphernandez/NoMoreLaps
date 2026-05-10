@@ -54,6 +54,7 @@ const ReservationHistoryView: React.FC<ReservationHistoryViewProps> = ({ history
                 label={
                   item.state === 'PENDING_SYNC' ? 'WAITING CONNECTION' : 
                   item.state === 'SYNC_ERROR' ? 'SYNC ERROR' :
+                  item.paid ? 'PAID' : 
                   (item.state || 'UNKNOWN')
                 } 
                 type={
@@ -72,11 +73,20 @@ const ReservationHistoryView: React.FC<ReservationHistoryViewProps> = ({ history
               </View>
               <View style={styles.detailItem}>
                 <Typography variant="label">Status</Typography>
-                <Typography variant="body" style={{fontWeight: '600'}}>{item.state}</Typography>
+                <Typography variant="body" style={{fontWeight: '600'}}>
+                  {item.paid ? 'PAID' : item.state}
+                </Typography>
               </View>
               <View style={styles.detailItem}>
                 <Typography variant="label">Cost</Typography>
-                <Typography variant="body" style={{fontWeight: '600'}}>{item.price}€</Typography>
+                <View style={{ flexDirection: 'row', alignItems: 'baseline' }}>
+                  <Typography variant="body" style={{fontWeight: '600'}}>{item.price}€</Typography>
+                  {item.sanctionPrice && item.sanctionPrice > 0 ? (
+                    <Typography variant="caption" color={theme.danger} style={{marginLeft: 4}}>
+                      (inc. {item.sanctionPrice}€ fine)
+                    </Typography>
+                  ) : null}
+                </View>
               </View>
             </View>
             
@@ -130,6 +140,7 @@ const ReservationHistoryView: React.FC<ReservationHistoryViewProps> = ({ history
                       label={
                         selectedRes.state === 'PENDING_SYNC' ? 'WAITING CONNECTION' : 
                         selectedRes.state === 'SYNC_ERROR' ? 'SYNC ERROR' :
+                        selectedRes.paid ? 'PAID' :
                         (selectedRes.state || '')
                       } 
                       type={
@@ -140,7 +151,24 @@ const ReservationHistoryView: React.FC<ReservationHistoryViewProps> = ({ history
                     />
                   </View>
                   <View style={styles.modalRow}>
-                    <Typography variant="label">Total Paid</Typography>
+                    <Typography variant="label">Payment</Typography>
+                    <Badge 
+                      label={selectedRes.paid ? 'PAID' : 'PENDING'} 
+                      type={selectedRes.paid ? 'success' : 'warning'} 
+                    />
+                  </View>
+                  <View style={styles.modalRow}>
+                    <Typography variant="label">Base Price</Typography>
+                    <Typography variant="body">{selectedRes.basePrice || selectedRes.price}€</Typography>
+                  </View>
+                  {selectedRes.sanctionPrice && selectedRes.sanctionPrice > 0 ? (
+                    <View style={styles.modalRow}>
+                      <Typography variant="label" color={theme.danger}>Sanctions</Typography>
+                      <Typography variant="body" color={theme.danger}>+{selectedRes.sanctionPrice}€</Typography>
+                    </View>
+                  ) : null}
+                  <View style={styles.modalRow}>
+                    <Typography variant="label">Total Cost</Typography>
                     <Typography variant="h2" color={theme.primary}>{selectedRes.price || '0'}€</Typography>
                   </View>
                   
@@ -183,13 +211,14 @@ const ReservationHistoryView: React.FC<ReservationHistoryViewProps> = ({ history
 };
 
 const styles = StyleSheet.create({
-  listContent: { paddingBottom: 20 },
-  header: { marginBottom: 24, marginTop: 10 },
-  cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 },
-  cardBody: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 20 },
+  listContent: { padding: 24, paddingBottom: 60 },
+  header: { marginBottom: 32, marginTop: 8 },
+  cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 },
+  cardBody: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 24 },
   detailItem: { flex: 1 },
   receiptBtn: {
     borderTopWidth: 1,
+    paddingTop: 4,
   },
   modalOverlay: {
     flex: 1,

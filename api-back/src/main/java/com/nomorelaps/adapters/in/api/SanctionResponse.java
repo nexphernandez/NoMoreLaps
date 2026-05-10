@@ -17,6 +17,9 @@ public class SanctionResponse {
     private String reason;
     private boolean paid;
     private LocalDateTime arrivalTime;
+    private Long userId;
+    private String userName;
+    private String parkingName;
 
     /**
      * Empty constructor
@@ -40,12 +43,15 @@ public class SanctionResponse {
      * @param paid status of the sanction
      * @param arrivalTime of the sanction
      */
-    public SanctionResponse(Long id, double amount, String reason, boolean paid, LocalDateTime arrivalTime) {
+    public SanctionResponse(Long id, double amount, String reason, boolean paid, LocalDateTime arrivalTime, Long userId, String userName, String parkingName) {
         this.id = id;
         this.amount = amount;
         this.reason = reason;
         this.paid = paid;
         this.arrivalTime = arrivalTime;
+        this.userId = userId;
+        this.userName = userName;
+        this.parkingName = parkingName;
     }
 
     public Long getId() {
@@ -86,6 +92,30 @@ public class SanctionResponse {
 
     public void setArrivalTime(LocalDateTime arrivalTime) {
         this.arrivalTime = arrivalTime;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getParkingName() {
+        return parkingName;
+    }
+
+    public void setParkingName(String parkingName) {
+        this.parkingName = parkingName;
     }
 
     @Override

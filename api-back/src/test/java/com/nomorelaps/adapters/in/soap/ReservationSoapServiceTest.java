@@ -1,80 +1,89 @@
 package com.nomorelaps.adapters.in.soap;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.List;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
+
 import com.nomorelaps.adapters.in.api.ReservationResponse;
 import com.nomorelaps.adapters.mapper.ReservationMapper;
 import com.nomorelaps.business.interfaces.IReservationService;
 import com.nomorelaps.domain.models.Reservation;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 
-import java.util.Collections;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
+/**
+ * Unit tests for ReservationSoapService.
+ * Validates the retrieval of reservation information via SOAP adapter.
+ * 
+ * @author nexphernandez
+ * @version 1.1.0
+ */
+@SpringBootTest
 class ReservationSoapServiceTest {
 
+    @MockitoBean
     private IReservationService reservationService;
+
+    @MockitoSpyBean
     private ReservationMapper reservationMapper;
+
+    @Autowired
     private ReservationSoapService reservationSoapService;
+
+    private Reservation sampleReservation;
 
     @BeforeEach
     void setUp() {
-        reservationService = mock(IReservationService.class);
-        reservationMapper = mock(ReservationMapper.class);
-        reservationSoapService = new ReservationSoapService(reservationService, reservationMapper);
+        sampleReservation = new Reservation(1L);
+        sampleReservation.setState("ACTIVE");
+        sampleReservation.setPrice(20.0);
     }
 
     @Test
-    @DisplayName("findByUserId - Should return list")
-    void shouldReturnFindByUserId() {
-        Reservation reservation = new Reservation(1L);
-        ReservationResponse response = new ReservationResponse();
-        response.setId(1L);
+    @DisplayName("findByUserId - Success: Should return list of user reservations")
+    void shouldReturnReservationsByUserIdSuccessfully() {
+        when(reservationService.findByUserId(10L)).thenReturn(List.of(sampleReservation));
 
-        when(reservationService.findByUserId(2L)).thenReturn(Collections.singletonList(reservation));
-        when(reservationMapper.toResponse(reservation)).thenReturn(response);
-
-        List<ReservationResponse> result = reservationSoapService.findByUserId(2L);
+        List<ReservationResponse> result = reservationSoapService.findByUserId(10L);
 
         assertNotNull(result);
         assertEquals(1, result.size());
-        verify(reservationService, times(1)).findByUserId(2L);
+        assertEquals(1L, result.get(0).getId());
+        verify(reservationService).findByUserId(10L);
     }
 
     @Test
-    @DisplayName("findByParkingSpotId - Should return list")
-    void shouldReturnFindByParkingSpotId() {
-        Reservation reservation = new Reservation(1L);
-        ReservationResponse response = new ReservationResponse();
-        response.setId(1L);
+    @DisplayName("findByParkingSpotId - Success: Should return list of spot reservations")
+    void shouldReturnReservationsBySpotIdSuccessfully() {
+        when(reservationService.findByParkingSpotId(20L)).thenReturn(List.of(sampleReservation));
 
-        when(reservationService.findByParkingSpotId(2L)).thenReturn(Collections.singletonList(reservation));
-        when(reservationMapper.toResponse(reservation)).thenReturn(response);
-
-        List<ReservationResponse> result = reservationSoapService.findByParkingSpotId(2L);
+        List<ReservationResponse> result = reservationSoapService.findByParkingSpotId(20L);
 
         assertNotNull(result);
         assertEquals(1, result.size());
-        verify(reservationService, times(1)).findByParkingSpotId(2L);
+        assertEquals("ACTIVE", result.get(0).getState());
+        verify(reservationService).findByParkingSpotId(20L);
     }
 
     @Test
-    @DisplayName("findByState - Should return list")
-    void shouldReturnFindByState() {
-        Reservation reservation = new Reservation(1L);
-        ReservationResponse response = new ReservationResponse();
-        response.setId(1L);
-
-        when(reservationService.findByState("ACTIVE")).thenReturn(Collections.singletonList(reservation));
-        when(reservationMapper.toResponse(reservation)).thenReturn(response);
+    @DisplayName("findByState - Success: Should return filtered reservations")
+    void shouldReturnReservationsByStateSuccessfully() {
+        when(reservationService.findByState("ACTIVE")).thenReturn(List.of(sampleReservation));
 
         List<ReservationResponse> result = reservationSoapService.findByState("ACTIVE");
 
         assertNotNull(result);
         assertEquals(1, result.size());
-        verify(reservationService, times(1)).findByState("ACTIVE");
+        assertEquals(20.0, result.get(0).getPrice());
+        verify(reservationService).findByState("ACTIVE");
     }
 }

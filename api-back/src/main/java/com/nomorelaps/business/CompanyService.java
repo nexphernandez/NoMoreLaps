@@ -2,6 +2,7 @@ package com.nomorelaps.business;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,6 +33,9 @@ public class CompanyService implements ICompanyService {
         if (persistencePort.findByEmail(company.getEmail()).isPresent()) {
             throw new IllegalArgumentException("BusinessRuleException: El email de la empresa ya está registrado.");
         }
+        if (company.getApiKey() == null || company.getApiKey().isEmpty()) {
+            company.setApiKey("nml_live_" + UUID.randomUUID().toString().replace("-", ""));
+        }
         return persistencePort.save(company);
     }
 
@@ -57,11 +61,31 @@ public class CompanyService implements ICompanyService {
 
     @Override
     public Company update(Company company) {
-        return persistencePort.save(company);
+        Company existing = persistencePort.findById(company.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Company not found"));
+        
+        if (company.getName() != null) existing.setName(company.getName());
+        if (company.getPhone() != null) existing.setPhone(company.getPhone());
+        if (company.getEmail() != null) existing.setEmail(company.getEmail());
+        if (company.getCif() != null) existing.setCif(company.getCif());
+        if (company.getPassword() != null && !company.getPassword().isBlank()) {
+            existing.setPassword(company.getPassword());
+        }
+        
+        return persistencePort.save(existing);
     }
 
     @Override
     public void deleteById(Long id) {
         persistencePort.deleteById(id);
+    }
+
+    @Override
+    public Company regenerateApiKey(Long id) {
+        Company company = persistencePort.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Company not found"));
+        
+        company.setApiKey("nml_live_" + UUID.randomUUID().toString().replace("-", ""));
+        return persistencePort.save(company);
     }
 }

@@ -1,94 +1,87 @@
 package com.nomorelaps.adapters.in.api;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+/**
+ * Unit tests for RoleResponse DTO.
+ * Verifies that role response data is correctly mapped and logical equality is maintained.
+ * 
+ * @author nexphernandez
+ * @version 1.0.0
+ */
 class RoleResponseTest {
 
-    @Test
-    @DisplayName("Should test getters, setters and empty constructor for RoleResponse")
-    void testGettersAndSetters() {
-        RoleResponse dto = new RoleResponse();
-        assertNotNull(dto);
+    private RoleResponse roleResponse;
 
-        dto.setId(1L);
-        assertEquals(1L, dto.getId());
-        dto.setName("dummy1");
-        assertEquals("dummy1", dto.getName());
-        dto.setDescription("dummy1");
-        assertEquals("dummy1", dto.getDescription());
+    @BeforeEach
+    void setUp() {
+        roleResponse = new RoleResponse();
     }
 
     @Test
-    @DisplayName("Should test parameterized constructors for RoleResponse")
-    void testConstructors() {
-        RoleResponse dto1 = new RoleResponse(1L);
-        assertEquals(1L, dto1.getId());
-        assertNull(dto1.getName());
-
-        RoleResponse dto2 = new RoleResponse(2L, "Admin", "Admin role");
-        assertEquals(2L, dto2.getId());
-        assertEquals("Admin", dto2.getName());
-        assertEquals("Admin role", dto2.getDescription());
+    @DisplayName("Constructor(id) - Should initialize with ID")
+    void shouldInitializeWithIdConstructor() {
+        RoleResponse idOnly = new RoleResponse(15L);
+        assertEquals(15L, idOnly.getId());
+        assertNull(idOnly.getName());
     }
 
+    @Test
+    @DisplayName("Full Constructor - Should correctly map all fields")
+    void shouldInitializeWithFullConstructor() {
+        RoleResponse fullResponse = new RoleResponse(1L, "MANAGER", "Can manage parking spots");
+
+        assertEquals(1L, fullResponse.getId());
+        assertEquals("MANAGER", fullResponse.getName());
+        assertEquals("Can manage parking spots", fullResponse.getDescription());
+    }
 
     @Test
-    @DisplayName("Should test equals and hashCode branches for RoleResponse")
-    void testEqualsAndHashCode() {
-        RoleResponse dto1 = new RoleResponse();
-        RoleResponse dto2 = new RoleResponse();
-        RoleResponse dto3 = new RoleResponse();
+    @DisplayName("id - Should set and get the ID")
+    void shouldSetAndGetId() {
+        roleResponse.setId(10L);
+        assertEquals(10L, roleResponse.getId());
+    }
 
-        dto1.setId(1L);
-        dto2.setId(1L);
-        dto3.setId(2L);
-        dto1.setName("dummy1");
-        dto2.setName("dummy1");
-        dto3.setName("dummy2");
-        dto1.setDescription("dummy1");
-        dto2.setDescription("dummy1");
-        dto3.setDescription("dummy2");
+    @Test
+    @DisplayName("name - Should set and get the name")
+    void shouldSetAndGetName() {
+        roleResponse.setName("MODERATOR");
+        assertEquals("MODERATOR", roleResponse.getName());
+    }
 
-        // Base checks
-        assertEquals(dto1, dto1);
-        assertEquals(dto1, dto2);
-        assertNotEquals(dto1, dto3);
-        assertNotEquals(dto1, null);
-        assertNotEquals(dto1, new Object());
-        assertEquals(dto1.hashCode(), dto2.hashCode());
+    @Test
+    @DisplayName("description - Should set and get the description")
+    void shouldSetAndGetDescription() {
+        roleResponse.setDescription("Moderates user comments");
+        assertEquals("Moderates user comments", roleResponse.getDescription());
+    }
 
-        // Branch coverage for each field
-        RoleResponse tempid = new RoleResponse();
-        tempid.setId(1L);
-        tempid.setName("dummy1");
-        tempid.setDescription("dummy1");
-        tempid.setId(null);
-        dto1.equals(tempid);
-        tempid.equals(dto1);
-        tempid.setId(2L);
-        dto1.equals(tempid);
+    @Test
+    @DisplayName("equals - Should be equal for same ID")
+    void shouldBeEqualForSameId() {
+        RoleResponse first = new RoleResponse(1L);
+        RoleResponse second = new RoleResponse(1L);
+        RoleResponse third = new RoleResponse(2L);
 
-        RoleResponse tempname = new RoleResponse();
-        tempname.setId(1L);
-        tempname.setName("dummy1");
-        tempname.setDescription("dummy1");
-        tempname.setName(null);
-        dto1.equals(tempname);
-        tempname.equals(dto1);
-        tempname.setName("dummy2");
-        dto1.equals(tempname);
+        assertEquals(first, first, "Should be equal to itself");
+        assertEquals(first, second, "Should be equal if IDs match");
+        assertNotEquals(first, third, "Should not be equal if IDs differ");
+        assertNotEquals(first, null, "Should not be equal to null");
+        assertNotEquals(first, "different", "Should return false for different class (instanceof test)");
+    }
 
-        RoleResponse tempdescription = new RoleResponse();
-        tempdescription.setId(1L);
-        tempdescription.setName("dummy1");
-        tempdescription.setDescription("dummy1");
-        tempdescription.setDescription(null);
-        dto1.equals(tempdescription);
-        tempdescription.equals(dto1);
-        tempdescription.setDescription("dummy2");
-        dto1.equals(tempdescription);
+    @Test
+    @DisplayName("hashCode - Should be consistent for same ID")
+    void shouldHaveConsistentHashCode() {
+        RoleResponse first = new RoleResponse(1L);
+        RoleResponse second = new RoleResponse(1L);
 
+        assertEquals(first.hashCode(), second.hashCode());
     }
 }

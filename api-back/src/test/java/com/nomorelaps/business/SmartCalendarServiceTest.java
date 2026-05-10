@@ -25,6 +25,11 @@ import com.nomorelaps.business.interfaces.IReservationService;
 import com.nomorelaps.domain.models.Parking;
 import com.nomorelaps.domain.models.ParkingSpot;
 
+/**
+ * Unit tests for SmartCalendarService.
+ * Verifies geographic recommendation logic, geocoding fallbacks,
+ * and distance-based sorting for parking suggestions.
+ */
 @ExtendWith(MockitoExtension.class)
 class SmartCalendarServiceTest {
 
@@ -41,6 +46,8 @@ class SmartCalendarServiceTest {
     private SmartCalendarService smartCalendarService;
 
     private SmartRecommendationRequest request;
+    private Parking  parking;
+    private ParkingSpot  spot;
 
     @BeforeEach
     void setUp() {
@@ -50,20 +57,18 @@ class SmartCalendarServiceTest {
         request.setStartTime(LocalDateTime.now().plusHours(1).toString());
         request.setDurationHours(2);
         request.setRadiusKm(5.0);
+        parking = new Parking(1L);
+        parking.setName("Sol Parking");
+        parking.setLatitude(40.417);
+        parking.setLongitude(-3.704);
+        parking.setPricePerHour(2.5);
+        spot = new ParkingSpot(100L);
+        spot.setNumber(1);
     }
 
     @Test
     @DisplayName("Should recommend parking when nearby spots are available")
     void shouldRecommendParking() {
-        // Arrange
-        Parking parking = new Parking(1L);
-        parking.setName("Sol Parking");
-        parking.setLatitude(40.417);
-        parking.setLongitude(-3.704);
-        parking.setPricePerHour(2.5);
-
-        ParkingSpot spot = new ParkingSpot(100L);
-        spot.setNumber(1);
 
         when(parkingService.findNearby(anyDouble(), anyDouble(), anyDouble()))
                 .thenReturn(Collections.singletonList(parking));
@@ -72,10 +77,8 @@ class SmartCalendarServiceTest {
         when(reservationService.hasOverlappingReservations(anyLong(), any(), any()))
                 .thenReturn(false);
 
-        // Act
         SmartRecommendationResponse response = smartCalendarService.recommend(request);
 
-        // Assert
         assertNotNull(response);
         assertFalse(response.getSuggestions().isEmpty());
         assertEquals("Sol Parking", response.getSuggestions().get(0).getParkingName());
@@ -84,7 +87,6 @@ class SmartCalendarServiceTest {
     @Test
     @DisplayName("Should resolve coordinates from destination text if missing")
     void shouldGeocodeWhenCoordsMissing() {
-        // Arrange
         request.setLatitude(null);
         request.setLongitude(null);
         request.setDestinationText("Puerta del Sol");
@@ -93,10 +95,8 @@ class SmartCalendarServiceTest {
         when(geocodingProvider.geocode("Puerta del Sol")).thenReturn(geocodeResponse);
         when(parkingService.findNearby(anyDouble(), anyDouble(), anyDouble())).thenReturn(Collections.emptyList());
 
-        // Act
         smartCalendarService.recommend(request);
 
-        // Assert
         verify(geocodingProvider).geocode("Puerta del Sol");
     }
 
@@ -105,9 +105,9 @@ class SmartCalendarServiceTest {
     void shouldGeocode() {
         SmartGeocodeResponse expected = new SmartGeocodeResponse("Address", 1.0, 2.0);
         when(geocodingProvider.geocode("query")).thenReturn(expected);
-        
+
         SmartGeocodeResponse actual = smartCalendarService.geocode("query");
-        
+
         assertEquals(expected, actual);
         verify(geocodingProvider).geocode("query");
     }
@@ -115,16 +115,16 @@ class SmartCalendarServiceTest {
     @Test
     @DisplayName("Should return empty recommendations when no spots available")
     void shouldReturnEmptyWhenNoSpots() {
-        Parking parking = new Parking(1L);
         parking.setLatitude(40.0);
         parking.setLongitude(-3.0);
-        
-        when(parkingService.findNearby(anyDouble(), anyDouble(), anyDouble())).thenReturn(Collections.singletonList(parking));
+
+        when(parkingService.findNearby(anyDouble(), anyDouble(), anyDouble()))
+                .thenReturn(Collections.singletonList(parking));
         when(parkingSpotService.findByParkingId(1L)).thenReturn(Collections.singletonList(new ParkingSpot(100L)));
         when(reservationService.hasOverlappingReservations(anyLong(), any(), any())).thenReturn(true);
-        
+
         SmartRecommendationResponse response = smartCalendarService.recommend(request);
-        
+
         assertTrue(response.getSuggestions().isEmpty());
     }
 
@@ -154,7 +154,6 @@ class SmartCalendarServiceTest {
     @DisplayName("Should skip geocode when only longitude is null but latitude provided")
     void shouldThrowWhenOnlyLongitudeNull() {
         request.setLongitude(null);
-        // latitude is present, destinationText null → first if is false, second if throws
         assertThrows(IllegalArgumentException.class, () -> smartCalendarService.recommend(request));
     }
 
@@ -163,7 +162,7 @@ class SmartCalendarServiceTest {
     void shouldGeocodeWhenLatitudeNull() {
         request.setLatitude(null);
         request.setDestinationText("Some Address");
-        
+
         SmartGeocodeResponse geocodeResponse = new SmartGeocodeResponse("Formatted", 40.0, -3.0);
         when(geocodingProvider.geocode("Some Address")).thenReturn(geocodeResponse);
         when(parkingService.findNearby(anyDouble(), anyDouble(), anyDouble())).thenReturn(Collections.emptyList());
@@ -173,4 +172,3 @@ class SmartCalendarServiceTest {
         verify(geocodingProvider).geocode("Some Address");
     }
 }
-

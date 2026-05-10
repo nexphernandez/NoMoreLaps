@@ -84,7 +84,7 @@ const ParkingDetailView: React.FC<ParkingDetailViewProps> = ({
         {address && <Typography variant="body" color={theme.textSecondary}>{address}</Typography>}
       </View>
 
-      <View style={{ maxHeight: '100%' }}>
+      <View style={{ flex: 1 }}>
         <FlatList
           data={spots}
           numColumns={3}
@@ -93,7 +93,7 @@ const ParkingDetailView: React.FC<ParkingDetailViewProps> = ({
           ListHeaderComponent={() => (
             <View style={{ marginBottom: 16 }}>
               {/* DATE SELECTOR */}
-              <Typography variant="label" style={styles.sectionTitle}>1. SELECCIONA DÍA</Typography>
+              <Typography variant="label" style={styles.sectionTitle}>1. SELECT DAY</Typography>
               <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
                 {getDays().map((date, idx) => {
                   const isSelected = isSameDay(selectedDate, date);
@@ -119,10 +119,10 @@ const ParkingDetailView: React.FC<ParkingDetailViewProps> = ({
               </ScrollView>
 
               {/* TIME SELECTORS */}
-              <Typography variant="label" style={styles.sectionTitle}>2. HORARIO DE ESTANCIA</Typography>
+              <Typography variant="label" style={styles.sectionTitle}>2. STAY DURATION</Typography>
               <View style={styles.timeRow}>
                 <View style={{ flex: 1 }}>
-                  <Typography variant="caption" color={theme.textSecondary}>Entrada</Typography>
+                  <Typography variant="caption" color={theme.textSecondary}>Entry</Typography>
                   <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.miniScroll}>
                     {TIME_STEPS.map(t => {
                       const isToday = isSameDay(selectedDate, new Date());
@@ -153,7 +153,7 @@ const ParkingDetailView: React.FC<ParkingDetailViewProps> = ({
                 </View>
 
                 <View style={{ flex: 1, marginLeft: 12 }}>
-                  <Typography variant="caption" color={theme.textSecondary}>Salida</Typography>
+                  <Typography variant="caption" color={theme.textSecondary}>Exit</Typography>
                   <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.miniScroll}>
                     {TIME_STEPS.map(t => {
                       if (t <= startHour) return null;
@@ -172,7 +172,7 @@ const ParkingDetailView: React.FC<ParkingDetailViewProps> = ({
                 </View>
               </View>
 
-              <Typography variant="label" style={styles.sectionTitle}>3. PLAZAS DISPONIBLES</Typography>
+              <Typography variant="label" style={styles.sectionTitle}>3. AVAILABLE SPOTS</Typography>
             </View>
           )}
           renderItem={({ item }) => {
@@ -225,39 +225,44 @@ const ParkingDetailView: React.FC<ParkingDetailViewProps> = ({
 };
 
 const styles = StyleSheet.create({
-  header: { padding: 24, borderBottomWidth: 1 },
-  list: { padding: 16 },
-  sectionTitle: { marginTop: 24, marginBottom: 12, fontWeight: 'bold', fontSize: 12 },
-  scrollContent: { paddingRight: 24 },
+  header: { padding: 24, paddingVertical: 28, borderBottomWidth: 1 },
+  list: { padding: 24 },
+  sectionTitle: { marginTop: 32, marginBottom: 16, fontWeight: 'bold', fontSize: 13, textTransform: 'uppercase', opacity: 0.8 },
+  scrollContent: { paddingRight: 24, paddingBottom: 8 },
   dateBtn: {
-    width: 65,
-    height: 75,
-    borderRadius: 12,
-    borderWidth: 1,
+    width: 68,
+    height: 80,
+    borderRadius: 16,
+    borderWidth: 1.5,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 10,
+    marginRight: 12,
   },
-  timeRow: { flexDirection: 'row', marginTop: 8 },
-  miniScroll: { marginTop: 8 },
+  timeRow: { flexDirection: 'row', marginTop: 12, gap: 16 },
+  miniScroll: { marginTop: 10, paddingBottom: 8 },
   miniBtn: {
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 8,
-    borderWidth: 1,
-    marginRight: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 10,
+    borderWidth: 1.5,
+    marginRight: 10,
     alignItems: 'center',
   },
   spotCard: {
     flex: 1,
-    margin: 8,
-    height: 80,
-    borderRadius: 12,
+    margin: 6,
+    height: 85,
+    borderRadius: 16,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 2,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOpacity: 0.05,
+    shadowRadius: 5,
+    shadowOffset: { width: 0, height: 2 },
   },
-  footer: { padding: 24, borderTopWidth: 1 },
+  footer: { padding: 24, paddingBottom: 40, borderTopWidth: 1, elevation: 10, shadowColor: '#000', shadowOpacity: 0.1, shadowRadius: 10 },
 });
 
 export default ParkingDetailView;

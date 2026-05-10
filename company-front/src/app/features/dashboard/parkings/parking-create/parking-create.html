@@ -1,0 +1,87 @@
+<div class="create-container">
+  <header class="page-header">
+    <div class="header-text">
+      <h1 class="page-title">{{ isEditMode ? 'Edit Parking' : 'Add New Parking' }}</h1>
+      <p class="page-subtitle">{{ isEditMode ? 'Update your location information.' : 'Configure a new physical location for your network.' }}</p>
+    </div>
+    <button class="btn-secondary" routerLink="/dashboard/parkings">Back</button>
+  </header>
+
+  <div class="form-card glass-card">
+    <form class="parking-form" [formGroup]="parkingForm" (ngSubmit)="onSave()">
+      <div class="form-section">
+        <h3>General Information</h3>
+        <app-input 
+          label="Parking Name" 
+          placeholder="e.g. Central Plaza"
+          type="text"
+          formControlName="name"
+        ></app-input>
+        
+        <app-input 
+          label="Full Address" 
+          placeholder="123 Fake St, Madrid"
+          type="text"
+          formControlName="address"
+        ></app-input>
+
+        <div class="coords-row">
+          <app-input 
+            label="Latitude" 
+            placeholder="40.4168"
+            type="number"
+            formControlName="latitude"
+          ></app-input>
+          <app-input 
+            label="Longitude" 
+            placeholder="-3.7038"
+            type="number"
+            formControlName="longitude"
+          ></app-input>
+        </div>
+
+        <app-input 
+          label="Capacity (Number of Spots)" 
+          placeholder="10"
+          type="number"
+          formControlName="totalSpots"
+        ></app-input>
+      </div>
+
+      <div class="form-section">
+        <h3>Sanction Configuration</h3>
+        <p class="section-help">Define how users who exceed their reservation time will be penalized.</p>
+        
+        <div class="sanction-row">
+          <app-input 
+            label="Sanction Amount (€)" 
+            placeholder="15.00"
+            type="number"
+            formControlName="sanctionAmount"
+          ></app-input>
+          
+          <app-input 
+            label="Sanction Interval (Minutes)" 
+            placeholder="30"
+            type="number"
+            formControlName="sanctionIntervalInMinutes"
+          ></app-input>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <app-button 
+          text="Cancel" 
+          customClass="btn-outline"
+          routerLink="/dashboard/parkings"
+        ></app-button>
+        
+        <app-button 
+          [text]="isEditMode ? 'Save Changes' : 'Save Parking'" 
+          type="submit"
+          [loading]="loading"
+        ></app-button>
+      </div>
+    </form>
+  </div>
+</div>

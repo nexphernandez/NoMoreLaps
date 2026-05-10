@@ -11,6 +11,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.nomorelaps.adapters.mapper.ReservationMapper;
+import com.nomorelaps.adapters.mapper.SanctionMapper;
 import com.nomorelaps.adapters.out.persistence.jpa.ParkingSpotJpaEntity;
 import com.nomorelaps.adapters.out.persistence.jpa.ReservationJpaEntity;
 import com.nomorelaps.adapters.out.persistence.repository.ReservationJpaRepository;
@@ -27,6 +28,9 @@ class ReservationPersistenceAdapterMapperTest {
     @Mock
     private ReservationMapper mapper;
 
+    @Mock
+    private SanctionMapper sanctionMapper;
+
     @InjectMocks
     private ReservationPersistenceAdapter adapter;
 
@@ -34,7 +38,6 @@ class ReservationPersistenceAdapterMapperTest {
     @DisplayName("Should handle null user and spot on toEntity")
     void shouldHandleNullsOnToEntity() {
         Reservation domain = new Reservation(1L);
-        // User and Spot are null by default
 
         ReservationJpaEntity entity = new ReservationJpaEntity();
         entity.setId(1L);
@@ -44,9 +47,8 @@ class ReservationPersistenceAdapterMapperTest {
         assertNull(result.getUser());
         assertNull(result.getParkingSpot());
 
-        // Now test with empty User and Spot (null IDs)
-        domain.setUser(new User()); // ID is null
-        domain.setParkingSpot(new ParkingSpot()); // ID is null
+        domain.setUser(new User());
+        domain.setParkingSpot(new ParkingSpot());
         result = adapter.toEntity(domain);
         assertNull(result.getUser());
         assertNull(result.getParkingSpot());
@@ -65,7 +67,6 @@ class ReservationPersistenceAdapterMapperTest {
         assertNull(result.getUser());
         assertNull(result.getParkingSpot());
 
-        // Now test with Spot but no Parking
         ParkingSpotJpaEntity spotEntity = new ParkingSpotJpaEntity();
         spotEntity.setId(2L);
         spotEntity.setParking(null);

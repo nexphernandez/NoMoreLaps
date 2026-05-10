@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.nomorelaps.adapters.mapper.ReservationMapper;
+import com.nomorelaps.adapters.mapper.SanctionMapper;
 import com.nomorelaps.adapters.out.persistence.abstracta.BasePersistenceAdapter;
 import com.nomorelaps.adapters.out.persistence.interfaces.IReservationPersistenceAdapter;
 import com.nomorelaps.adapters.out.persistence.jpa.ParkingJpaEntity;
@@ -33,11 +34,13 @@ public class ReservationPersistenceAdapter
         implements IReservationPersistenceAdapter {
 
     private final ReservationMapper mapper;
+    private final SanctionMapper sanctionMapper;
 
     @Autowired
-    public ReservationPersistenceAdapter(ReservationJpaRepository repository, ReservationMapper mapper) {
+    public ReservationPersistenceAdapter(ReservationJpaRepository repository, ReservationMapper mapper, SanctionMapper sanctionMapper) {
         super(repository);
         this.mapper = mapper;
+        this.sanctionMapper = sanctionMapper;
     }
 
     /**
@@ -61,6 +64,13 @@ public class ReservationPersistenceAdapter
             entity.setParkingSpot(spotEntity);
         }
 
+        if (domain.getSanctions() != null) {
+            entity.setSanctions(domain.getSanctions().stream()
+                    .map(sanctionMapper::toJpaEntity)
+                    .collect(Collectors.toSet()));
+            entity.getSanctions().forEach(s -> s.setReservation(entity));
+        }
+
         return entity;
     }
 
@@ -76,6 +86,7 @@ public class ReservationPersistenceAdapter
         if (entity.getUser() != null) {
             User user = new User();
             user.setId(entity.getUser().getId());
+            user.setName(entity.getUser().getName());
             domain.setUser(user);
         }
         if (entity.getParkingSpot() != null) {
@@ -97,6 +108,12 @@ public class ReservationPersistenceAdapter
             }
 
             domain.setParkingSpot(spot);
+        }
+
+        if (entity.getSanctions() != null) {
+            domain.setSanctions(entity.getSanctions().stream()
+                    .map(sanctionMapper::toDomain)
+                    .collect(Collectors.toSet()));
         }
 
         return domain;
@@ -143,5 +160,12 @@ public class ReservationPersistenceAdapter
                 .findByParkingSpotIdAndStateAndStartTimeBeforeAndEndTimeAfterAndIdNot(spotId, "ACTIVE", end, start,
                         excludeId)
                 .isEmpty();
+    }
+
+    @Override
+    public List<Reservation> findByCompanyId(Long companyId) {
+        return repository.findByParkingSpotParkingCompanyId(companyId).stream()
+                .map(this::toDomain)
+                .collect(Collectors.toList());
     }
 }

@@ -79,4 +79,13 @@ public interface ReservationJpaRepository extends JpaRepository<ReservationJpaEn
      */
     List<ReservationJpaEntity> findByParkingSpotIdAndStateAndStartTimeBeforeAndEndTimeAfterAndIdNot(
             Long spotId, String state, LocalDateTime end, LocalDateTime start, Long id);
-}
+
+    /**
+     * Retrieves all reservations associated with a specific company's parkings.
+     * 
+     * @param companyId The company ID.
+     * @return A list of matching reservations.
+     */
+    @EntityGraph(attributePaths = { "parkingSpot", "parkingSpot.parking", "user" })
+    List<ReservationJpaEntity> findByParkingSpotParkingCompanyId(Long companyId);
+}

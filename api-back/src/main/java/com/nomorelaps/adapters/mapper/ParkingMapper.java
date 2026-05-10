@@ -16,7 +16,7 @@ import com.nomorelaps.domain.models.Parking;
  * @author nexphernandez DiazLuisAlejandro
  * @version 1.0.0
  */
-@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
+@Mapper(componentModel = "spring", uses = {UserMapper.class, CompanyMapper.class, DynamicPriceMapper.class}, unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface ParkingMapper {
     /**
      * Converts an API request into a domain model.
@@ -24,6 +24,7 @@ public interface ParkingMapper {
      * @param request The incoming request DTO.
      * @return The domain model representation.
      */
+    @Mapping(target = "company.id", source = "companyId")
     Parking toDomainFromRequest(ParkingRequest request);
 
     /**
@@ -32,6 +33,7 @@ public interface ParkingMapper {
      * @param domain The business domain object.
      * @return The response DTO for the API.
      */
+    @Mapping(target = "companyId", source = "company.id")
     ParkingResponse toResponse(Parking domain);
 
     /**
@@ -53,6 +55,6 @@ public interface ParkingMapper {
      */
     @Mapping(target = "parkingSpots", ignore = true)
     @Mapping(target = "dynamicPrice", ignore = true)
-    @Mapping(target = "company", ignore = true)
+    @Mapping(target = "company", source = "company")
     Parking toDomain(ParkingJpaEntity entity);
 }

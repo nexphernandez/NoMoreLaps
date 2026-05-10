@@ -40,10 +40,8 @@ public interface UserMapper {
      * @param domain The business domain object.
      * @return The JPA entity for database storage.
      */
-    @Mapping(target = "companies", ignore = true)
     @Mapping(target = "reservations", ignore = true)
     @Mapping(target = "sanctions", ignore = true)
-    @Mapping(target = "role", ignore = true)
     UserJpaEntity toJpaEntity(User domain);
 
     /**
@@ -55,6 +53,5 @@ public interface UserMapper {
     @Mapping(target = "companies", ignore = true)
     @Mapping(target = "reservations", ignore = true)
     @Mapping(target = "sanctions", ignore = true)
-    @Mapping(target = "role", ignore = true)
     User toDomain(UserJpaEntity entity);
 }

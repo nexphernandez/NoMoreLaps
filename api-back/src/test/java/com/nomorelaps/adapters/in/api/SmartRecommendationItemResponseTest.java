@@ -1,255 +1,144 @@
 package com.nomorelaps.adapters.in.api;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+/**
+ * Unit tests for SmartRecommendationItemResponse DTO.
+ * Verifies that individual suggestion details are correctly mapped and equality is maintained.
+ * 
+ * @author nexphernandez
+ * @version 1.0.0
+ */
 class SmartRecommendationItemResponseTest {
 
-    @Test
-    @DisplayName("Should test getters, setters and empty constructor for SmartRecommendationItemResponse")
-    void testGettersAndSetters() {
-        SmartRecommendationItemResponse dto = new SmartRecommendationItemResponse();
-        assertNotNull(dto);
+    private SmartRecommendationItemResponse itemResponse;
 
-        dto.setParkingId(1L);
-        assertEquals(1L, dto.getParkingId());
-        dto.setParkingName("dummy1");
-        assertEquals("dummy1", dto.getParkingName());
-        dto.setAddress("dummy1");
-        assertEquals("dummy1", dto.getAddress());
-        dto.setDistanceKm(1.0);
-        assertEquals(1.0, dto.getDistanceKm());
-        dto.setAvailableSpots(1);
-        assertEquals(1, dto.getAvailableSpots());
-        dto.setSuggestedSpotId(1L);
-        assertEquals(1L, dto.getSuggestedSpotId());
-        dto.setSuggestedSpotNumber(1);
-        assertEquals(1, dto.getSuggestedSpotNumber());
-        dto.setStartTime("dummy1");
-        assertEquals("dummy1", dto.getStartTime());
-        dto.setEndTime("dummy1");
-        assertEquals("dummy1", dto.getEndTime());
-        dto.setPriceLabel("dummy1");
-        assertEquals("dummy1", dto.getPriceLabel());
+    @BeforeEach
+    void setUp() {
+        itemResponse = new SmartRecommendationItemResponse();
     }
 
     @Test
-    @DisplayName("Should test equals and hashCode branches for SmartRecommendationItemResponse")
-    void testEqualsAndHashCode() {
-        SmartRecommendationItemResponse dto1 = new SmartRecommendationItemResponse();
-        SmartRecommendationItemResponse dto2 = new SmartRecommendationItemResponse();
-        SmartRecommendationItemResponse dto3 = new SmartRecommendationItemResponse();
+    @DisplayName("Constructor - Should correctly initialize all recommendation item fields")
+    void shouldInitializeWithFullConstructor() {
+        SmartRecommendationItemResponse fullItem = new SmartRecommendationItemResponse(
+                101L, "City Center Parking", "Main St 10", 0.5, 12, 505L, 14, "18:00", "21:00", "5.25€ total"
+        );
 
-        dto1.setParkingId(1L);
-        dto2.setParkingId(1L);
-        dto3.setParkingId(2L);
-        dto1.setParkingName("dummy1");
-        dto2.setParkingName("dummy1");
-        dto3.setParkingName("dummy2");
-        dto1.setAddress("dummy1");
-        dto2.setAddress("dummy1");
-        dto3.setAddress("dummy2");
-        dto1.setDistanceKm(1.0);
-        dto2.setDistanceKm(1.0);
-        dto3.setDistanceKm(2.0);
-        dto1.setAvailableSpots(1);
-        dto2.setAvailableSpots(1);
-        dto3.setAvailableSpots(2);
-        dto1.setSuggestedSpotId(1L);
-        dto2.setSuggestedSpotId(1L);
-        dto3.setSuggestedSpotId(2L);
-        dto1.setSuggestedSpotNumber(1);
-        dto2.setSuggestedSpotNumber(1);
-        dto3.setSuggestedSpotNumber(2);
-        dto1.setStartTime("dummy1");
-        dto2.setStartTime("dummy1");
-        dto3.setStartTime("dummy2");
-        dto1.setEndTime("dummy1");
-        dto2.setEndTime("dummy1");
-        dto3.setEndTime("dummy2");
-        dto1.setPriceLabel("dummy1");
-        dto2.setPriceLabel("dummy1");
-        dto3.setPriceLabel("dummy2");
+        assertEquals(101L, fullItem.getParkingId());
+        assertEquals("City Center Parking", fullItem.getParkingName());
+        assertEquals("Main St 10", fullItem.getAddress());
+        assertEquals(0.5, fullItem.getDistanceKm());
+        assertEquals(12, fullItem.getAvailableSpots());
+        assertEquals(505L, fullItem.getSuggestedSpotId());
+        assertEquals(14, fullItem.getSuggestedSpotNumber());
+        assertEquals("18:00", fullItem.getStartTime());
+        assertEquals("21:00", fullItem.getEndTime());
+        assertEquals("5.25€ total", fullItem.getPriceLabel());
+    }
 
-        // Base checks
-        assertEquals(dto1, dto1);
-        assertEquals(dto1, dto2);
-        assertNotEquals(dto1, dto3);
-        assertNotEquals(dto1, null);
-        assertNotEquals(dto1, new Object());
-        assertEquals(dto1.hashCode(), dto2.hashCode());
+    @Test
+    @DisplayName("parkingId - Should set and get the parking identifier")
+    void shouldSetAndGetParkingId() {
+        itemResponse.setParkingId(99L);
+        assertEquals(99L, itemResponse.getParkingId());
+    }
 
-        // Branch coverage for each field
-        SmartRecommendationItemResponse tempparkingId = new SmartRecommendationItemResponse();
-        tempparkingId.setParkingId(1L);
-        tempparkingId.setParkingName("dummy1");
-        tempparkingId.setAddress("dummy1");
-        tempparkingId.setDistanceKm(1.0);
-        tempparkingId.setAvailableSpots(1);
-        tempparkingId.setSuggestedSpotId(1L);
-        tempparkingId.setSuggestedSpotNumber(1);
-        tempparkingId.setStartTime("dummy1");
-        tempparkingId.setEndTime("dummy1");
-        tempparkingId.setPriceLabel("dummy1");
-        tempparkingId.setParkingId(null);
-        dto1.equals(tempparkingId);
-        tempparkingId.equals(dto1);
-        tempparkingId.setParkingId(2L);
-        dto1.equals(tempparkingId);
+    @Test
+    @DisplayName("parkingName - Should set and get the name")
+    void shouldSetAndGetParkingName() {
+        itemResponse.setParkingName("Sol Parking");
+        assertEquals("Sol Parking", itemResponse.getParkingName());
+    }
 
-        SmartRecommendationItemResponse tempparkingName = new SmartRecommendationItemResponse();
-        tempparkingName.setParkingId(1L);
-        tempparkingName.setParkingName("dummy1");
-        tempparkingName.setAddress("dummy1");
-        tempparkingName.setDistanceKm(1.0);
-        tempparkingName.setAvailableSpots(1);
-        tempparkingName.setSuggestedSpotId(1L);
-        tempparkingName.setSuggestedSpotNumber(1);
-        tempparkingName.setStartTime("dummy1");
-        tempparkingName.setEndTime("dummy1");
-        tempparkingName.setPriceLabel("dummy1");
-        tempparkingName.setParkingName(null);
-        dto1.equals(tempparkingName);
-        tempparkingName.equals(dto1);
-        tempparkingName.setParkingName("dummy2");
-        dto1.equals(tempparkingName);
+    @Test
+    @DisplayName("address - Should set and get the address")
+    void shouldSetAndGetAddress() {
+        itemResponse.setAddress("Calle Sol, 1");
+        assertEquals("Calle Sol, 1", itemResponse.getAddress());
+    }
 
-        SmartRecommendationItemResponse tempaddress = new SmartRecommendationItemResponse();
-        tempaddress.setParkingId(1L);
-        tempaddress.setParkingName("dummy1");
-        tempaddress.setAddress("dummy1");
-        tempaddress.setDistanceKm(1.0);
-        tempaddress.setAvailableSpots(1);
-        tempaddress.setSuggestedSpotId(1L);
-        tempaddress.setSuggestedSpotNumber(1);
-        tempaddress.setStartTime("dummy1");
-        tempaddress.setEndTime("dummy1");
-        tempaddress.setPriceLabel("dummy1");
-        tempaddress.setAddress(null);
-        dto1.equals(tempaddress);
-        tempaddress.equals(dto1);
-        tempaddress.setAddress("dummy2");
-        dto1.equals(tempaddress);
+    @Test
+    @DisplayName("distanceKm - Should set and get distance")
+    void shouldSetAndGetDistanceKm() {
+        itemResponse.setDistanceKm(1.25);
+        assertEquals(1.25, itemResponse.getDistanceKm());
+    }
 
-        SmartRecommendationItemResponse tempdistanceKm = new SmartRecommendationItemResponse();
-        tempdistanceKm.setParkingId(1L);
-        tempdistanceKm.setParkingName("dummy1");
-        tempdistanceKm.setAddress("dummy1");
-        tempdistanceKm.setDistanceKm(1.0);
-        tempdistanceKm.setAvailableSpots(1);
-        tempdistanceKm.setSuggestedSpotId(1L);
-        tempdistanceKm.setSuggestedSpotNumber(1);
-        tempdistanceKm.setStartTime("dummy1");
-        tempdistanceKm.setEndTime("dummy1");
-        tempdistanceKm.setPriceLabel("dummy1");
-        tempdistanceKm.setDistanceKm(null);
-        dto1.equals(tempdistanceKm);
-        tempdistanceKm.equals(dto1);
-        tempdistanceKm.setDistanceKm(2.0);
-        dto1.equals(tempdistanceKm);
+    @Test
+    @DisplayName("availableSpots - Should set and get availability")
+    void shouldSetAndGetAvailableSpots() {
+        itemResponse.setAvailableSpots(5);
+        assertEquals(5, itemResponse.getAvailableSpots());
+    }
 
-        SmartRecommendationItemResponse tempavailableSpots = new SmartRecommendationItemResponse();
-        tempavailableSpots.setParkingId(1L);
-        tempavailableSpots.setParkingName("dummy1");
-        tempavailableSpots.setAddress("dummy1");
-        tempavailableSpots.setDistanceKm(1.0);
-        tempavailableSpots.setAvailableSpots(1);
-        tempavailableSpots.setSuggestedSpotId(1L);
-        tempavailableSpots.setSuggestedSpotNumber(1);
-        tempavailableSpots.setStartTime("dummy1");
-        tempavailableSpots.setEndTime("dummy1");
-        tempavailableSpots.setPriceLabel("dummy1");
-        tempavailableSpots.setAvailableSpots(null);
-        dto1.equals(tempavailableSpots);
-        tempavailableSpots.equals(dto1);
-        tempavailableSpots.setAvailableSpots(2);
-        dto1.equals(tempavailableSpots);
+    @Test
+    @DisplayName("suggestedSpotId - Should set and get spot ID")
+    void shouldSetAndGetSuggestedSpotId() {
+        itemResponse.setSuggestedSpotId(303L);
+        assertEquals(303L, itemResponse.getSuggestedSpotId());
+    }
 
-        SmartRecommendationItemResponse tempsuggestedSpotId = new SmartRecommendationItemResponse();
-        tempsuggestedSpotId.setParkingId(1L);
-        tempsuggestedSpotId.setParkingName("dummy1");
-        tempsuggestedSpotId.setAddress("dummy1");
-        tempsuggestedSpotId.setDistanceKm(1.0);
-        tempsuggestedSpotId.setAvailableSpots(1);
-        tempsuggestedSpotId.setSuggestedSpotId(1L);
-        tempsuggestedSpotId.setSuggestedSpotNumber(1);
-        tempsuggestedSpotId.setStartTime("dummy1");
-        tempsuggestedSpotId.setEndTime("dummy1");
-        tempsuggestedSpotId.setPriceLabel("dummy1");
-        tempsuggestedSpotId.setSuggestedSpotId(null);
-        dto1.equals(tempsuggestedSpotId);
-        tempsuggestedSpotId.equals(dto1);
-        tempsuggestedSpotId.setSuggestedSpotId(2L);
-        dto1.equals(tempsuggestedSpotId);
+    @Test
+    @DisplayName("suggestedSpotNumber - Should set and get spot number")
+    void shouldSetAndGetSuggestedSpotNumber() {
+        itemResponse.setSuggestedSpotNumber(22);
+        assertEquals(22, itemResponse.getSuggestedSpotNumber());
+    }
 
-        SmartRecommendationItemResponse tempsuggestedSpotNumber = new SmartRecommendationItemResponse();
-        tempsuggestedSpotNumber.setParkingId(1L);
-        tempsuggestedSpotNumber.setParkingName("dummy1");
-        tempsuggestedSpotNumber.setAddress("dummy1");
-        tempsuggestedSpotNumber.setDistanceKm(1.0);
-        tempsuggestedSpotNumber.setAvailableSpots(1);
-        tempsuggestedSpotNumber.setSuggestedSpotId(1L);
-        tempsuggestedSpotNumber.setSuggestedSpotNumber(1);
-        tempsuggestedSpotNumber.setStartTime("dummy1");
-        tempsuggestedSpotNumber.setEndTime("dummy1");
-        tempsuggestedSpotNumber.setPriceLabel("dummy1");
-        tempsuggestedSpotNumber.setSuggestedSpotNumber(null);
-        dto1.equals(tempsuggestedSpotNumber);
-        tempsuggestedSpotNumber.equals(dto1);
-        tempsuggestedSpotNumber.setSuggestedSpotNumber(2);
-        dto1.equals(tempsuggestedSpotNumber);
+    @Test
+    @DisplayName("startTime - Should set and get start time")
+    void shouldSetAndGetStartTime() {
+        itemResponse.setStartTime("10:00");
+        assertEquals("10:00", itemResponse.getStartTime());
+    }
 
-        SmartRecommendationItemResponse tempstartTime = new SmartRecommendationItemResponse();
-        tempstartTime.setParkingId(1L);
-        tempstartTime.setParkingName("dummy1");
-        tempstartTime.setAddress("dummy1");
-        tempstartTime.setDistanceKm(1.0);
-        tempstartTime.setAvailableSpots(1);
-        tempstartTime.setSuggestedSpotId(1L);
-        tempstartTime.setSuggestedSpotNumber(1);
-        tempstartTime.setStartTime("dummy1");
-        tempstartTime.setEndTime("dummy1");
-        tempstartTime.setPriceLabel("dummy1");
-        tempstartTime.setStartTime(null);
-        dto1.equals(tempstartTime);
-        tempstartTime.equals(dto1);
-        tempstartTime.setStartTime("dummy2");
-        dto1.equals(tempstartTime);
+    @Test
+    @DisplayName("endTime - Should set and get end time")
+    void shouldSetAndGetEndTime() {
+        itemResponse.setEndTime("12:00");
+        assertEquals("12:00", itemResponse.getEndTime());
+    }
 
-        SmartRecommendationItemResponse tempendTime = new SmartRecommendationItemResponse();
-        tempendTime.setParkingId(1L);
-        tempendTime.setParkingName("dummy1");
-        tempendTime.setAddress("dummy1");
-        tempendTime.setDistanceKm(1.0);
-        tempendTime.setAvailableSpots(1);
-        tempendTime.setSuggestedSpotId(1L);
-        tempendTime.setSuggestedSpotNumber(1);
-        tempendTime.setStartTime("dummy1");
-        tempendTime.setEndTime("dummy1");
-        tempendTime.setPriceLabel("dummy1");
-        tempendTime.setEndTime(null);
-        dto1.equals(tempendTime);
-        tempendTime.equals(dto1);
-        tempendTime.setEndTime("dummy2");
-        dto1.equals(tempendTime);
+    @Test
+    @DisplayName("priceLabel - Should set and get price info")
+    void shouldSetAndGetPriceLabel() {
+        itemResponse.setPriceLabel("Low Price");
+        assertEquals("Low Price", itemResponse.getPriceLabel());
+    }
 
-        SmartRecommendationItemResponse temppriceLabel = new SmartRecommendationItemResponse();
-        temppriceLabel.setParkingId(1L);
-        temppriceLabel.setParkingName("dummy1");
-        temppriceLabel.setAddress("dummy1");
-        temppriceLabel.setDistanceKm(1.0);
-        temppriceLabel.setAvailableSpots(1);
-        temppriceLabel.setSuggestedSpotId(1L);
-        temppriceLabel.setSuggestedSpotNumber(1);
-        temppriceLabel.setStartTime("dummy1");
-        temppriceLabel.setEndTime("dummy1");
-        temppriceLabel.setPriceLabel("dummy1");
-        temppriceLabel.setPriceLabel(null);
-        dto1.equals(temppriceLabel);
-        temppriceLabel.equals(dto1);
-        temppriceLabel.setPriceLabel("dummy2");
-        dto1.equals(temppriceLabel);
+    @Test
+    @DisplayName("equals - Should be equal for same parking ID")
+    void shouldBeEqualForSameParkingId() {
+        SmartRecommendationItemResponse first = new SmartRecommendationItemResponse();
+        first.setParkingId(1L);
+        
+        SmartRecommendationItemResponse second = new SmartRecommendationItemResponse();
+        second.setParkingId(1L);
+        
+        SmartRecommendationItemResponse third = new SmartRecommendationItemResponse();
+        third.setParkingId(2L);
 
+        assertEquals(first, first, "Should be equal to itself");
+        assertEquals(first, second, "Should be equal if parking IDs match");
+        assertNotEquals(first, third, "Should not be equal if parking IDs differ");
+        assertNotEquals(first, null, "Should not be equal to null");
+        assertNotEquals(first, 123, "Should return false for different class (instanceof test)");
+    }
+
+    @Test
+    @DisplayName("hashCode - Should be consistent for same parking ID")
+    void shouldHaveConsistentHashCode() {
+        SmartRecommendationItemResponse first = new SmartRecommendationItemResponse();
+        first.setParkingId(1L);
+        
+        SmartRecommendationItemResponse second = new SmartRecommendationItemResponse();
+        second.setParkingId(1L);
+
+        assertEquals(first.hashCode(), second.hashCode());
     }
 }

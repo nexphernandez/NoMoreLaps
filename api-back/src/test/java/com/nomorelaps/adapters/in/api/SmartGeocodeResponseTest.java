@@ -1,80 +1,82 @@
 package com.nomorelaps.adapters.in.api;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+/**
+ * Unit tests for SmartGeocodeResponse DTO.
+ * Verifies that geocoding results are correctly mapped and logical equality is maintained.
+ * 
+ * @author nexphernandez
+ * @version 1.0.0
+ */
 class SmartGeocodeResponseTest {
 
-    @Test
-    @DisplayName("Should test getters, setters and empty constructor for SmartGeocodeResponse")
-    void testGettersAndSetters() {
-        SmartGeocodeResponse dto = new SmartGeocodeResponse();
-        assertNotNull(dto);
+    private SmartGeocodeResponse geocodeResponse;
 
-        dto.setFormattedAddress("dummy1");
-        assertEquals("dummy1", dto.getFormattedAddress());
-        dto.setLatitude(1.0);
-        assertEquals(1.0, dto.getLatitude());
-        dto.setLongitude(1.0);
-        assertEquals(1.0, dto.getLongitude());
+    @BeforeEach
+    void setUp() {
+        geocodeResponse = new SmartGeocodeResponse();
     }
 
     @Test
-    @DisplayName("Should test equals and hashCode branches for SmartGeocodeResponse")
-    void testEqualsAndHashCode() {
-        SmartGeocodeResponse dto1 = new SmartGeocodeResponse();
-        SmartGeocodeResponse dto2 = new SmartGeocodeResponse();
-        SmartGeocodeResponse dto3 = new SmartGeocodeResponse();
+    @DisplayName("Constructor - Should correctly initialize all fields")
+    void shouldInitializeWithParameterizedConstructor() {
+        SmartGeocodeResponse response = new SmartGeocodeResponse("Calle Falsa 123, Madrid", 40.0, -3.0);
 
-        dto1.setFormattedAddress("dummy1");
-        dto2.setFormattedAddress("dummy1");
-        dto3.setFormattedAddress("dummy2");
-        dto1.setLatitude(1.0);
-        dto2.setLatitude(1.0);
-        dto3.setLatitude(2.0);
-        dto1.setLongitude(1.0);
-        dto2.setLongitude(1.0);
-        dto3.setLongitude(2.0);
+        assertEquals("Calle Falsa 123, Madrid", response.getFormattedAddress());
+        assertEquals(40.0, response.getLatitude());
+        assertEquals(-3.0, response.getLongitude());
+    }
 
-        // Base checks
-        assertEquals(dto1, dto1);
-        assertEquals(dto1, dto2);
-        assertNotEquals(dto1, dto3);
-        assertNotEquals(dto1, null);
-        assertNotEquals(dto1, new Object());
-        assertEquals(dto1.hashCode(), dto2.hashCode());
+    @Test
+    @DisplayName("formattedAddress - Should set and get the address string")
+    void shouldSetAndGetFormattedAddress() {
+        geocodeResponse.setFormattedAddress("Paseo de la Castellana, 1");
+        assertEquals("Paseo de la Castellana, 1", geocodeResponse.getFormattedAddress());
+    }
 
-        // Branch coverage for each field
-        SmartGeocodeResponse tempformattedAddress = new SmartGeocodeResponse();
-        tempformattedAddress.setFormattedAddress("dummy1");
-        tempformattedAddress.setLatitude(1.0);
-        tempformattedAddress.setLongitude(1.0);
-        tempformattedAddress.setFormattedAddress(null);
-        dto1.equals(tempformattedAddress);
-        tempformattedAddress.equals(dto1);
-        tempformattedAddress.setFormattedAddress("dummy2");
-        dto1.equals(tempformattedAddress);
+    @Test
+    @DisplayName("latitude - Should set and get the latitude")
+    void shouldSetAndGetLatitude() {
+        geocodeResponse.setLatitude(40.4168);
+        assertEquals(40.4168, geocodeResponse.getLatitude());
+    }
 
-        SmartGeocodeResponse templatitude = new SmartGeocodeResponse();
-        templatitude.setFormattedAddress("dummy1");
-        templatitude.setLatitude(1.0);
-        templatitude.setLongitude(1.0);
-        templatitude.setLatitude(null);
-        dto1.equals(templatitude);
-        templatitude.equals(dto1);
-        templatitude.setLatitude(2.0);
-        dto1.equals(templatitude);
+    @Test
+    @DisplayName("longitude - Should set and get the longitude")
+    void shouldSetAndGetLongitude() {
+        geocodeResponse.setLongitude(-3.7038);
+        assertEquals(-3.7038, geocodeResponse.getLongitude());
+    }
 
-        SmartGeocodeResponse templongitude = new SmartGeocodeResponse();
-        templongitude.setFormattedAddress("dummy1");
-        templongitude.setLatitude(1.0);
-        templongitude.setLongitude(1.0);
-        templongitude.setLongitude(null);
-        dto1.equals(templongitude);
-        templongitude.equals(dto1);
-        templongitude.setLongitude(2.0);
-        dto1.equals(templongitude);
+    @Test
+    @DisplayName("equals - Should be equal for identical responses")
+    void shouldBeEqualForIdenticalResponses() {
+        SmartGeocodeResponse first = new SmartGeocodeResponse("Addr A", 1.0, 1.0);
+        SmartGeocodeResponse second = new SmartGeocodeResponse("Addr A", 1.0, 1.0);
+        SmartGeocodeResponse diffAddr = new SmartGeocodeResponse("Addr B", 1.0, 1.0);
+        SmartGeocodeResponse diffLat = new SmartGeocodeResponse("Addr A", 2.0, 1.0);
+        SmartGeocodeResponse diffLon = new SmartGeocodeResponse("Addr A", 1.0, 2.0);
 
+        assertEquals(first, first, "Should be equal to itself");
+        assertEquals(first, second, "Should be equal if all fields match");
+        assertNotEquals(first, diffAddr);
+        assertNotEquals(first, diffLat);
+        assertNotEquals(first, diffLon);
+        assertNotEquals(first, null);
+        assertNotEquals(first, new Object(), "Should return false for different class (instanceof test)");
+    }
+
+    @Test
+    @DisplayName("hashCode - Should be consistent for equal responses")
+    void shouldHaveConsistentHashCode() {
+        SmartGeocodeResponse first = new SmartGeocodeResponse("Addr A", 1.0, 1.0);
+        SmartGeocodeResponse second = new SmartGeocodeResponse("Addr A", 1.0, 1.0);
+
+        assertEquals(first.hashCode(), second.hashCode());
     }
 }

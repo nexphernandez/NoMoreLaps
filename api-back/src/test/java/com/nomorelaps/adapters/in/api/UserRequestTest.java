@@ -1,36 +1,80 @@
 package com.nomorelaps.adapters.in.api;
 
-import static org.junit.jupiter.api.Assertions.*;
-
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-public class UserRequestTest {
-    
+/**
+ * Unit tests for UserRequest DTO.
+ * Verifies property mapping and constructor initialization.
+ * 
+ * @author nexphernandez
+ * @version 1.0.0
+ */
+class UserRequestTest {
+
+    private UserRequest userRequest;
+
+    @BeforeEach
+    void setUp() {
+        userRequest = new UserRequest();
+    }
+
     @Test
-    void testGettersAndSetters() {
-        UserRequest req = new UserRequest();
-        assertNotNull(req);
+    @DisplayName("Constructor - Should correctly initialize all fields")
+    void shouldInitializeWithFullConstructor() {
+        UserRequest fullRequest = new UserRequest("Alice", "alice@test.com", "secret123", true, "avatar.png", "555-1234");
 
-        req.setName("Name");
-        assertEquals("Name", req.getName());
+        assertEquals("Alice", fullRequest.getName());
+        assertEquals("alice@test.com", fullRequest.getEmail());
+        assertEquals("secret123", fullRequest.getPassword());
+        assertTrue(fullRequest.isCalendarEnable());
+        assertEquals("avatar.png", fullRequest.getAvatar());
+        assertEquals("555-1234", fullRequest.getPhone());
+    }
 
-        req.setEmail("email");
-        assertEquals("email", req.getEmail());
+    @Test
+    @DisplayName("name - Should set and get user name")
+    void shouldSetAndGetName() {
+        userRequest.setName("Bob");
+        assertEquals("Bob", userRequest.getName());
+    }
 
-        req.setPassword("pass");
-        assertEquals("pass", req.getPassword());
+    @Test
+    @DisplayName("email - Should set and get email")
+    void shouldSetAndGetEmail() {
+        userRequest.setEmail("bob@test.com");
+        assertEquals("bob@test.com", userRequest.getEmail());
+    }
 
-        req.setCalendarEnable(true);
-        assertTrue(req.isCalendarEnable());
-        assertTrue(req.getEnable());
+    @Test
+    @DisplayName("password - Should set and get password")
+    void shouldSetAndGetPassword() {
+        userRequest.setPassword("newPass789");
+        assertEquals("newPass789", userRequest.getPassword());
+    }
 
-        req.setAvatar("avatar");
-        assertEquals("avatar", req.getAvatar());
-        
-        req.setPhone("123");
-        assertEquals("123", req.getPhone());
-        
-        UserRequest r2 = new UserRequest("Name", "email", "pass", true, "avatar", "123");
-        assertEquals("Name", r2.getName());
+    @Test
+    @DisplayName("isCalendarEnable - Should set and get calendar status")
+    void shouldSetAndGetCalendarEnable() {
+        userRequest.setCalendarEnable(true);
+        assertTrue(userRequest.isCalendarEnable());
+        assertTrue(userRequest.getEnable(), "getEnable should return the same as isCalendarEnable");
+    }
+
+    @Test
+    @DisplayName("avatar - Should set and get avatar path")
+    void shouldSetAndGetAvatar() {
+        userRequest.setAvatar("path/to/img.jpg");
+        assertEquals("path/to/img.jpg", userRequest.getAvatar());
+    }
+
+    @Test
+    @DisplayName("phone - Should set and get phone number")
+    void shouldSetAndGetPhone() {
+        userRequest.setPhone("987654321");
+        assertEquals("987654321", userRequest.getPhone());
     }
 }

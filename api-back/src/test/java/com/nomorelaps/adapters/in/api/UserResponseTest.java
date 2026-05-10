@@ -1,77 +1,136 @@
 package com.nomorelaps.adapters.in.api;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.time.LocalDateTime;
-
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-public class UserResponseTest {
-    
-    @Test
-    void testGettersAndSetters() {
-        UserResponse response = new UserResponse();
-        assertNotNull(response);
+/**
+ * Unit tests for UserResponse DTO.
+ * Separates field mapping, constructors, and equality logic into granular tests.
+ * 
+ * @author nexphernandez
+ * @version 1.0.0
+ */
+class UserResponseTest {
 
-        response.setId(1L);
-        assertEquals(1L, response.getId());
+    private UserResponse userResponse;
+    private LocalDateTime now;
 
-        response.setName("Name");
-        assertEquals("Name", response.getName());
-
-        response.setEmail("email");
-        assertEquals("email", response.getEmail());
-
-        response.setPassword("pass");
-        assertEquals("pass", response.getPassword());
-
-        response.setCalendarEnable(true);
-        assertTrue(response.isCalendarEnable());
-        assertTrue(response.getEnable());
-
-        response.setAvatar("avatar");
-        assertEquals("avatar", response.getAvatar());
-        
-        response.setPhone("123");
-        assertEquals("123", response.getPhone());
-
-        LocalDateTime now = LocalDateTime.now();
-        response.setCreateAt(now);
-        assertEquals(now, response.getCreateAt());
-
-        UserResponse r2 = new UserResponse(1L);
-        assertEquals(1L, r2.getId());
-        
-        UserResponse r3 = new UserResponse(1L, "Name", "email", "pass", true, "avatar", "123", now);
-        assertEquals(1L, r3.getId());
-        assertEquals("Name", r3.getName());
+    @BeforeEach
+    void setUp() {
+        userResponse = new UserResponse();
+        now = LocalDateTime.now();
     }
 
     @Test
-    void testEqualsAndHashCode() {
-        UserResponse response1 = new UserResponse(1L);
-        UserResponse response2 = new UserResponse(1L);
-        UserResponse response3 = new UserResponse(2L);
+    @DisplayName("Constructor(id) - Should initialize with ID")
+    void shouldInitializeWithIdConstructor() {
+        UserResponse idResponse = new UserResponse(100L);
+        assertEquals(100L, idResponse.getId());
+    }
 
-        // Same object
-        assertEquals(response1, response1);
+    @Test
+    @DisplayName("Full Constructor - Should map all fields correctly")
+    void shouldInitializeWithFullConstructor() {
+        UserResponse fullResponse = new UserResponse(1L, "Alice", "alice@test.com", "secret", true, "avatar.png", "555-1234", now);
+
+        assertEquals(1L, fullResponse.getId());
+        assertEquals("Alice", fullResponse.getName());
+        assertEquals("alice@test.com", fullResponse.getEmail());
+        assertEquals("secret", fullResponse.getPassword());
+        assertTrue(fullResponse.isCalendarEnable());
+        assertEquals("avatar.png", fullResponse.getAvatar());
+        assertEquals("555-1234", fullResponse.getPhone());
+        assertEquals(now, fullResponse.getCreateAt());
+    }
+
+    @Test
+    @DisplayName("id - Should set and get user ID")
+    void shouldSetAndGetId() {
+        userResponse.setId(25L);
+        assertEquals(25L, userResponse.getId());
+    }
+
+    @Test
+    @DisplayName("name - Should set and get name")
+    void shouldSetAndGetName() {
+        userResponse.setName("Bob");
+        assertEquals("Bob", userResponse.getName());
+    }
+
+    @Test
+    @DisplayName("email - Should set and get email")
+    void shouldSetAndGetEmail() {
+        userResponse.setEmail("bob@test.com");
+        assertEquals("bob@test.com", userResponse.getEmail());
+    }
+
+    @Test
+    @DisplayName("password - Should set and get password")
+    void shouldSetAndGetPassword() {
+        userResponse.setPassword("pass123");
+        assertEquals("pass123", userResponse.getPassword());
+    }
+
+    @Test
+    @DisplayName("calendarEnable - Should set and get calendar status")
+    void shouldSetAndGetCalendarEnable() {
+        userResponse.setCalendarEnable(true);
+        assertTrue(userResponse.isCalendarEnable());
+        assertTrue(userResponse.getEnable());
         
-        // Equal objects
-        assertEquals(response1, response2);
-        assertEquals(response1.hashCode(), response2.hashCode());
-        
-        // Different objects
-        assertNotEquals(response1, response3);
-        
-        // Null and different class
-        assertNotEquals(response1, null);
-        assertNotEquals(response1, new Object());
-        
-        // Null ID coverage
-        UserResponse responseNull = new UserResponse(null);
-        UserResponse responseNull2 = new UserResponse(null);
-        assertEquals(responseNull, responseNull2);
-        assertNotEquals(responseNull, response1);
-        assertNotEquals(response1, responseNull);
+        userResponse.setCalendarEnable(false);
+        assertFalse(userResponse.isCalendarEnable());
+        assertFalse(userResponse.getEnable());
+    }
+
+    @Test
+    @DisplayName("avatar - Should set and get avatar path")
+    void shouldSetAndGetAvatar() {
+        userResponse.setAvatar("img.png");
+        assertEquals("img.png", userResponse.getAvatar());
+    }
+
+    @Test
+    @DisplayName("phone - Should set and get phone")
+    void shouldSetAndGetPhone() {
+        userResponse.setPhone("123456789");
+        assertEquals("123456789", userResponse.getPhone());
+    }
+
+    @Test
+    @DisplayName("createAt - Should set and get creation timestamp")
+    void shouldSetAndGetCreateAt() {
+        userResponse.setCreateAt(now);
+        assertEquals(now, userResponse.getCreateAt());
+    }
+
+    @Test
+    @DisplayName("equals - Should be equal for same ID")
+    void shouldBeEqualForSameId() {
+        UserResponse firstUser = new UserResponse(100L);
+        UserResponse secondUser = new UserResponse(100L);
+        UserResponse thirdUser = new UserResponse(200L);
+
+        assertEquals(firstUser, firstUser, "Should be equal to itself");
+        assertEquals(firstUser, secondUser, "Should be equal if IDs match");
+        assertNotEquals(firstUser, thirdUser, "Should not be equal if IDs differ");
+        assertNotEquals(firstUser, null, "Should not be equal to null");
+        assertNotEquals(firstUser, new Object(), "Should not be equal to other types");
+    }
+
+    @Test
+    @DisplayName("hashCode - Should be consistent for same ID")
+    void shouldHaveConsistentHashCode() {
+        UserResponse firstUser = new UserResponse(100L);
+        UserResponse secondUser = new UserResponse(100L);
+
+        assertEquals(firstUser.hashCode(), secondUser.hashCode(), "Same ID should produce same hash code");
     }
 }

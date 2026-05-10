@@ -1,132 +1,127 @@
 package com.nomorelaps.adapters.in.api;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
+import java.time.LocalDateTime;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import java.time.LocalDateTime;
 
+/**
+ * Unit tests for SanctionResponse DTO.
+ * Verifies constructors, property accessors, and logical equality.
+ * 
+ * @author nexphernandez
+ * @version 1.0.0
+ */
 class SanctionResponseTest {
 
-    @Test
-    @DisplayName("Should test getters, setters and empty constructor for SanctionResponse")
-    void testGettersAndSetters() {
-        SanctionResponse dto = new SanctionResponse();
-        assertNotNull(dto);
+    private SanctionResponse sanctionResponse;
+    private LocalDateTime arrivalTime;
 
-        dto.setId(1L);
-        assertEquals(1L, dto.getId());
-        dto.setAmount(1.0);
-        assertEquals(1.0, dto.getAmount());
-        dto.setReason("dummy1");
-        assertEquals("dummy1", dto.getReason());
-        dto.setPaid(false);
-        assertEquals(false, dto.isPaid());
-        dto.setArrivalTime(LocalDateTime.of(2026, 1, 1, 0, 0).plusDays(1));
-        assertEquals(LocalDateTime.of(2026, 1, 1, 0, 0).plusDays(1), dto.getArrivalTime());
+    @BeforeEach
+    void setUp() {
+        sanctionResponse = new SanctionResponse();
+        arrivalTime = LocalDateTime.now();
     }
 
     @Test
-    @DisplayName("Should test parameterized constructors")
-    void testConstructors() {
-        SanctionResponse dto1 = new SanctionResponse(1L);
-        assertEquals(1L, dto1.getId());
-        assertFalse(dto1.isPaid());
-
-        LocalDateTime now = LocalDateTime.now();
-        SanctionResponse dto2 = new SanctionResponse(2L, 50.0, "Late", true, now);
-        assertEquals(2L, dto2.getId());
-        assertEquals(50.0, dto2.getAmount());
-        assertEquals("Late", dto2.getReason());
-        assertTrue(dto2.isPaid());
-        assertEquals(now, dto2.getArrivalTime());
+    @DisplayName("Constructor(id) - Should initialize with ID and default paid status")
+    void shouldInitializeWithIdConstructor() {
+        SanctionResponse idOnlyResponse = new SanctionResponse(500L);
+        assertEquals(500L, idOnlyResponse.getId());
+        assertFalse(idOnlyResponse.isPaid());
     }
 
+    @Test
+    @DisplayName("Full Constructor - Should map all provided fields correctly")
+    void shouldInitializeWithFullConstructor() {
+        SanctionResponse fullResponse = new SanctionResponse(1L, 50.0, "Speeding", true, arrivalTime, 10L, "John", "Parking A");
+
+        assertEquals(1L, fullResponse.getId());
+        assertEquals(50.0, fullResponse.getAmount());
+        assertEquals("Speeding", fullResponse.getReason());
+        assertTrue(fullResponse.isPaid());
+        assertEquals(arrivalTime, fullResponse.getArrivalTime());
+        assertEquals(10L, fullResponse.getUserId());
+        assertEquals("John", fullResponse.getUserName());
+        assertEquals("Parking A", fullResponse.getParkingName());
+    }
 
     @Test
-    @DisplayName("Should test equals and hashCode branches for SanctionResponse")
-    void testEqualsAndHashCode() {
-        SanctionResponse dto1 = new SanctionResponse();
-        SanctionResponse dto2 = new SanctionResponse();
-        SanctionResponse dto3 = new SanctionResponse();
+    @DisplayName("id - Should set and get sanction ID")
+    void shouldSetAndGetId() {
+        sanctionResponse.setId(10L);
+        assertEquals(10L, sanctionResponse.getId());
+    }
 
-        dto1.setId(1L);
-        dto2.setId(1L);
-        dto3.setId(2L);
-        dto1.setAmount(1.0);
-        dto2.setAmount(1.0);
-        dto3.setAmount(2.0);
-        dto1.setReason("dummy1");
-        dto2.setReason("dummy1");
-        dto3.setReason("dummy2");
-        dto1.setPaid(false);
-        dto2.setPaid(false);
-        dto3.setPaid(true);
-        dto1.setArrivalTime(LocalDateTime.of(2026, 1, 1, 0, 0).plusDays(1));
-        dto2.setArrivalTime(LocalDateTime.of(2026, 1, 1, 0, 0).plusDays(1));
-        dto3.setArrivalTime(LocalDateTime.of(2026, 1, 1, 0, 0).plusDays(2));
+    @Test
+    @DisplayName("amount - Should set and get amount")
+    void shouldSetAndGetAmount() {
+        sanctionResponse.setAmount(15.0);
+        assertEquals(15.0, sanctionResponse.getAmount());
+    }
 
-        // Base checks
-        assertEquals(dto1, dto1);
-        assertEquals(dto1, dto2);
-        assertNotEquals(dto1, dto3);
-        assertNotEquals(dto1, null);
-        assertNotEquals(dto1, new Object());
-        assertEquals(dto1.hashCode(), dto2.hashCode());
+    @Test
+    @DisplayName("reason - Should set and get reason")
+    void shouldSetAndGetReason() {
+        sanctionResponse.setReason("Late exit");
+        assertEquals("Late exit", sanctionResponse.getReason());
+    }
 
-        // Branch coverage for each field
-        SanctionResponse tempid = new SanctionResponse();
-        tempid.setId(1L);
-        tempid.setAmount(1.0);
-        tempid.setReason("dummy1");
-        tempid.setPaid(false);
-        tempid.setArrivalTime(LocalDateTime.of(2026, 1, 1, 0, 0).plusDays(1));
-        tempid.setId(null);
-        dto1.equals(tempid);
-        tempid.equals(dto1);
-        tempid.setId(2L);
-        dto1.equals(tempid);
+    @Test
+    @DisplayName("isPaid - Should set and get payment status")
+    void shouldSetAndGetIsPaid() {
+        sanctionResponse.setPaid(true);
+        assertTrue(sanctionResponse.isPaid());
+    }
 
-        SanctionResponse tempamount = new SanctionResponse();
-        tempamount.setId(1L);
-        tempamount.setAmount(1.0);
-        tempamount.setReason("dummy1");
-        tempamount.setPaid(false);
-        tempamount.setArrivalTime(LocalDateTime.of(2026, 1, 1, 0, 0).plusDays(1));
-        tempamount.setAmount(2.0);
-        dto1.equals(tempamount);
+    @Test
+    @DisplayName("equals - Should be equal for identical objects")
+    void shouldBeEqualForIdenticalObjects() {
+        SanctionResponse firstResponse = new SanctionResponse(1L, 20.0, "Reason", true, arrivalTime, 5L, "User", "Park");
+        SanctionResponse secondResponse = new SanctionResponse(1L, 20.0, "Reason", true, arrivalTime, 5L, "User", "Park");
 
-        SanctionResponse tempreason = new SanctionResponse();
-        tempreason.setId(1L);
-        tempreason.setAmount(1.0);
-        tempreason.setReason("dummy1");
-        tempreason.setPaid(false);
-        tempreason.setArrivalTime(LocalDateTime.of(2026, 1, 1, 0, 0).plusDays(1));
-        tempreason.setReason(null);
-        dto1.equals(tempreason);
-        tempreason.equals(dto1);
-        tempreason.setReason("dummy2");
-        dto1.equals(tempreason);
+        assertEquals(firstResponse, firstResponse, "Should be equal to itself");
+        assertEquals(firstResponse, secondResponse, "Should be equal if all fields match");
+    }
 
-        SanctionResponse temppaid = new SanctionResponse();
-        temppaid.setId(1L);
-        temppaid.setAmount(1.0);
-        temppaid.setReason("dummy1");
-        temppaid.setPaid(false);
-        temppaid.setArrivalTime(LocalDateTime.of(2026, 1, 1, 0, 0).plusDays(1));
-        temppaid.setPaid(true);
-        dto1.equals(temppaid);
+    @Test
+    @DisplayName("equals - Should not be equal if IDs differ")
+    void shouldNotBeEqualIfIdsDiffer() {
+        SanctionResponse baseResponse = new SanctionResponse(1L, 20.0, "Reason", true, arrivalTime, 5L, "User", "Park");
+        SanctionResponse differentId = new SanctionResponse(2L, 20.0, "Reason", true, arrivalTime, 5L, "User", "Park");
+        
+        assertNotEquals(baseResponse, differentId);
+    }
 
-        SanctionResponse temparrivalTime = new SanctionResponse();
-        temparrivalTime.setId(1L);
-        temparrivalTime.setAmount(1.0);
-        temparrivalTime.setReason("dummy1");
-        temparrivalTime.setPaid(false);
-        temparrivalTime.setArrivalTime(LocalDateTime.of(2026, 1, 1, 0, 0).plusDays(1));
-        temparrivalTime.setArrivalTime(null);
-        dto1.equals(temparrivalTime);
-        temparrivalTime.equals(dto1);
-        temparrivalTime.setArrivalTime(LocalDateTime.of(2026, 1, 1, 0, 0).plusDays(2));
-        dto1.equals(temparrivalTime);
+    @Test
+    @DisplayName("equals - Should be equal if IDs match regardless of other fields")
+    void shouldBeEqualIfIdsMatch() {
+        SanctionResponse baseResponse = new SanctionResponse(1L, 20.0, "Reason", true, arrivalTime, 5L, "User", "Park");
+        SanctionResponse sameIdDifferentAmount = new SanctionResponse(1L, 30.0, "Other", false, arrivalTime.plusDays(1), 10L, "Other", "Other");
 
+        assertEquals(baseResponse, sameIdDifferentAmount, "Should be equal because implementation only compares ID");
+    }
+
+    @Test
+    @DisplayName("equals - Should not be equal to different object types")
+    void shouldNotBeEqualToDifferentTypes() {
+        SanctionResponse baseResponse = new SanctionResponse(1L);
+        
+        assertNotEquals(baseResponse, "Not a SanctionResponse", "Should return false when comparing with a different class");
+        assertNotEquals(baseResponse, null, "Should return false when comparing with null");
+    }
+
+    @Test
+    @DisplayName("hashCode - Should be consistent for equal objects")
+    void shouldHaveConsistentHashCode() {
+        SanctionResponse firstResponse = new SanctionResponse(1L, 20.0, "Reason", true, arrivalTime, 5L, "User", "Park");
+        SanctionResponse secondResponse = new SanctionResponse(1L, 20.0, "Reason", true, arrivalTime, 5L, "User", "Park");
+
+        assertEquals(firstResponse.hashCode(), secondResponse.hashCode());
     }
 }

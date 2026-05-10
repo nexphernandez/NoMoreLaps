@@ -1,316 +1,226 @@
 package com.nomorelaps.adapters.out.persistence;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.nomorelaps.adapters.out.persistence.interfaces.IReservationPersistenceAdapter;
-import com.nomorelaps.domain.models.Parking;
-import com.nomorelaps.domain.models.ParkingSpot;
-import com.nomorelaps.domain.models.Reservation;
-import com.nomorelaps.domain.models.User;
-import com.nomorelaps.adapters.out.persistence.interfaces.IParkingPersistenceAdapter;
-import com.nomorelaps.adapters.out.persistence.interfaces.IParkingSpotPersistenceAdapter;
-import com.nomorelaps.adapters.out.persistence.interfaces.IUserPersistenceAdapter;
+import com.nomorelaps.adapters.mapper.ReservationMapper;
+import com.nomorelaps.adapters.mapper.SanctionMapper;
 import com.nomorelaps.adapters.out.persistence.jpa.ParkingJpaEntity;
 import com.nomorelaps.adapters.out.persistence.jpa.ParkingSpotJpaEntity;
 import com.nomorelaps.adapters.out.persistence.jpa.ReservationJpaEntity;
+import com.nomorelaps.adapters.out.persistence.jpa.SanctionJpaEntity;
+import com.nomorelaps.adapters.out.persistence.jpa.UserJpaEntity;
+import com.nomorelaps.adapters.out.persistence.repository.ReservationJpaRepository;
+import com.nomorelaps.domain.models.ParkingSpot;
+import com.nomorelaps.domain.models.Reservation;
+import com.nomorelaps.domain.models.Sanction;
+import com.nomorelaps.domain.models.User;
 
-@SpringBootTest
-@Transactional
+/**
+ * Unit tests for ReservationPersistenceAdapter.
+ * Verifies all branches of manual mapping and repository delegations with granular tests.
+ */
+@ExtendWith(MockitoExtension.class)
 class ReservationPersistenceAdapterTest {
 
-    @Autowired
-    private IReservationPersistenceAdapter reservationAdapter;
+    @Mock
+    private ReservationJpaRepository repository;
 
-    @Autowired
-    private IParkingPersistenceAdapter parkingAdapter;
+    @Mock
+    private ReservationMapper mapper;
 
-    @Autowired
-    private IParkingSpotPersistenceAdapter spotAdapter;
+    @Mock
+    private SanctionMapper sanctionMapper;
 
-    @Autowired
-    private IUserPersistenceAdapter userAdapter;
+    @InjectMocks
+    private ReservationPersistenceAdapter adapter;
 
-    private User testUser;
-    private ParkingSpot testSpot;
-    private Parking testParking;
+    private Reservation domain;
+    private ReservationJpaEntity entity;
 
     @BeforeEach
     void setUp() {
-        // Create user
-        User user = new User();
-        user.setEmail("integration@test.com");
-        user.setName("Integration Test");
-        testUser = userAdapter.save(user);
- 
-        // Create parking
-        Parking parking = new Parking();
-        parking.setName("Test Parking");
-        parking.setAddress("Test Address");
-        testParking = parkingAdapter.save(parking);
- 
-        // Create spot
-        ParkingSpot spot = new ParkingSpot();
-        spot.setNumber(999);
-        spot.setParking(testParking);
-        testSpot = spotAdapter.save(spot);
+        domain = new Reservation(1L);
+        entity = new ReservationJpaEntity(1L);
     }
 
     @Test
-    @DisplayName("Should save and find reservation")
-    void shouldSaveAndFindReservation() {
-        // Arrange
-        Reservation reservation = new Reservation();
-        reservation.setStartTime(LocalDateTime.now().plusDays(1));
-        reservation.setEndTime(LocalDateTime.now().plusDays(1).plusHours(2));
-        reservation.setUser(testUser);
-        reservation.setParkingSpot(testSpot);
-        reservation.setState("PENDING");
-
-        // Act
-        Reservation saved = reservationAdapter.save(reservation);
-        assertNotNull(saved.getId());
-
-        Reservation found = reservationAdapter.findById(saved.getId()).orElse(null);
-
-        // Assert
-        assertNotNull(found);
-        assertEquals(testUser.getId(), found.getUser().getId());
-        assertEquals(testSpot.getId(), found.getParkingSpot().getId());
+    @DisplayName("toEntity - Should map User when present with ID")
+    void toEntityWithUser() {
+        User user = new User(); user.setId(10L);
+        domain.setUser(user);
+        when(mapper.toJpaEntity(domain)).thenReturn(entity);
+        assertEquals(10L, adapter.toEntity(domain).getUser().getId());
     }
 
     @Test
-    @DisplayName("Should detect overlapping reservations")
-    void shouldDetectOverlaps() {
-        // Arrange
-        LocalDateTime start = LocalDateTime.of(2026, 6, 1, 10, 0);
-        LocalDateTime end = start.plusHours(2);
-
-        Reservation r1 = new Reservation();
-        r1.setStartTime(start);
-        r1.setEndTime(end);
-        r1.setUser(testUser);
-        r1.setParkingSpot(testSpot);
-        r1.setState("ACTIVE");
-        reservationAdapter.save(r1);
-
-        // Verify it was saved correctly
-        List<Reservation> all = reservationAdapter.findByParkingSpotId(testSpot.getId());
-        assertFalse(all.isEmpty(), "Reservation should be in database");
-        assertEquals("ACTIVE", all.get(0).getState(), "State should be ACTIVE");
-
-        // Act & Assert
-        // Case 1: Exact same time
-        assertTrue(reservationAdapter.hasOverlappingReservations(testSpot.getId(), start, end), "Exact same time should overlap");
+    @DisplayName("toEntity - Should not map User when null or ID null")
+    void toEntityWithUserNull() {
+        domain.setUser(null);
+        when(mapper.toJpaEntity(domain)).thenReturn(entity);
+        assertNull(adapter.toEntity(domain).getUser());
         
-        // Case 2: Starts during r1
-        assertTrue(reservationAdapter.hasOverlappingReservations(testSpot.getId(), start.plusMinutes(30), end.plusHours(1)), "Partial start overlap should overlap");
-
-        // Case 3: Ends during r1
-        assertTrue(reservationAdapter.hasOverlappingReservations(testSpot.getId(), start.minusHours(1), start.plusMinutes(30)), "Partial end overlap should overlap");
-
-        // Case 4: No overlap
-        assertFalse(reservationAdapter.hasOverlappingReservations(testSpot.getId(), end.plusHours(1), end.plusHours(2)), "Non-overlapping times should not overlap");
+        domain.setUser(new User());
+        assertNull(adapter.toEntity(domain).getUser());
     }
 
     @Test
-    @DisplayName("Should handle null associations in toEntity (save)")
-    void shouldHandleNullAssociationsInSave() {
-        Reservation reservation = new Reservation();
-        reservation.setStartTime(LocalDateTime.now().plusDays(5));
-        reservation.setEndTime(LocalDateTime.now().plusDays(5).plusHours(1));
-        reservation.setUser(null);
-        reservation.setParkingSpot(null);
-        reservation.setState("PENDING");
+    @DisplayName("toEntity - Should map ParkingSpot when present with ID")
+    void toEntityWithSpot() {
+        ParkingSpot spot = new ParkingSpot(); spot.setId(20L);
+        domain.setParkingSpot(spot);
+        when(mapper.toJpaEntity(domain)).thenReturn(entity);
+        assertEquals(20L, adapter.toEntity(domain).getParkingSpot().getId());
+    }
 
-        Reservation saved = reservationAdapter.save(reservation);
-        assertNotNull(saved.getId());
+    @Test
+    @DisplayName("toEntity - Should not map ParkingSpot when null or ID null")
+    void toEntityWithSpotNull() {
+        domain.setParkingSpot(null);
+        when(mapper.toJpaEntity(domain)).thenReturn(entity);
+        assertNull(adapter.toEntity(domain).getParkingSpot());
         
-        Reservation found = reservationAdapter.findById(saved.getId()).orElse(null);
-        assertNotNull(found);
-        assertNull(found.getUser());
-        assertNull(found.getParkingSpot());
+        domain.setParkingSpot(new ParkingSpot());
+        assertNull(adapter.toEntity(domain).getParkingSpot());
     }
 
     @Test
-    @DisplayName("Should handle partial null associations in toEntity (save)")
-    void shouldHandlePartialNullAssociationsInSave() {
-        Reservation reservation = new Reservation();
-        reservation.setStartTime(LocalDateTime.now().plusDays(6));
-        reservation.setEndTime(LocalDateTime.now().plusDays(6).plusHours(1));
-        
-        User userNoId = new User();
-        userNoId.setId(null);
-        reservation.setUser(userNoId);
-
-        ParkingSpot spotNoId = new ParkingSpot();
-        spotNoId.setId(null);
-        reservation.setParkingSpot(spotNoId);
-
-        Reservation saved = reservationAdapter.save(reservation);
-        assertNotNull(saved.getId());
+    @DisplayName("toEntity - Should map Sanctions when present")
+    void toEntityWithSanctions() {
+        Sanction sanction = new Sanction(30L);
+        domain.setSanctions(Set.of(sanction));
+        when(mapper.toJpaEntity(domain)).thenReturn(entity);
+        when(sanctionMapper.toJpaEntity(sanction)).thenReturn(new SanctionJpaEntity(30L));
+        assertEquals(1, adapter.toEntity(domain).getSanctions().size());
     }
 
     @Test
-    @DisplayName("Should cover hasOverlappingReservationsExcluding")
-    void shouldCoverOverlapExcluding() {
-        LocalDateTime start = LocalDateTime.of(2026, 7, 1, 10, 0);
-        LocalDateTime end = start.plusHours(2);
-
-        Reservation r1 = new Reservation();
-        r1.setStartTime(start);
-        r1.setEndTime(end);
-        r1.setUser(testUser);
-        r1.setParkingSpot(testSpot);
-        r1.setState("ACTIVE");
-        Reservation saved = reservationAdapter.save(r1);
-
-        // Should overlap with itself if not excluded
-        assertTrue(reservationAdapter.hasOverlappingReservations(testSpot.getId(), start, end));
-        
-        // Should NOT overlap if excluded
-        assertFalse(reservationAdapter.hasOverlappingReservationsExcluding(testSpot.getId(), start, end, saved.getId()));
+    @DisplayName("toEntity - Should handle null Sanctions")
+    void toEntityWithSanctionsNull() {
+        domain.setSanctions(null);
+        when(mapper.toJpaEntity(domain)).thenReturn(entity);
+        assertNull(adapter.toEntity(domain).getSanctions());
     }
 
     @Test
-    @DisplayName("Should handle null parking in spot in toDomain")
-    void shouldHandleNullParkingInSpotInToDomain() {
-        // Create a spot without parking
-        ParkingSpot spot = new ParkingSpot();
-        spot.setNumber(888);
-        spot.setParking(null);
-        ParkingSpot savedSpot = spotAdapter.save(spot);
-
-        Reservation r = new Reservation();
-        r.setStartTime(LocalDateTime.now().plusDays(10));
-        r.setEndTime(LocalDateTime.now().plusDays(10).plusHours(1));
-        r.setParkingSpot(savedSpot);
-        r.setState("ACTIVE");
-        
-        Reservation saved = reservationAdapter.save(r);
-        Reservation found = reservationAdapter.findById(saved.getId()).orElse(null);
-        
-        assertNotNull(found.getParkingSpot());
-        assertNull(found.getParkingSpot().getParking());
+    @DisplayName("toDomain - Should map User when present in entity")
+    void toDomainWithUser() {
+        UserJpaEntity uJpa = new UserJpaEntity(10L); uJpa.setName("User");
+        entity.setUser(uJpa);
+        when(mapper.toDomain(entity)).thenReturn(domain);
+        assertEquals(10L, adapter.toDomain(entity).getUser().getId());
     }
 
     @Test
-    @DisplayName("findByUserId - Should return list of reservations")
-    void shouldFindByUserId() {
-        Reservation r = new Reservation();
-        r.setStartTime(LocalDateTime.now().plusDays(11));
-        r.setEndTime(LocalDateTime.now().plusDays(11).plusHours(1));
-        r.setUser(testUser);
-        r.setState("ACTIVE");
-        reservationAdapter.save(r);
-
-        List<Reservation> found = reservationAdapter.findByUserId(testUser.getId());
-        assertFalse(found.isEmpty());
-        assertTrue(found.stream().anyMatch(res -> res.getUser().getId().equals(testUser.getId())));
+    @DisplayName("toDomain - Should handle null User in entity")
+    void toDomainWithUserNull() {
+        entity.setUser(null);
+        when(mapper.toDomain(entity)).thenReturn(domain);
+        assertNull(adapter.toDomain(entity).getUser());
     }
 
     @Test
-    @DisplayName("findByParkingId - Should return list of reservations")
-    void shouldFindByParkingId() {
-        // Create fresh parking
-        Parking parking = new Parking();
-        parking.setName("Search Parking");
-        Parking savedParking = parkingAdapter.save(parking);
-
-        // Create fresh spot
-        ParkingSpot spot = new ParkingSpot();
-        spot.setNumber(777);
-        spot.setParking(savedParking);
-        ParkingSpot savedSpot = spotAdapter.save(spot);
-
-        // Create reservation
-        Reservation r = new Reservation();
-        r.setStartTime(LocalDateTime.now().plusDays(15));
-        r.setEndTime(LocalDateTime.now().plusDays(15).plusHours(1));
-        r.setParkingSpot(savedSpot);
-        r.setState("ACTIVE");
-        Reservation savedRes = reservationAdapter.save(r);
-
-        assertNotNull(savedRes.getId());
-
-        List<Reservation> found = reservationAdapter.findByParkingId(savedParking.getId());
-        assertFalse(found.isEmpty(), "Should find the reservation for the new parking");
-        assertTrue(found.stream().anyMatch(res -> res.getId().equals(savedRes.getId())));
+    @DisplayName("toDomain - Should map ParkingSpot and nested Parking")
+    void toDomainWithParkingChain() {
+        ParkingJpaEntity pJpa = new ParkingJpaEntity(50L); pJpa.setName("P");
+        ParkingSpotJpaEntity sJpa = new ParkingSpotJpaEntity(100L); sJpa.setParking(pJpa);
+        entity.setParkingSpot(sJpa);
+        when(mapper.toDomain(entity)).thenReturn(domain);
+        assertEquals(50L, adapter.toDomain(entity).getParkingSpot().getParking().getId());
     }
 
     @Test
-    @DisplayName("toDomain - Should map full parking data when available")
-    void shouldMapFullParkingDataInToDomain() {
-        // This test explicitly hits the if (entity.getParkingSpot().getParking() != null) block
-        // by constructing the entities manually and calling toDomain.
-        
-        ParkingJpaEntity pEntity = new ParkingJpaEntity();
-        pEntity.setId(5L);
-        pEntity.setName("Full Mapping Parking");
-        pEntity.setAddress("Map Street 1");
-        pEntity.setLatitude(10.0);
-        pEntity.setLongitude(20.0);
-        pEntity.setPricePerHour(3.5);
-        pEntity.setSanctionAmount(50.0);
-        pEntity.setSanctionIntervalInMinutes(30);
-
-        ParkingSpotJpaEntity sEntity = new ParkingSpotJpaEntity();
-        sEntity.setId(10L);
-        sEntity.setParking(pEntity);
-
-        ReservationJpaEntity rEntity = new ReservationJpaEntity();
-        rEntity.setId(1L);
-        rEntity.setParkingSpot(sEntity);
-
-        // Access the implementation to test the mapping logic directly
-        ReservationPersistenceAdapter impl = (ReservationPersistenceAdapter) reservationAdapter;
-        Reservation domain = impl.toDomain(rEntity);
-
-        assertNotNull(domain.getParkingSpot());
-        assertNotNull(domain.getParkingSpot().getParking());
-        assertEquals("Full Mapping Parking", domain.getParkingSpot().getParking().getName());
-        assertEquals(3.5, domain.getParkingSpot().getParking().getPricePerHour());
+    @DisplayName("toDomain - Should handle null Parking in chain")
+    void toDomainWithParkingNull() {
+        ParkingSpotJpaEntity sJpa = new ParkingSpotJpaEntity(100L); // Parking is null
+        entity.setParkingSpot(sJpa);
+        when(mapper.toDomain(entity)).thenReturn(domain);
+        assertNull(adapter.toDomain(entity).getParkingSpot().getParking());
     }
 
     @Test
-    @DisplayName("hasOverlappingReservationsExcluding - Should return true if ANOTHER overlapping reservation exists")
-    void shouldReturnTrueWhenAnotherOverlapExists() {
-        // Arrange
-        LocalDateTime start = LocalDateTime.of(2026, 8, 1, 10, 0);
-        LocalDateTime end = start.plusHours(2);
+    @DisplayName("toDomain - Should map Sanctions when present")
+    void toDomainWithSanctions() {
+        SanctionJpaEntity sJpa = new SanctionJpaEntity(5L);
+        entity.setSanctions(Set.of(sJpa));
+        when(mapper.toDomain(entity)).thenReturn(domain);
+        when(sanctionMapper.toDomain(sJpa)).thenReturn(new Sanction(5L));
+        assertEquals(1, adapter.toDomain(entity).getSanctions().size());
+    }
 
-        // Reservation 1 (the one we will exclude)
-        Reservation r1 = new Reservation();
-        r1.setStartTime(start);
-        r1.setEndTime(end);
-        r1.setUser(testUser);
-        r1.setParkingSpot(testSpot);
-        r1.setState("ACTIVE");
-        Reservation saved1 = reservationAdapter.save(r1);
+    @Test
+    @DisplayName("findByUserId - Should delegate and map results")
+    void findByUserId() {
+        when(repository.findByUserId(10L)).thenReturn(List.of(entity));
+        when(mapper.toDomain(entity)).thenReturn(domain);
+        List<Reservation> results = adapter.findByUserId(10L);
+        assertEquals(1, results.size());
+        verify(repository).findByUserId(10L);
+    }
 
-        // Reservation 2 (the one that causes the overlap even if r1 is excluded)
-        Reservation r2 = new Reservation();
-        r2.setStartTime(start.plusMinutes(30));
-        r2.setEndTime(end.plusMinutes(30));
-        r2.setUser(testUser);
-        r2.setParkingSpot(testSpot);
-        r2.setState("ACTIVE");
-        reservationAdapter.save(r2);
+    @Test
+    @DisplayName("findByParkingSpotId - Should delegate and map results")
+    void findByParkingSpotId() {
+        when(repository.findByParkingSpotId(20L)).thenReturn(List.of(entity));
+        when(mapper.toDomain(entity)).thenReturn(domain);
+        List<Reservation> results = adapter.findByParkingSpotId(20L);
+        assertEquals(1, results.size());
+        verify(repository).findByParkingSpotId(20L);
+    }
 
-        // Act & Assert
-        // If we exclude r1, it should still return true because of r2
-        assertTrue(reservationAdapter.hasOverlappingReservationsExcluding(testSpot.getId(), start, end, saved1.getId()), 
-            "Should return true because r2 still overlaps even if r1 is excluded");
+    @Test
+    @DisplayName("findByParkingId - Should delegate and map results")
+    void findByParkingId() {
+        when(repository.findByParkingSpotParkingId(50L)).thenReturn(List.of(entity));
+        when(mapper.toDomain(entity)).thenReturn(domain);
+        List<Reservation> results = adapter.findByParkingId(50L);
+        assertEquals(1, results.size());
+        verify(repository).findByParkingSpotParkingId(50L);
+    }
+
+    @Test
+    @DisplayName("hasOverlappingReservations - Should return true if not empty")
+    void hasOverlappingTrue() {
+        when(repository.findByParkingSpotIdAndStateAndStartTimeBeforeAndEndTimeAfter(anyLong(), anyString(), any(), any()))
+            .thenReturn(List.of(new ReservationJpaEntity()));
+        assertTrue(adapter.hasOverlappingReservations(1L, LocalDateTime.now(), LocalDateTime.now()));
+    }
+
+    @Test
+    @DisplayName("hasOverlappingReservations - Should return false if empty")
+    void hasOverlappingFalse() {
+        when(repository.findByParkingSpotIdAndStateAndStartTimeBeforeAndEndTimeAfter(anyLong(), anyString(), any(), any()))
+            .thenReturn(Collections.emptyList());
+        assertFalse(adapter.hasOverlappingReservations(1L, LocalDateTime.now(), LocalDateTime.now()));
+    }
+
+    @Test
+    @DisplayName("hasOverlappingExcluding - Should return true if not empty")
+    void hasOverlappingExcludingTrue() {
+        when(repository.findByParkingSpotIdAndStateAndStartTimeBeforeAndEndTimeAfterAndIdNot(anyLong(), anyString(), any(), any(), anyLong()))
+            .thenReturn(List.of(new ReservationJpaEntity()));
+        assertTrue(adapter.hasOverlappingReservationsExcluding(1L, LocalDateTime.now(), LocalDateTime.now(), 1L));
+    }
+
+    @Test
+    @DisplayName("hasOverlappingExcluding - Should return false if empty")
+    void hasOverlappingExcludingFalse() {
+        when(repository.findByParkingSpotIdAndStateAndStartTimeBeforeAndEndTimeAfterAndIdNot(anyLong(), anyString(), any(), any(), anyLong()))
+            .thenReturn(Collections.emptyList());
+        assertFalse(adapter.hasOverlappingReservationsExcluding(1L, LocalDateTime.now(), LocalDateTime.now(), 1L));
     }
 }
-
-

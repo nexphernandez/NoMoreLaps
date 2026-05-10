@@ -1,0 +1,54 @@
+<div class="reservations-container">
+  <header class="page-header">
+    <div class="header-text">
+      <h1 class="page-title">Reservations List</h1>
+      <p class="page-subtitle">Monitor real-time activity of your parkings.</p>
+    </div>
+  </header>
+
+  <div class="filters-bar glass-card">
+    <div class="filter-actions">
+      <select class="filter-select" [(ngModel)]="parkingFilter">
+        <option value="all">All parkings</option>
+        @for (p of parkings; track p.id) {
+        <option [value]="p.name">{{ p.name }}</option>
+      }
+      </select>
+      
+      <select class="filter-select" [(ngModel)]="statusFilter">
+        <option value="all">All statuses</option>
+        <option value="active">Active</option>
+        <option value="finished">Finished</option>
+        <option value="canceled">Cancelled</option>
+      </select>
+    </div>
+  </div>
+
+  @if (!loading) {
+    <div class="reservations-list">
+      <div class="list-header">
+        <span>USER & LOCATION</span>
+        <span>DATE & TIME</span>
+        <span>STATUS</span>
+        <span>PAYMENT</span>
+        <span>ACTIONS</span>
+      </div>
+
+      @for (res of filteredReservations; track res.id) {
+        <app-reservation-row 
+          [reservation]="res"
+        ></app-reservation-row>
+      }
+    </div>
+
+    @if (filteredReservations.length === 0) {
+      <div class="empty-container">
+        <p>No reservations found.</p>
+      </div>
+    }
+  } @else {
+    <div class="loading-container">
+      <p>Loading reservations...</p>
+    </div>
+  }
+</div>

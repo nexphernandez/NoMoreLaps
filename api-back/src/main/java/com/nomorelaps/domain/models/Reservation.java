@@ -17,9 +17,11 @@ public class Reservation {
     private Long id;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
-    private double price;
+    private Double price;
     private String state;
     private LocalDateTime creationTime;
+    private Double basePrice;
+    private boolean paid;
     private ParkingSpot parkingSpot;
     private User user;
     private Set<Sanction> sanctions = new HashSet<>();
@@ -51,7 +53,7 @@ public class Reservation {
      * @param user         creator user
      * @param sanctions    list of associated possible sanctions
      */
-    public Reservation(Long id, LocalDateTime startTime, LocalDateTime endTime, double price, String state,
+    public Reservation(Long id, LocalDateTime startTime, LocalDateTime endTime, Double price, String state,
             LocalDateTime creationTime, ParkingSpot parkingSpot, User user, Set<Sanction> sanctions) {
         this.id = id;
         this.startTime = startTime;
@@ -88,11 +90,11 @@ public class Reservation {
         this.endTime = endTime;
     }
 
-    public double getPrice() {
+    public Double getPrice() {
         return price;
     }
 
-    public void setPrice(double price) {
+    public void setPrice(Double price) {
         this.price = price;
     }
 
@@ -110,6 +112,22 @@ public class Reservation {
 
     public void setCreationTime(LocalDateTime creationTime) {
         this.creationTime = creationTime;
+    }
+
+    public Double getBasePrice() {
+        return basePrice;
+    }
+
+    public void setBasePrice(Double basePrice) {
+        this.basePrice = basePrice;
+    }
+
+    public boolean isPaid() {
+        return paid;
+    }
+
+    public void setPaid(boolean paid) {
+        this.paid = paid;
     }
 
     public ParkingSpot getParkingSpot() {

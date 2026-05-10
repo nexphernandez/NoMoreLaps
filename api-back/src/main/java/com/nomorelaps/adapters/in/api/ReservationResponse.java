@@ -21,6 +21,10 @@ public class ReservationResponse {
     private Long parkingSpotId;
     private Long userId;
     private String parkingName;
+    private String userName;
+    private double basePrice;
+    private double sanctionPrice;
+    private boolean paid;
 
     /**
      * Empty constructor
@@ -39,7 +43,7 @@ public class ReservationResponse {
     /**
      * Constructor with all the reservation attributes
      */
-    public ReservationResponse(Long id, LocalDateTime startTime, LocalDateTime endTime, double price, String state, LocalDateTime creationTime, Long parkingSpotId, Long userId, String parkingName) {
+    public ReservationResponse(Long id, LocalDateTime startTime, LocalDateTime endTime, double price, String state, LocalDateTime creationTime, Long parkingSpotId, Long userId, String parkingName, String userName, double basePrice, double sanctionPrice, boolean paid) {
         this.id = id;
         this.startTime = startTime;
         this.endTime = endTime;
@@ -49,6 +53,10 @@ public class ReservationResponse {
         this.parkingSpotId = parkingSpotId;
         this.userId = userId;
         this.parkingName = parkingName;
+        this.userName = userName;
+        this.basePrice = basePrice;
+        this.sanctionPrice = sanctionPrice;
+        this.paid = paid;
     }
 
     public Long getId() {
@@ -115,12 +123,44 @@ public class ReservationResponse {
         this.parkingName = parkingName;
     }
 
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
     public LocalDateTime getCreationTime() {
         return this.creationTime;
     }
 
     public void setCreationTime(LocalDateTime creationTime) {
         this.creationTime = creationTime;
+    }
+
+    public double getBasePrice() {
+        return basePrice;
+    }
+
+    public void setBasePrice(double basePrice) {
+        this.basePrice = basePrice;
+    }
+
+    public double getSanctionPrice() {
+        return sanctionPrice;
+    }
+
+    public void setSanctionPrice(double sanctionPrice) {
+        this.sanctionPrice = sanctionPrice;
+    }
+
+    public boolean isPaid() {
+        return paid;
+    }
+
+    public void setPaid(boolean paid) {
+        this.paid = paid;
     }
 
     @Override

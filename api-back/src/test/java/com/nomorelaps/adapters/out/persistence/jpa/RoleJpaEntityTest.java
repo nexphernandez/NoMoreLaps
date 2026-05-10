@@ -1,64 +1,86 @@
 package com.nomorelaps.adapters.out.persistence.jpa;
 
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
-
+/**
+ * Unit tests for RoleJpaEntity.
+ * Verifies data integrity, all constructors, and all branches of equals/hashCode.
+ */
 class RoleJpaEntityTest {
 
-    @Test
-    void testGettersAndSetters() {
-        RoleJpaEntity entity = new RoleJpaEntity();
-        assertNotNull(entity);
+    private RoleJpaEntity testRole;
 
-        entity.setId(1L);
-        assertEquals(1L, entity.getId());
-
-        entity.setName("ADMIN");
-        assertEquals("ADMIN", entity.getName());
-
-        Set<UserJpaEntity> users = new HashSet<>();
-        users.add(new UserJpaEntity());
-        entity.setUsers(users);
-        assertEquals(users, entity.getUsers());
-
-        RoleJpaEntity entity2 = new RoleJpaEntity(2L);
-        assertEquals(2L, entity2.getId());
-
-        RoleJpaEntity entity3 = new RoleJpaEntity(3L, "USER", users);
-        assertEquals(3L, entity3.getId());
-        assertEquals("USER", entity3.getName());
-        assertEquals(users, entity3.getUsers());
+    @BeforeEach
+    void setUp() {
+        testRole = new RoleJpaEntity();
     }
 
     @Test
-    void testEqualsAndHashCode() {
-        RoleJpaEntity entity1 = new RoleJpaEntity(1L);
-        RoleJpaEntity entity2 = new RoleJpaEntity(1L);
-        RoleJpaEntity entity3 = new RoleJpaEntity(2L);
+    @DisplayName("Constructor - Empty should initialize object")
+    void shouldInitializeEmpty() {
+        assertNotNull(new RoleJpaEntity());
+    }
 
-        // Same object
-        assertEquals(entity1, entity1);
+    @Test
+    @DisplayName("Constructor - ID constructor should correctly set ID")
+    void shouldInitializeWithId() {
+        RoleJpaEntity entity = new RoleJpaEntity(5L);
+        assertEquals(5L, entity.getId());
+    }
 
-        // Equal objects
-        assertEquals(entity1, entity2);
-        assertEquals(entity1.hashCode(), entity2.hashCode());
+    @Test
+    @DisplayName("Constructor - Full constructor should correctly set all fields")
+    void shouldInitializeWithAllFields() {
+        Set<UserJpaEntity> users = new HashSet<>();
+        RoleJpaEntity entity = new RoleJpaEntity(1L, "ADMIN", users);
 
-        // Different objects
-        assertNotEquals(entity1, entity3);
+        assertEquals(1L, entity.getId());
+        assertEquals("ADMIN", entity.getName());
+        assertEquals(users, entity.getUsers());
+    }
 
-        // Null and different class
-        assertNotEquals(entity1, null);
-        assertNotEquals(entity1, new Object());
+    @Test
+    @DisplayName("Setters - Should update basic fields")
+    void shouldSetBasicFields() {
+        testRole.setId(1L);
+        assertEquals(1L, testRole.getId());
+        
+        testRole.setName("USER");
+        assertEquals("USER", testRole.getName());
+    }
 
-        // Null ID coverage
-        RoleJpaEntity entityNull1 = new RoleJpaEntity(null);
-        RoleJpaEntity entityNull2 = new RoleJpaEntity(null);
-        assertEquals(entityNull1, entityNull2);
-        assertNotEquals(entityNull1, entity1);
-        assertNotEquals(entity1, entityNull1);
+    @Test
+    @DisplayName("Relationships - Should update Users collection")
+    void shouldSetRelationships() {
+        Set<UserJpaEntity> users = new HashSet<>();
+        testRole.setUsers(users);
+        assertEquals(users, testRole.getUsers());
+    }
+
+    @Test
+    @DisplayName("Equals - Should handle same object and same ID")
+    void shouldVerifyEquality() {
+        RoleJpaEntity r1 = new RoleJpaEntity(1L);
+        RoleJpaEntity r2 = new RoleJpaEntity(1L);
+        RoleJpaEntity r3 = new RoleJpaEntity(2L);
+
+        assertEquals(r1, r1);
+        assertEquals(r1, r2);
+        assertEquals(r1.hashCode(), r2.hashCode());
+        assertNotEquals(r1, r3);
+        assertNotEquals(r1, null);
+    }
+
+    @Test
+    @DisplayName("Equals - Should handle null IDs")
+    void equalsNullIds() {
+        RoleJpaEntity r1 = new RoleJpaEntity(null);
+        RoleJpaEntity r2 = new RoleJpaEntity(null);
+        assertEquals(r1, r2);
     }
 }

@@ -14,20 +14,20 @@ import jakarta.validation.constraints.Positive;
  */
 public class DynamicPriceRequest {
 
-    @Min(value = 1, message = "El día debe ser mayor o igual a 1 (Lunes)")
-    @Max(value = 7, message = "El día debe ser menor o igual a 7 (Domingo)")
-    private int dayOfWeek;
+    @Min(value = 1, message = "Day must be greater than or equal to 1 (Monday)")
+    @Max(value = 7, message = "Day must be less than or equal to 7 (Sunday)")
+    private Integer dayOfWeek;
 
-    @NotBlank(message = "La hora de inicio es obligatoria")
-    private String startHour;
+    @NotBlank(message = "Start time is mandatory")
+    private String startTime;
 
-    @NotBlank(message = "La hora de fin es obligatoria")
-    private String endHour;
+    @NotBlank(message = "End time is mandatory")
+    private String endTime;
 
-    @Positive(message = "El precio mínimo debe ser positivo")
-    private double minPrice;
+    @Positive(message = "Minimum price must be positive")
+    private Double minPrice;
 
-    @Positive(message = "El precio máximo debe ser positivo")
+    @Positive(message = "Maximum price must be positive")
     private double maxPrice;
 
     /**
@@ -40,15 +40,15 @@ public class DynamicPriceRequest {
      * Constructor with all the parameters
      * 
      * @param dayOfWeek of Dynamic Price
-     * @param startHour of Dynamic Price
-     * @param endHour   of Dynamic Price
+     * @param startTime of Dynamic Price
+     * @param endTime   of Dynamic Price
      * @param minPrice  of Dynamic Price
      * @param maxPrice  of Dynamic Price
      */
-    public DynamicPriceRequest(int dayOfWeek, String startHour, String endHour, double minPrice, double maxPrice) {
+    public DynamicPriceRequest(int dayOfWeek, String startTime, String endTime, double minPrice, double maxPrice) {
         this.dayOfWeek = dayOfWeek;
-        this.startHour = startHour;
-        this.endHour = endHour;
+        this.startTime = startTime;
+        this.endTime = endTime;
         this.minPrice = minPrice;
         this.maxPrice = maxPrice;
     }
@@ -62,19 +62,19 @@ public class DynamicPriceRequest {
     }
 
     public String getStartHour() {
-        return this.startHour;
+        return this.startTime;
     }
 
-    public void setStartHour(String startHour) {
-        this.startHour = startHour;
+    public void setStartHour(String startTime) {
+        this.startTime = startTime;
     }
 
     public String getEndHour() {
-        return this.endHour;
+        return this.endTime;
     }
 
-    public void setEndHour(String endHour) {
-        this.endHour = endHour;
+    public void setEndHour(String endTime) {
+        this.endTime = endTime;
     }
 
     public double getMinPrice() {

@@ -65,7 +65,7 @@ const ReservationConfirmScreen = () => {
 
   const handleConfirm = async () => {
     if (!user) {
-      Alert.alert("Error", "No se detectó el usuario.");
+      Alert.alert("Error", "User not detected.");
       return;
     }
     
@@ -86,7 +86,7 @@ const ReservationConfirmScreen = () => {
         [{ text: 'Ok', onPress: () => navigation.replace('ReservationHistory') }]
       );
     } catch (error: any) {
-      Alert.alert('Error', error.message || 'No se pudo reservar.');
+      Alert.alert('Error', error.message || 'Reservation failed.');
     } finally {
       setProcessing(false);
     }

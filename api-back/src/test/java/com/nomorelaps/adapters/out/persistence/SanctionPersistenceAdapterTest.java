@@ -1,10 +1,10 @@
 package com.nomorelaps.adapters.out.persistence;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 import java.util.List;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,10 +14,20 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.nomorelaps.adapters.mapper.SanctionMapper;
+import com.nomorelaps.adapters.out.persistence.jpa.ParkingJpaEntity;
+import com.nomorelaps.adapters.out.persistence.jpa.ParkingSpotJpaEntity;
+import com.nomorelaps.adapters.out.persistence.jpa.ReservationJpaEntity;
 import com.nomorelaps.adapters.out.persistence.jpa.SanctionJpaEntity;
+import com.nomorelaps.adapters.out.persistence.jpa.UserJpaEntity;
 import com.nomorelaps.adapters.out.persistence.repository.SanctionJpaRepository;
+import com.nomorelaps.domain.models.Reservation;
 import com.nomorelaps.domain.models.Sanction;
+import com.nomorelaps.domain.models.User;
 
+/**
+ * Unit tests for SanctionPersistenceAdapter.
+ * Verifies mapping logic and repository delegations with granular branch coverage.
+ */
 @ExtendWith(MockitoExtension.class)
 class SanctionPersistenceAdapterTest {
 
@@ -30,129 +40,134 @@ class SanctionPersistenceAdapterTest {
     @InjectMocks
     private SanctionPersistenceAdapter adapter;
 
-    private Sanction sanction;
+    private Sanction domain;
     private SanctionJpaEntity entity;
 
     @BeforeEach
     void setUp() {
-        sanction = new Sanction(1L);
-        entity = new SanctionJpaEntity();
-        entity.setId(1L);
+        domain = new Sanction(1L);
+        entity = new SanctionJpaEntity(1L);
     }
 
     @Test
-    @DisplayName("findByUserId - Should return list")
-    void shouldReturnByUserId() {
-        when(repository.findByUserId(1L)).thenReturn(List.of(entity));
-        when(mapper.toDomain(entity)).thenReturn(sanction);
-
-        List<Sanction> result = adapter.findByUserId(1L);
-
-        assertEquals(1, result.size());
+    @DisplayName("toEntity - Should map User when present with ID")
+    void toEntityWithUser() {
+        User user = new User(); user.setId(10L);
+        domain.setUser(user);
+        when(mapper.toJpaEntity(domain)).thenReturn(entity);
+        SanctionJpaEntity result = adapter.toEntity(domain);
+        assertEquals(10L, result.getUser().getId());
     }
 
     @Test
-    @DisplayName("findByReservationId - Should return list")
-    void shouldReturnByReservationId() {
-        when(repository.findByReservationId(1L)).thenReturn(List.of(entity));
-        when(mapper.toDomain(entity)).thenReturn(sanction);
-
-        List<Sanction> result = adapter.findByReservationId(1L);
-
-        assertEquals(1, result.size());
-    }
-
-    @Test
-    @DisplayName("save - Should map associations in toEntity")
-    void shouldSaveWithAssociations() {
-        // Arrange
-        com.nomorelaps.domain.models.User user = new com.nomorelaps.domain.models.User(10L);
-        com.nomorelaps.domain.models.Reservation res = new com.nomorelaps.domain.models.Reservation(20L);
-        sanction.setUser(user);
-        sanction.setReservation(res);
-
-        when(mapper.toJpaEntity(sanction)).thenReturn(entity);
-        when(repository.save(entity)).thenReturn(entity);
-        when(mapper.toDomain(entity)).thenReturn(sanction);
-
-        // Act
-        adapter.save(sanction);
-
-        // Assert
-        assertNotNull(entity.getUser());
-        assertEquals(10L, entity.getUser().getId());
-        assertNotNull(entity.getReservation());
-        assertEquals(20L, entity.getReservation().getId());
-    }
-
-    @Test
-    @DisplayName("toDomain - Should map associations from entity")
-    void shouldMapAssociationsToDomain() {
-        // Arrange
-        com.nomorelaps.adapters.out.persistence.jpa.UserJpaEntity userEntity = 
-            new com.nomorelaps.adapters.out.persistence.jpa.UserJpaEntity(10L);
-        com.nomorelaps.adapters.out.persistence.jpa.ReservationJpaEntity resEntity = 
-            new com.nomorelaps.adapters.out.persistence.jpa.ReservationJpaEntity(20L);
+    @DisplayName("toEntity - Should not map User when null or ID null")
+    void toEntityWithUserNull() {
+        domain.setUser(null);
+        when(mapper.toJpaEntity(domain)).thenReturn(entity);
+        assertNull(adapter.toEntity(domain).getUser());
         
-        entity.setUser(userEntity);
-        entity.setReservation(resEntity);
-
-        when(repository.findByUserId(1L)).thenReturn(List.of(entity));
-        when(mapper.toDomain(entity)).thenReturn(sanction);
-
-        // Act
-        List<Sanction> result = adapter.findByUserId(1L);
-
-        // Assert
-        assertFalse(result.isEmpty());
-        Sanction resultSanction = result.get(0);
-        assertNotNull(resultSanction.getUser());
-        assertEquals(10L, resultSanction.getUser().getId());
-        assertNotNull(resultSanction.getReservation());
-        assertEquals(20L, resultSanction.getReservation().getId());
+        domain.setUser(new User());
+        assertNull(adapter.toEntity(domain).getUser());
     }
 
     @Test
-    @DisplayName("toEntity/toDomain - Should handle null associations")
-    void shouldHandleNullAssociations() {
-        // Arrange
-        sanction.setUser(null);
-        sanction.setReservation(null);
+    @DisplayName("toEntity - Should map Reservation when present with ID")
+    void toEntityWithReservation() {
+        Reservation res = new Reservation(); res.setId(20L);
+        domain.setReservation(res);
+        when(mapper.toJpaEntity(domain)).thenReturn(entity);
+        SanctionJpaEntity result = adapter.toEntity(domain);
+        assertEquals(20L, result.getReservation().getId());
+    }
+
+    @Test
+    @DisplayName("toEntity - Should not map Reservation when null or ID null")
+    void toEntityWithReservationNull() {
+        domain.setReservation(null);
+        when(mapper.toJpaEntity(domain)).thenReturn(entity);
+        assertNull(adapter.toEntity(domain).getReservation());
+        
+        domain.setReservation(new Reservation());
+        assertNull(adapter.toEntity(domain).getReservation());
+    }
+
+    @Test
+    @DisplayName("toDomain - Should map User if present in entity")
+    void toDomainWithUser() {
+        UserJpaEntity uJpa = new UserJpaEntity(10L); uJpa.setName("Bob");
+        entity.setUser(uJpa);
+        when(mapper.toDomain(entity)).thenReturn(domain);
+        assertEquals("Bob", adapter.toDomain(entity).getUser().getName());
+    }
+
+    @Test
+    @DisplayName("toDomain - Should handle null User in entity")
+    void toDomainWithUserNull() {
         entity.setUser(null);
-        entity.setReservation(null);
-
-        when(mapper.toJpaEntity(sanction)).thenReturn(entity);
-        when(repository.save(entity)).thenReturn(entity);
-        when(mapper.toDomain(entity)).thenReturn(sanction);
-
-        // Act
-        Sanction saved = adapter.save(sanction);
-
-        // Assert
-        assertNotNull(saved);
-        assertNull(entity.getUser());
-        assertNull(entity.getReservation());
+        when(mapper.toDomain(entity)).thenReturn(domain);
+        assertNull(adapter.toDomain(entity).getUser());
     }
 
     @Test
-    @DisplayName("toEntity - Should handle null association IDs")
-    void shouldHandleNullAssociationIds() {
-        // Arrange
-        com.nomorelaps.domain.models.User userNoId = new com.nomorelaps.domain.models.User();
-        com.nomorelaps.domain.models.Reservation resNoId = new com.nomorelaps.domain.models.Reservation();
-        sanction.setUser(userNoId);
-        sanction.setReservation(resNoId);
+    @DisplayName("toDomain - Should map deep structure (Reservation->Spot->Parking)")
+    void toDomainWithParkingChain() {
+        ParkingJpaEntity pJpa = new ParkingJpaEntity(50L); pJpa.setName("P1");
+        ParkingSpotJpaEntity sJpa = new ParkingSpotJpaEntity(100L); sJpa.setParking(pJpa);
+        ReservationJpaEntity rJpa = new ReservationJpaEntity(200L); rJpa.setParkingSpot(sJpa);
+        entity.setReservation(rJpa);
+        when(mapper.toDomain(entity)).thenReturn(domain);
+        Sanction result = adapter.toDomain(entity);
+        assertNotNull(result.getReservation().getParkingSpot().getParking());
+        assertEquals(50L, result.getReservation().getParkingSpot().getParking().getId());
+    }
 
-        when(mapper.toJpaEntity(sanction)).thenReturn(entity);
-        when(repository.save(entity)).thenReturn(entity);
-        when(mapper.toDomain(entity)).thenReturn(sanction);
+    @Test
+    @DisplayName("toDomain - Should handle null Parking in Reservation chain")
+    void toDomainWithParkingNull() {
+        ReservationJpaEntity rJpa = new ReservationJpaEntity(200L);
+        rJpa.setParkingSpot(new ParkingSpotJpaEntity(100L)); // Parking is null
+        entity.setReservation(rJpa);
+        when(mapper.toDomain(entity)).thenReturn(domain);
+        assertNull(adapter.toDomain(entity).getReservation().getParkingSpot());
+    }
 
-        // Act
-        adapter.save(sanction);
+    @Test
+    @DisplayName("toDomain - Should handle null Spot in Reservation chain")
+    void toDomainWithSpotNull() {
+        ReservationJpaEntity rJpa = new ReservationJpaEntity(200L);
+        rJpa.setParkingSpot(null);
+        entity.setReservation(rJpa);
+        when(mapper.toDomain(entity)).thenReturn(domain);
+        assertNull(adapter.toDomain(entity).getReservation().getParkingSpot());
+    }
 
-        // Assert
-        assertNull(entity.getUser());
-        assertNull(entity.getReservation());
+    @Test
+    @DisplayName("findByUserId - Should delegate and map results")
+    void findByUserId() {
+        when(repository.findByUserId(10L)).thenReturn(List.of(entity));
+        when(mapper.toDomain(entity)).thenReturn(domain);
+        List<Sanction> results = adapter.findByUserId(10L);
+        assertEquals(1, results.size());
+        verify(repository).findByUserId(10L);
+    }
+
+    @Test
+    @DisplayName("findByReservationId - Should delegate and map results")
+    void findByReservationId() {
+        when(repository.findByReservationId(20L)).thenReturn(List.of(entity));
+        when(mapper.toDomain(entity)).thenReturn(domain);
+        List<Sanction> results = adapter.findByReservationId(20L);
+        assertEquals(1, results.size());
+        verify(repository).findByReservationId(20L);
+    }
+
+    @Test
+    @DisplayName("findByCompanyId - Should delegate and map results")
+    void findByCompanyId() {
+        when(repository.findByReservationParkingSpotParkingCompanyId(5L)).thenReturn(List.of(entity));
+        when(mapper.toDomain(entity)).thenReturn(domain);
+        List<Sanction> results = adapter.findByCompanyId(5L);
+        assertEquals(1, results.size());
+        verify(repository).findByReservationParkingSpotParkingCompanyId(5L);
     }
 }
-

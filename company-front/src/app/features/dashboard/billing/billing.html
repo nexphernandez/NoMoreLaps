@@ -1,0 +1,104 @@
+<div class="billing-container">
+  <header class="page-header">
+    <div class="header-text">
+      <h1 class="page-title">Unified Billing</h1>
+      <p class="page-subtitle">Manage payments, price breakdowns, and payment statuses.</p>
+    </div>
+  </header>
+
+  <div class="stats-row">
+    <div class="mini-stat glass-card">
+      <span class="label">Collected (Total)</span>
+      <span class="value">{{ totalCollected | currency:'EUR' }}</span>
+    </div>
+    <div class="mini-stat glass-card">
+      <span class="label">Pending Payment</span>
+      <span class="value highlight">{{ pendingAmount | currency:'EUR' }}</span>
+    </div>
+  </div>
+
+  <div class="filters-bar glass-card">
+    <div class="search-box">
+      <span class="material-symbols-outlined search-icon">search</span>
+      <input type="text" 
+             placeholder="Search by user..." 
+             class="filter-input"
+             [(ngModel)]="searchTerm">
+    </div>
+    <div class="filter-actions">
+      <select class="filter-select" [(ngModel)]="parkingFilter">
+        <option value="all">All parkings</option>
+        @for (p of parkings; track p.id) {
+          <option [value]="p.name">{{ p.name }}</option>
+        }
+      </select>
+
+      <select class="filter-select" [(ngModel)]="statusFilter">
+        <option value="all">All statuses</option>
+        <option value="pending">Pending</option>
+        <option value="paid">Paid</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="billing-list">
+    <div class="list-header">
+      <span>USER & SPOT</span>
+      <span>BREAKDOWN (BASE + SANC.)</span>
+      <span>TOTAL</span>
+      <span>STATUS / ACTION</span>
+    </div>
+
+    @for (r of filteredReservations; track r.id) {
+      <div class="billing-row glass-card" [class.paid]="r.paid">
+        <div class="user-info">
+          <div class="avatar-mini">{{ r.userName.charAt(0) }}</div>
+          <div class="details">
+            <span class="name">{{ r.userName }}</span>
+            <span class="parking">{{ r.parkingName }} - Spot #{{ r.parkingSpotId }}</span>
+          </div>
+        </div>
+
+        <div class="breakdown">
+          <span class="base">{{ r.basePrice | currency:'EUR' }}</span>
+          <span class="plus">+</span>
+          <span class="sanction">{{ r.sanctionPrice | currency:'EUR' }}</span>
+        </div>
+
+        <div class="total-price">
+          <span class="value">{{ r.price | currency:'EUR' }}</span>
+        </div>
+
+        <div class="actions">
+          <span class="status-badge" [class.paid]="r.paid">
+            <span class="material-symbols-outlined" style="font-size: 1rem; vertical-align: middle;">
+              {{ r.paid ? 'check_circle' : 'pending' }}
+            </span>
+            {{ r.paid ? 'Paid' : 'Pending' }}
+          </span>
+          @if (!r.paid) {
+            <button class="toggle-btn" (click)="togglePayment(r)">
+              Mark Paid
+            </button>
+          }
+        </div>
+      </div>
+    }
+  </div>
+
+  @if (loading) {
+    <div class="loading-container">
+      <div class="spinner"></div>
+      <p>Loading financial data...</p>
+    </div>
+  }
+
+  @if (!loading && filteredReservations.length === 0) {
+    <div class="empty-container">
+      <div class="empty-icon">
+        <span class="material-symbols-outlined" style="font-size: 4rem;">payments</span>
+      </div>
+      <p>No billing records found.</p>
+    </div>
+  }
+</div>

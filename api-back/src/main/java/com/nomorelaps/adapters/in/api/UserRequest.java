@@ -12,10 +12,10 @@ import jakarta.validation.constraints.NotBlank;
  */
 public class UserRequest {
     
-    @NotBlank(message = "El nombre no puede estar vacío")
+    @NotBlank(message = "Name cannot be empty")
     private String name;
-    @NotBlank(message = "El email no puede estar vacío")
-    @Email(message = "Debe ser un formato de email correcto")
+    @NotBlank(message = "Email cannot be empty")
+    @Email(message = "Must be a valid email format")
     private String email;
     private String password;
     private boolean calendarEnable;

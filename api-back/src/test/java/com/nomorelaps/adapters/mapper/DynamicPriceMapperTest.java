@@ -4,19 +4,35 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDateTime;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mapstruct.factory.Mappers;
 
 import com.nomorelaps.adapters.in.api.DynamicPriceRequest;
 import com.nomorelaps.adapters.in.api.DynamicPriceResponse;
 import com.nomorelaps.adapters.out.persistence.jpa.DynamicPriceJpaEntity;
 import com.nomorelaps.domain.models.DynamicPrice;
 
-import org.mapstruct.factory.Mappers;
-
+/**
+ * Unit tests for DynamicPriceMapper.
+ * Verifies mapping between DynamicPrice domain models, API requests/responses, and JPA entities.
+ */
 class DynamicPriceMapperTest {
 
     private final DynamicPriceMapper mapper = Mappers.getMapper(DynamicPriceMapper.class);
+    private DynamicPrice testPrice;
+
+    @BeforeEach
+    void setUp() {
+        testPrice = new DynamicPrice(1L);
+        testPrice.setDayOfWeek(1);
+        testPrice.setStartHour("08:00");
+        testPrice.setEndHour("20:00");
+        testPrice.setMinPrice(1.0);
+        testPrice.setMaxPrice(5.0);
+        testPrice.setCreateAt(LocalDateTime.now());
+    }
 
     @Test
     @DisplayName("toDomainFromRequest - Should map request to domain")
@@ -39,30 +55,22 @@ class DynamicPriceMapperTest {
     @Test
     @DisplayName("toResponse - Should map domain to response")
     void shouldMapDomainToResponse() {
-        DynamicPrice domain = new DynamicPrice(1L);
-        domain.setDayOfWeek(2);
-        domain.setMinPrice(2.0);
-        domain.setCreateAt(LocalDateTime.now());
-
-        DynamicPriceResponse response = mapper.toResponse(domain);
+        DynamicPriceResponse response = mapper.toResponse(testPrice);
 
         assertNotNull(response);
         assertEquals(1L, response.getId());
-        assertEquals(2, response.getDayOfWeek());
-        assertEquals(2.0, response.getMinPrice());
+        assertEquals(1, response.getDayOfWeek());
+        assertEquals(1.0, response.getMinPrice());
     }
 
     @Test
     @DisplayName("toJpaEntity - Should map domain to jpa")
     void shouldMapDomainToJpa() {
-        DynamicPrice domain = new DynamicPrice(1L);
-        domain.setMaxPrice(10.0);
-
-        DynamicPriceJpaEntity entity = mapper.toJpaEntity(domain);
+        DynamicPriceJpaEntity entity = mapper.toJpaEntity(testPrice);
 
         assertNotNull(entity);
         assertEquals(1L, entity.getId());
-        assertEquals(10.0, entity.getMaxPrice());
+        assertEquals(5.0, entity.getMaxPrice());
     }
 
     @Test
@@ -80,11 +88,26 @@ class DynamicPriceMapperTest {
     }
 
     @Test
-    @DisplayName("Null handling - Should return null when input is null")
-    void shouldHandleNulls() {
+    @DisplayName("toDomainFromRequest - Should return null when input is null")
+    void shouldReturnNullWhenRequestIsNull() {
         assertNull(mapper.toDomainFromRequest(null));
+    }
+
+    @Test
+    @DisplayName("toResponse - Should return null when input is null")
+    void shouldReturnNullWhenDomainIsNullForResponse() {
         assertNull(mapper.toResponse(null));
+    }
+
+    @Test
+    @DisplayName("toJpaEntity - Should return null when input is null")
+    void shouldReturnNullWhenDomainIsNullForJpa() {
         assertNull(mapper.toJpaEntity(null));
+    }
+
+    @Test
+    @DisplayName("toDomain - Should return null when input is null")
+    void shouldReturnNullWhenJpaIsNull() {
         assertNull(mapper.toDomain(null));
     }
 }

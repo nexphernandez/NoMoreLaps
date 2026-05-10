@@ -2,120 +2,97 @@ package com.nomorelaps.infrastructure.security;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-import static org.mockito.ArgumentMatchers.anyString;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.util.ReflectionTestUtils;
 
-@ExtendWith(MockitoExtension.class)
+/**
+ * Unit tests for JwtService.
+ * Adheres to the New Backend Test Refactoring Plan for granularity and business naming.
+ * Verifies JWT token lifecycle, parsing logic, and security validation.
+ */
 class JwtServiceTest {
 
     private JwtService jwtService;
-
-    @Mock
-    private UserDetails userDetails;
-
-    private final String SECRET = "mysecretkeythatislongenoughforhmacsha256";
+    private UserDetails testUserDetails;
+    private final String TEST_SECRET = "my-test-secret-key-that-needs-to-be-sufficiently-long";
 
     @BeforeEach
     void setUp() {
         jwtService = new JwtService();
-        ReflectionTestUtils.setField(jwtService, "secretKey", SECRET);
+        testUserDetails = mock(UserDetails.class);
+        when(testUserDetails.getUsername()).thenReturn("alice@test.com");
+        
+        ReflectionTestUtils.setField(jwtService, "secretKey", TEST_SECRET);
         ReflectionTestUtils.setField(jwtService, "jwtExpiration", 60L);
     }
 
+
     @Test
-    @DisplayName("generateToken - Should generate a valid token")
-    void shouldGenerateToken() {
-        when(userDetails.getUsername()).thenReturn("user@test.com");
-        
-        String token = jwtService.generateToken(userDetails);
-        
-        assertNotNull(token);
-        assertEquals("user@test.com", jwtService.extractUsername(token));
+    @DisplayName("generateToken - Output: Should produce a non-empty string")
+    void generateToken_ShouldReturnNonEmptyString() {
+        String jwtToken = jwtService.generateToken(testUserDetails);
+        assertFalse(jwtToken.isEmpty());
     }
 
     @Test
-    @DisplayName("isTokenValid - Should return true for valid token and user")
-    void shouldValidateToken() {
-        when(userDetails.getUsername()).thenReturn("user@test.com");
-        String token = jwtService.generateToken(userDetails);
+    @DisplayName("generateToken - Claims: Should include custom data")
+    void generateToken_WithExtraClaims_ShouldIncludeCustomData() {
+        Map<String, Object> extraClaims = new HashMap<>();
+        extraClaims.put("app", "NoMoreLaps");
         
-        assertTrue(jwtService.isTokenValid(token, userDetails));
+        String jwtToken = jwtService.generateToken(extraClaims, testUserDetails);
+        String appClaimValue = jwtService.extractClaim(jwtToken, claims -> claims.get("app", String.class));
+        
+        assertEquals("NoMoreLaps", appClaimValue);
+    }
+
+
+    @Test
+    @DisplayName("isTokenValid - Case 1 (T && T): Should return true for valid token")
+    void isTokenValid_Valid_ShouldReturnTrue() {
+        String jwtToken = jwtService.generateToken(testUserDetails);
+        assertTrue(jwtService.isTokenValid(jwtToken, testUserDetails));
     }
 
     @Test
-    @DisplayName("isTokenValid - Should return false for different user")
-    void shouldFailForDifferentUser() {
-        when(userDetails.getUsername()).thenReturn("user@test.com");
-        String token = jwtService.generateToken(userDetails);
+    @DisplayName("isTokenValid - Case 2 (F && ?): Should return false for user mismatch")
+    void isTokenValid_UserMismatch_ShouldReturnFalse() {
+        String jwtToken = jwtService.generateToken(testUserDetails);
+        UserDetails otherUserDetails = mock(UserDetails.class);
+        when(otherUserDetails.getUsername()).thenReturn("bob@test.com");
         
-        UserDetails otherUser = org.mockito.Mockito.mock(UserDetails.class);
-        when(otherUser.getUsername()).thenReturn("other@test.com");
-        
-        assertFalse(jwtService.isTokenValid(token, otherUser));
+        assertFalse(jwtService.isTokenValid(jwtToken, otherUserDetails));
     }
 
     @Test
-    @DisplayName("isTokenValid - Should return false for expired token")
-    void shouldReturnFalseForExpiredToken() {
-        ReflectionTestUtils.setField(jwtService, "jwtExpiration", -60L); // Expired 60 minutes ago
-        when(userDetails.getUsername()).thenReturn("user@test.com");
-        
-        String token = jwtService.generateToken(userDetails);
-        
-        assertFalse(jwtService.isTokenValid(token, userDetails));
-    }
-
-    @Test
-    @DisplayName("isTokenValid - Should return false when username does not match")
-    void shouldReturnFalseWhenUsernameMismatch() {
-        // Arrange
-        when(userDetails.getUsername()).thenReturn("user@test.com");
-        String token = jwtService.generateToken(userDetails);
-        
-        UserDetails otherUser = org.mockito.Mockito.mock(UserDetails.class);
-        when(otherUser.getUsername()).thenReturn("wrong@test.com");
-        
-        // Act & Assert
-        assertFalse(jwtService.isTokenValid(token, otherUser));
-    }
-
-    @Test
-    @DisplayName("isTokenValid - Should return false when token is expired (covering the && second part)")
-    void shouldReturnFalseWhenExpiredPartTwo() {
-        // Arrange
+    @DisplayName("isTokenValid - Case 3 (T && F): Should return false for expired token")
+    void isTokenValid_Expired_ShouldReturnFalse() {
         JwtService spyService = spy(jwtService);
-        ReflectionTestUtils.setField(spyService, "secretKey", SECRET);
-        ReflectionTestUtils.setField(spyService, "jwtExpiration", 60L);
+        String jwtToken = jwtService.generateToken(testUserDetails);
         
-        when(userDetails.getUsername()).thenReturn("user@test.com");
-        String token = jwtService.generateToken(userDetails);
-        
-        // We mock extractUsername to succeed, but isTokenExpired to return true
-        doReturn("user@test.com").when(spyService).extractUsername(anyString());
         doReturn(true).when(spyService).isTokenExpired(anyString());
         
-        // Act
-        boolean isValid = spyService.isTokenValid(token, userDetails);
-        
-        // Assert
-        assertFalse(isValid, "Should be false because it is expired, even if username matches");
+        assertFalse(spyService.isTokenValid(jwtToken, testUserDetails));
     }
 
     @Test
-    @DisplayName("isTokenValid - Should return false on any exception")
-    void shouldReturnFalseOnException() {
-        // Act
-        boolean isValid = jwtService.isTokenValid("invalid-token", userDetails);
-        
-        // Assert
-        assertFalse(isValid);
+    @DisplayName("isTokenValid - Exception: Should return false on parsing error")
+    void isTokenValid_Exception_ShouldReturnFalse() {
+        assertFalse(jwtService.isTokenValid("corrupted.token", testUserDetails));
+    }
+
+
+    @Test
+    @DisplayName("isTokenExpired - Not Expired: Should return false for new tokens")
+    void isTokenExpired_NotExpired_ShouldReturnFalse() {
+        String jwtToken = jwtService.generateToken(testUserDetails);
+        assertFalse(jwtService.isTokenExpired(jwtToken));
     }
 }

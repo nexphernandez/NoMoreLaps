@@ -23,6 +23,9 @@ public class ParkingResponse {
     private Double sanctionAmount;
     private Integer sanctionIntervalInMinutes;
     private Double pricePerHour;
+    private Long companyId;
+    private String status = "Open";
+    private Integer totalSpots;
     
     /**
      * Empty constructor
@@ -50,7 +53,9 @@ public class ParkingResponse {
      * @param createdAt of the parking creation day
      */
     public ParkingResponse(Long id, String address, String name, Double latitude, Double longitude, 
-                           LocalDateTime openingTime, LocalDateTime closingTime, LocalDateTime createdAt, Double pricePerHour) {
+                           LocalDateTime openingTime, LocalDateTime closingTime, LocalDateTime createdAt, 
+                           Double pricePerHour, Double sanctionAmount, Integer sanctionIntervalInMinutes,
+                           Integer totalSpots) {
         this.id = id;
         this.address = address;
         this.name = name;
@@ -60,6 +65,9 @@ public class ParkingResponse {
         this.closingTime = closingTime;
         this.createdAt = createdAt;
         this.pricePerHour = pricePerHour;
+        this.sanctionAmount = sanctionAmount;
+        this.sanctionIntervalInMinutes = sanctionIntervalInMinutes;
+        this.totalSpots = totalSpots;
     }
 
     public Long getId() {
@@ -148,6 +156,30 @@ public class ParkingResponse {
 
     public void setPricePerHour(Double pricePerHour) {
         this.pricePerHour = pricePerHour;
+    }
+
+    public Long getCompanyId() {
+        return companyId;
+    }
+
+    public void setCompanyId(Long companyId) {
+        this.companyId = companyId;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public Integer getTotalSpots() {
+        return totalSpots;
+    }
+
+    public void setTotalSpots(Integer totalSpots) {
+        this.totalSpots = totalSpots;
     }
 
     @Override

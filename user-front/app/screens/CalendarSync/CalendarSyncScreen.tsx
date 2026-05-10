@@ -98,7 +98,6 @@ const CalendarSyncScreen = () => {
     const start = new Date(event.startDate);
     const end = new Date(event.endDate);
     
-    // Round start time to nearest half hour for consistency
     const minutes = start.getMinutes();
     const roundedStart = new Date(start);
     if (minutes >= 45) {

@@ -22,10 +22,9 @@ import com.nomorelaps.adapters.out.persistence.interfaces.IUserPersistenceAdapte
 import com.nomorelaps.domain.models.User;
 
 /**
- * Unit tests for UserService covering all business methods.
- *
- * @author nexphernandez
- * @version 1.0.0
+ * Unit tests for UserService.
+ * Verifies user registration with password encoding, partial profile updates,
+ * and secure password change logic.
  */
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
@@ -48,8 +47,6 @@ class UserServiceTest {
         testUser.setEmail("alice@test.com");
         testUser.setPassword("plainPassword");
     }
-
-    // ── create ──────────────────────────────────────────────────────────────
 
     @Test
     @DisplayName("create - Should encode password and save user successfully")
@@ -94,8 +91,6 @@ class UserServiceTest {
         verify(persistencePort, never()).save(any());
     }
 
-    // ── findById ─────────────────────────────────────────────────────────────
-
     @Test
     @DisplayName("findById - Should return user when found")
     void shouldFindUserById() {
@@ -117,8 +112,6 @@ class UserServiceTest {
         assertFalse(result.isPresent());
     }
 
-    // ── findByEmail ───────────────────────────────────────────────────────────
-
     @Test
     @DisplayName("findByEmail - Should return user by email")
     void shouldFindUserByEmail() {
@@ -129,8 +122,6 @@ class UserServiceTest {
         assertTrue(result.isPresent());
         assertEquals(1L, result.get().getId());
     }
-
-    // ── findAll ───────────────────────────────────────────────────────────────
 
     @Test
     @DisplayName("findAll - Should return all users")
@@ -143,8 +134,6 @@ class UserServiceTest {
 
         assertEquals(2, result.size());
     }
-
-    // ── update ────────────────────────────────────────────────────────────────
 
     @Test
     @DisplayName("update - Should update name and email when provided")
@@ -198,8 +187,6 @@ class UserServiceTest {
         assertThrows(IllegalArgumentException.class, () -> userService.update(updates));
     }
 
-    // ── deleteById ────────────────────────────────────────────────────────────
-
     @Test
     @DisplayName("deleteById - Should call persistence deleteById")
     void shouldDeleteUserById() {
@@ -217,7 +204,6 @@ class UserServiceTest {
         existingUser.setName("Alice");
         existingUser.setEmail("alice@test.com");
 
-        // Provide null name, empty email, null password → no fields should be updated
         User updates = new User(1L);
         updates.setName(null);
         updates.setEmail("");
@@ -229,7 +215,6 @@ class UserServiceTest {
         User result = userService.update(updates);
 
         assertNotNull(result);
-        // original values preserved
         assertEquals("Alice", existingUser.getName());
         assertEquals("alice@test.com", existingUser.getEmail());
         verify(passwordEncoder, never()).encode(anyString());
@@ -273,5 +258,35 @@ class UserServiceTest {
         assertEquals("encoded", existingUser.getPassword());
         verify(passwordEncoder, never()).encode(anyString());
     }
-}
 
+    @Test
+    @DisplayName("changePassword - Should encode and save new password")
+    void shouldChangePasswordSuccessfully() {
+        when(persistencePort.findById(1L)).thenReturn(Optional.of(testUser));
+        when(passwordEncoder.matches("oldPass", "plainPassword")).thenReturn(true);
+        when(passwordEncoder.encode("newPass")).thenReturn("encodedNew");
+
+        userService.changePassword(1L, "oldPass", "newPass");
+
+        assertEquals("encodedNew", testUser.getPassword());
+        verify(persistencePort).save(testUser);
+    }
+
+    @Test
+    @DisplayName("changePassword - Should throw when user not found")
+    void shouldThrowWhenUserNotFoundOnChangePassword() {
+        when(persistencePort.findById(99L)).thenReturn(Optional.empty());
+
+        assertThrows(IllegalArgumentException.class, () -> userService.changePassword(99L, "old", "new"));
+    }
+
+    @Test
+    @DisplayName("changePassword - Should throw when current password incorrect")
+    void shouldThrowWhenCurrentPasswordIncorrect() {
+        when(persistencePort.findById(1L)).thenReturn(Optional.of(testUser));
+        when(passwordEncoder.matches("wrongPass", "plainPassword")).thenReturn(false);
+
+        assertThrows(IllegalArgumentException.class, () -> userService.changePassword(1L, "wrongPass", "newPass"));
+        verify(persistencePort, never()).save(any());
+    }
+}

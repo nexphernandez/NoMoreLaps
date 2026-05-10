@@ -28,6 +28,7 @@ public class Parking {
     private Set<DynamicPrice> dynamicPrice = new HashSet<>();
     private Double sanctionAmount = 0.0; 
     private Integer sanctionIntervalInMinutes = 15;
+    private Integer totalSpots;
 
     /**
      * Empty constructor
@@ -165,6 +166,10 @@ public class Parking {
         return dynamicPrice;
     }
 
+    public void setDynamicPrice(Set<DynamicPrice> dynamicPrice) {
+        this.dynamicPrice = dynamicPrice;
+    }
+
     public Double getPricePerHour() {
         return pricePerHour;
     }
@@ -187,6 +192,14 @@ public class Parking {
 
     public void setSanctionIntervalInMinutes(Integer sanctionIntervalInMinutes) {
         this.sanctionIntervalInMinutes = sanctionIntervalInMinutes;
+    }
+
+    public Integer getTotalSpots() {
+        return totalSpots;
+    }
+
+    public void setTotalSpots(Integer totalSpots) {
+        this.totalSpots = totalSpots;
     }
 
     @Override

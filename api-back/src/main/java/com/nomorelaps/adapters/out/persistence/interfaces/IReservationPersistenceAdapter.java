@@ -40,7 +40,7 @@ public interface IReservationPersistenceAdapter extends IBasePersistenceAdapter<
     List<Reservation> findByParkingId(Long parkingId);
     
     /**
-     * Finds and lists reservations based on their current state (e.g., CONFIRMADA, FINALIZADA, CANCELADA).
+     * Finds and lists reservations based on their current state .
      * Allows filtering occupancy slots easily.
      * 
      * @param state The textual state that characterizes the reservation.
@@ -68,4 +68,12 @@ public interface IReservationPersistenceAdapter extends IBasePersistenceAdapter<
      * @return true if there is a conflict, false otherwise.
      */
     boolean hasOverlappingReservationsExcluding(Long spotId, LocalDateTime start, LocalDateTime end, Long excludeId);
+
+    /**
+     * Retrieves all reservations associated with a specific company's parkings.
+     * 
+     * @param companyId The company ID.
+     * @return A list of matching reservations.
+     */
+    List<Reservation> findByCompanyId(Long companyId);
 }

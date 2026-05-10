@@ -3,6 +3,7 @@ package com.nomorelaps.adapters.out.persistence.jpa;
 import java.time.LocalDateTime;
 import java.util.Set;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -63,10 +64,13 @@ public class ParkingJpaEntity {
     @Column(name = "sanction_interval")
     private Integer sanctionIntervalInMinutes = 15;
 
-    @OneToMany(mappedBy = "parking")
+    @Column(name = "total_spots")
+    private Integer totalSpots;
+
+    @OneToMany(mappedBy = "parking", cascade = CascadeType.ALL)
     private Set<ParkingSpotJpaEntity> parkingSpots;
 
-    @OneToMany(mappedBy = "parking")
+    @OneToMany(mappedBy = "parking", cascade = CascadeType.ALL)
     private Set<DynamicPriceJpaEntity> dynamicPrice;
 
     /**
@@ -230,6 +234,14 @@ public class ParkingJpaEntity {
 
     public void setSanctionIntervalInMinutes(Integer sanctionIntervalInMinutes) {
         this.sanctionIntervalInMinutes = sanctionIntervalInMinutes;
+    }
+
+    public Integer getTotalSpots() {
+        return totalSpots;
+    }
+
+    public void setTotalSpots(Integer totalSpots) {
+        this.totalSpots = totalSpots;
     }
 
     @Override

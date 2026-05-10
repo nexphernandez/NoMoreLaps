@@ -18,6 +18,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.nomorelaps.adapters.out.persistence.interfaces.IDynamicPricePersistenceAdapter;
 import com.nomorelaps.domain.models.DynamicPrice;
 
+/**
+ * Unit tests for DynamicPriceService.
+ * Verifies business logic for dynamic pricing, including range validation.
+ */
 @ExtendWith(MockitoExtension.class)
 class DynamicPriceServiceTest {
 
@@ -27,72 +31,71 @@ class DynamicPriceServiceTest {
     @InjectMocks
     private DynamicPriceService dynamicPriceService;
 
-    private DynamicPrice validPrice;
+    private DynamicPrice testPrice;
 
     @BeforeEach
     void setUp() {
-        validPrice = new DynamicPrice();
-        validPrice.setMinPrice(1.0);
-        validPrice.setMaxPrice(5.0);
+        testPrice = new DynamicPrice();
+        testPrice.setId(1L);
+        testPrice.setMinPrice(1.0);
+        testPrice.setMaxPrice(5.0);
     }
 
     @Test
-    @DisplayName("Should find dynamic price by id")
-    void shouldFindById() {
-        when(persistencePort.findById(1L)).thenReturn(Optional.of(validPrice));
-        Optional<DynamicPrice> found = dynamicPriceService.findById(1L);
-        assertTrue(found.isPresent());
-        assertEquals(validPrice, found.get());
+    @DisplayName("create - Should save dynamic price when range is valid")
+    void shouldCreateWhenPriceRangeIsValid() {
+        when(persistencePort.save(testPrice)).thenReturn(testPrice);
+
+        DynamicPrice result = dynamicPriceService.create(testPrice);
+
+        assertNotNull(result);
+        verify(persistencePort).save(testPrice);
     }
 
     @Test
-    @DisplayName("Should find all dynamic prices")
-    void shouldFindAll() {
-        when(persistencePort.findAll()).thenReturn(List.of(validPrice));
-        List<DynamicPrice> found = dynamicPriceService.findAll();
-        assertEquals(1, found.size());
+    @DisplayName("create - Should throw exception when min price > max price")
+    void shouldThrowWhenMinPriceIsGreaterThanMax() {
+        testPrice.setMinPrice(10.0);
+        testPrice.setMaxPrice(5.0);
+
+        assertThrows(IllegalArgumentException.class, () -> dynamicPriceService.create(testPrice));
+        verify(persistencePort, never()).save(any());
     }
 
     @Test
-    @DisplayName("Should find dynamic prices by parking id")
-    void shouldFindByParkingId() {
-        when(persistencePort.findByParkingId(1L)).thenReturn(List.of(validPrice));
-        List<DynamicPrice> found = dynamicPriceService.findByParkingId(1L);
-        assertEquals(1, found.size());
+    @DisplayName("findById - Should return price if exists")
+    void shouldReturnPriceById() {
+        when(persistencePort.findById(1L)).thenReturn(Optional.of(testPrice));
+        assertTrue(dynamicPriceService.findById(1L).isPresent());
     }
 
     @Test
-    @DisplayName("Should update dynamic price")
-    void shouldUpdate() {
-        when(persistencePort.save(any(DynamicPrice.class))).thenReturn(validPrice);
-        DynamicPrice updated = dynamicPriceService.update(validPrice);
-        assertNotNull(updated);
-        verify(persistencePort).save(validPrice);
+    @DisplayName("findAll - Should return all prices")
+    void shouldReturnAllPrices() {
+        when(persistencePort.findAll()).thenReturn(List.of(testPrice));
+        assertFalse(dynamicPriceService.findAll().isEmpty());
     }
 
     @Test
-    @DisplayName("Should delete dynamic price by id")
+    @DisplayName("findByParkingId - Should return prices for parking")
+    void shouldReturnPricesByParkingId() {
+        when(persistencePort.findByParkingId(55L)).thenReturn(List.of(testPrice));
+        assertEquals(1, dynamicPriceService.findByParkingId(55L).size());
+    }
+
+    @Test
+    @DisplayName("update - Should call persistence port")
+    void shouldUpdatePrice() {
+        when(persistencePort.save(testPrice)).thenReturn(testPrice);
+        DynamicPrice result = dynamicPriceService.update(testPrice);
+        assertNotNull(result);
+        verify(persistencePort).save(testPrice);
+    }
+
+    @Test
+    @DisplayName("deleteById - Should call persistence port")
     void shouldDeleteById() {
-        doNothing().when(persistencePort).deleteById(1L);
         dynamicPriceService.deleteById(1L);
         verify(persistencePort).deleteById(1L);
-    }
-
-    @Test
-    @DisplayName("Should create dynamic price when valid")
-    void shouldCreateWhenValid() {
-        when(persistencePort.save(any(DynamicPrice.class))).thenReturn(validPrice);
-        DynamicPrice created = dynamicPriceService.create(validPrice);
-        assertNotNull(created);
-        verify(persistencePort).save(validPrice);
-    }
-
-    @Test
-    @DisplayName("Should throw exception when min price is greater than max price")
-    void shouldThrowExceptionWhenMinPriceIsInvalid() {
-        validPrice.setMinPrice(10.0);
-        validPrice.setMaxPrice(5.0);
-        assertThrows(IllegalArgumentException.class, () -> dynamicPriceService.create(validPrice));
-        verify(persistencePort, never()).save(any());
     }
 }

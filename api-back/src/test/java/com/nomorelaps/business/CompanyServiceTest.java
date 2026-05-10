@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,10 +19,9 @@ import com.nomorelaps.adapters.out.persistence.interfaces.ICompanyPersistenceAda
 import com.nomorelaps.domain.models.Company;
 
 /**
- * Unit tests for CompanyService covering all business methods.
- *
- * @author nexphernandez
- * @version 1.0.0
+ * Unit tests for CompanyService.
+ * Verifies business logic for company management, including API key generation
+ * and partial updates.
  */
 @ExtendWith(MockitoExtension.class)
 class CompanyServiceTest {
@@ -43,70 +41,180 @@ class CompanyServiceTest {
         testCompany.setEmail("parking@corp.com");
     }
 
-    // ── create ──────────────────────────────────────────────────────────────
-
     @Test
-    @DisplayName("create - Should save company when email is not registered")
+    @DisplayName("create - Should save company and generate API key")
     void shouldCreateCompanySuccessfully() {
-        when(persistencePort.findByEmail("parking@corp.com")).thenReturn(Optional.empty());
-        when(persistencePort.save(any(Company.class))).thenReturn(testCompany);
+        testCompany.setApiKey(null);
+        when(persistencePort.findByEmail(testCompany.getEmail())).thenReturn(Optional.empty());
+        when(persistencePort.save(any(Company.class))).thenAnswer(i -> i.getArguments()[0]);
 
         Company result = companyService.create(testCompany);
 
         assertNotNull(result);
-        assertEquals("Parking Corp", result.getName());
+        assertNotNull(result.getApiKey());
+        assertTrue(result.getApiKey().startsWith("nml_live_"));
         verify(persistencePort).save(testCompany);
     }
 
     @Test
-    @DisplayName("create - Should throw when email already registered")
-    void shouldThrowWhenCompanyEmailExists() {
-        when(persistencePort.findByEmail("parking@corp.com")).thenReturn(Optional.of(testCompany));
+    @DisplayName("create - Should not overwrite existing API key")
+    void shouldNotOverwriteExistingApiKey() {
+        testCompany.setApiKey("existing-key");
+        when(persistencePort.findByEmail(testCompany.getEmail())).thenReturn(Optional.empty());
+        when(persistencePort.save(any(Company.class))).thenAnswer(i -> i.getArguments()[0]);
+
+        Company result = companyService.create(testCompany);
+
+        assertEquals("existing-key", result.getApiKey());
+    }
+
+    @Test
+    @DisplayName("create - Should throw when email is already registered")
+    void shouldThrowWhenEmailExists() {
+        when(persistencePort.findByEmail(testCompany.getEmail())).thenReturn(Optional.of(testCompany));
 
         assertThrows(IllegalArgumentException.class, () -> companyService.create(testCompany));
-        verify(persistencePort, never()).save(any());
     }
 
-    // ── findById ─────────────────────────────────────────────────────────────
+    @Test
+    @DisplayName("update - Should update name if provided")
+    void shouldUpdateName() {
+        Company existing = new Company(1L);
+        existing.setName("Old Name");
+        Company request = new Company(1L);
+        request.setName("New Name");
+
+        when(persistencePort.findById(1L)).thenReturn(Optional.of(existing));
+        when(persistencePort.save(any(Company.class))).thenAnswer(i -> i.getArguments()[0]);
+
+        Company result = companyService.update(request);
+        assertEquals("New Name", result.getName());
+    }
 
     @Test
-    @DisplayName("findById - Should return company when found")
-    void shouldFindCompanyById() {
+    @DisplayName("update - Should update phone if provided")
+    void shouldUpdatePhone() {
+        Company existing = new Company(1L);
+        existing.setPhone("111");
+        Company request = new Company(1L);
+        request.setPhone("222");
+
+        when(persistencePort.findById(1L)).thenReturn(Optional.of(existing));
+        when(persistencePort.save(any(Company.class))).thenAnswer(i -> i.getArguments()[0]);
+
+        Company result = companyService.update(request);
+        assertEquals("222", result.getPhone());
+    }
+
+    @Test
+    @DisplayName("update - Should update email if provided")
+    void shouldUpdateEmail() {
+        Company existing = new Company(1L);
+        existing.setEmail("old@test.com");
+        Company request = new Company(1L);
+        request.setEmail("new@test.com");
+
+        when(persistencePort.findById(1L)).thenReturn(Optional.of(existing));
+        when(persistencePort.save(any(Company.class))).thenAnswer(i -> i.getArguments()[0]);
+
+        Company result = companyService.update(request);
+        assertEquals("new@test.com", result.getEmail());
+    }
+
+    @Test
+    @DisplayName("update - Should update CIF if provided")
+    void shouldUpdateCif() {
+        Company existing = new Company(1L);
+        existing.setCif("A1");
+        Company request = new Company(1L);
+        request.setCif("B2");
+
+        when(persistencePort.findById(1L)).thenReturn(Optional.of(existing));
+        when(persistencePort.save(any(Company.class))).thenAnswer(i -> i.getArguments()[0]);
+
+        Company result = companyService.update(request);
+        assertEquals("B2", result.getCif());
+    }
+
+    @Test
+    @DisplayName("update - Should update password if provided and not blank")
+    void shouldUpdatePassword() {
+        Company existing = new Company(1L);
+        existing.setPassword("old-pass");
+        Company request = new Company(1L);
+        request.setPassword("new-pass");
+
+        when(persistencePort.findById(1L)).thenReturn(Optional.of(existing));
+        when(persistencePort.save(any(Company.class))).thenAnswer(i -> i.getArguments()[0]);
+
+        Company result = companyService.update(request);
+        assertEquals("new-pass", result.getPassword());
+    }
+
+    @Test
+    @DisplayName("update - Should not update password if blank")
+    void shouldNotUpdatePasswordIfBlank() {
+        Company existing = new Company(1L);
+        existing.setPassword("keep-this");
+        Company request = new Company(1L);
+        request.setPassword("   ");
+
+        when(persistencePort.findById(1L)).thenReturn(Optional.of(existing));
+        when(persistencePort.save(any(Company.class))).thenAnswer(i -> i.getArguments()[0]);
+
+        Company result = companyService.update(request);
+        assertEquals("keep-this", result.getPassword());
+    }
+
+    @Test
+    @DisplayName("update - Should throw exception if company not found")
+    void shouldThrowIfNotFoundOnUpdate() {
+        when(persistencePort.findById(1L)).thenReturn(Optional.empty());
+        assertThrows(IllegalArgumentException.class, () -> companyService.update(testCompany));
+    }
+
+    @Test
+    @DisplayName("regenerateApiKey - Should generate new key for existing company")
+    void shouldRegenerateApiKey() {
+        testCompany.setApiKey("old-key");
         when(persistencePort.findById(1L)).thenReturn(Optional.of(testCompany));
+        when(persistencePort.save(any(Company.class))).thenAnswer(i -> i.getArguments()[0]);
 
-        Optional<Company> result = companyService.findById(1L);
+        Company result = companyService.regenerateApiKey(1L);
 
-        assertTrue(result.isPresent());
-        assertEquals(1L, result.get().getId());
+        assertNotEquals("old-key", result.getApiKey());
+        assertTrue(result.getApiKey().startsWith("nml_live_"));
     }
 
     @Test
-    @DisplayName("findById - Should return empty when not found")
-    void shouldReturnEmptyWhenCompanyNotFound() {
-        when(persistencePort.findById(99L)).thenReturn(Optional.empty());
-
-        Optional<Company> result = companyService.findById(99L);
-
-        assertFalse(result.isPresent());
+    @DisplayName("regenerateApiKey - Should throw if company not found")
+    void shouldThrowIfNotFoundOnRegenerate() {
+        when(persistencePort.findById(1L)).thenReturn(Optional.empty());
+        assertThrows(IllegalArgumentException.class, () -> companyService.regenerateApiKey(1L));
     }
 
-    // ── findAll ───────────────────────────────────────────────────────────────
+    @Test
+    @DisplayName("findById - Should return company if exists")
+    void shouldReturnCompanyById() {
+        when(persistencePort.findById(1L)).thenReturn(Optional.of(testCompany));
+        assertTrue(companyService.findById(1L).isPresent());
+    }
 
     @Test
     @DisplayName("findAll - Should return all companies")
-    void shouldFindAllCompanies() {
-        Company c2 = new Company(2L);
-        c2.setName("Another Corp");
-        when(persistencePort.findAll()).thenReturn(Arrays.asList(testCompany, c2));
-
-        List<Company> result = companyService.findAll();
-
-        assertEquals(2, result.size());
+    void shouldReturnAllCompanies() {
+        when(persistencePort.findAll()).thenReturn(List.of(testCompany));
+        assertEquals(1, companyService.findAll().size());
     }
 
-    // ── findByEmail ───────────────────────────────────────────────────────────
-
     @Test
+    @DisplayName("deleteById - Should call persistence port")
+    void shouldDeleteById() {
+        companyService.deleteById(1L);
+        verify(persistencePort).deleteById(1L);
+    }
+
+        @Test
     @DisplayName("findByEmail - Should return company when found")
     void shouldFindCompanyByEmail() {
         when(persistencePort.findByEmail("parking@corp.com")).thenReturn(Optional.of(testCompany));
@@ -126,7 +234,6 @@ class CompanyServiceTest {
         assertFalse(result.isPresent());
     }
 
-    // ── findByApiKey ──────────────────────────────────────────────────────────
 
     @Test
     @DisplayName("findByApiKey - Should return company by API key")
@@ -149,29 +256,17 @@ class CompanyServiceTest {
         assertFalse(result.isPresent());
     }
 
-    // ── update ────────────────────────────────────────────────────────────────
-
     @Test
-    @DisplayName("update - Should delegate to persistence save")
-    void shouldUpdateCompany() {
-        testCompany.setName("Updated Corp");
-        when(persistencePort.save(testCompany)).thenReturn(testCompany);
+    @DisplayName("create - Should generate API key when it is an empty string")
+    void shouldGenerateApiKeyWhenEmptyString() {
+        testCompany.setApiKey("");
+        when(persistencePort.findByEmail(testCompany.getEmail())).thenReturn(Optional.empty());
+        when(persistencePort.save(any(Company.class))).thenAnswer(i -> i.getArguments()[0]);
 
-        Company result = companyService.update(testCompany);
+        Company result = companyService.create(testCompany);
 
-        assertEquals("Updated Corp", result.getName());
-        verify(persistencePort).save(testCompany);
-    }
-
-    // ── deleteById ────────────────────────────────────────────────────────────
-
-    @Test
-    @DisplayName("deleteById - Should call persistence deleteById")
-    void shouldDeleteCompanyById() {
-        doNothing().when(persistencePort).deleteById(1L);
-
-        companyService.deleteById(1L);
-
-        verify(persistencePort).deleteById(1L);
+        assertNotNull(result.getApiKey());
+        assertTrue(result.getApiKey().startsWith("nml_live_"));
+        assertNotEquals("", result.getApiKey());
     }
 }

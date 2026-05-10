@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import com.nomorelaps.adapters.in.api.ReservationRequest;
@@ -95,6 +96,23 @@ public class ReservationController {
     }
 
     /**
+     * Retrieves all reservations for a specific company.
+     *
+     * @param companyId The company ID.
+     * @return A list of reservations for the company.
+     */
+    @GetMapping("/company/{companyId}")
+    @PreAuthorize("@securityService.isCompanyOwner(#companyId)")
+    @Operation(summary = "Find reservations by Company", description = "Lists all bookings for all parkings owned by a company.")
+    @ApiResponse(responseCode = "200", description = "List retrieved")
+    public ResponseEntity<List<ReservationResponse>> findByCompanyId(@PathVariable Long companyId) {
+        List<ReservationResponse> responses = reservationService.findByCompanyId(companyId).stream()
+                .map(reservationMapper::toResponse)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(responses);
+    }
+
+    /**
      * Retrieves all reservations for a specific parking spot.
      *
      * @param spotId The parking spot ID.
@@ -177,5 +195,25 @@ public class ReservationController {
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         reservationService.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * Updates the payment status of a reservation.
+     *
+     * @param id   The reservation ID.
+     * @param paid The new payment status.
+     * @return The updated reservation.
+     */
+    @PatchMapping("/{id}/payment-status")
+    @Operation(summary = "Update payment status", description = "Marks a reservation as paid or pending.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Payment status updated successfully"),
+            @ApiResponse(responseCode = "404", description = "Reservation not found")
+    })
+    public ResponseEntity<ReservationResponse> updatePaymentStatus(
+            @PathVariable Long id,
+            @RequestParam boolean paid) {
+        Reservation updated = reservationService.updatePaymentStatus(id, paid);
+        return ResponseEntity.ok(reservationMapper.toResponse(updated));
     }
 }

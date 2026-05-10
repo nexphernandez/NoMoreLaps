@@ -1,0 +1,55 @@
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <h2 class="gradient-text">NML</h2>
+    <span class="version">Business v1.0</span>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a routerLink="/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-item">
+      <span class="icon material-symbols-outlined">dashboard</span>
+      <span>Dashboard</span>
+    </a>
+
+    <a routerLink="/dashboard/parkings" routerLinkActive="active" class="nav-item">
+      <span class="icon material-symbols-outlined">local_parking</span>
+      <span>My Parkings</span>
+    </a>
+
+    <a routerLink="/dashboard/reservations" routerLinkActive="active" class="nav-item">
+      <span class="icon material-symbols-outlined">calendar_today</span>
+      <span>Reservations</span>
+    </a>
+
+    <a routerLink="/dashboard/billing" routerLinkActive="active" class="nav-item">
+      <span class="icon material-symbols-outlined">receipt_long</span>
+      <span>Billing</span>
+    </a>
+
+    <a routerLink="/dashboard/notifications" routerLinkActive="active" class="nav-item">
+      <span class="icon material-symbols-outlined">notifications</span>
+      <span>Notifications</span>
+      @if ((unreadCount$ | async) ?? 0 > 0) {
+        <span class="badge">{{ unreadCount$ | async }}</span>
+      }
+    </a>
+
+    <div class="nav-divider"></div>
+
+    <a routerLink="/dashboard/profile" routerLinkActive="active" class="nav-item">
+      <span class="icon material-symbols-outlined">person</span>
+      <span>Profile</span>
+    </a>
+
+    <a routerLink="/dashboard/developer" routerLinkActive="active" class="nav-item">
+      <span class="icon material-symbols-outlined">api</span>
+      <span>API & Integration</span>
+    </a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <button class="logout-btn" (click)="onLogout()">
+      <span class="icon material-symbols-outlined">logout</span>
+      <span>Logout</span>
+    </button>
+  </div>
+</aside>
