@@ -148,6 +148,20 @@ class ReservationControllerTest {
     }
 
     @Test
+    @DisplayName("GET /api/reservations/parking/{parkingId}/occupied - Success: Should return active parking reservations")
+    @WithMockUser
+    void shouldReturnOccupiedByParkingSuccessfully() throws Exception {
+        Reservation cancelled = new Reservation(3L);
+        cancelled.setState("CANCELLED");
+        when(reservationService.findByParkingId(50L)).thenReturn(List.of(sampleReservation, cancelled));
+
+        mockMvc.perform(get("/api/reservations/parking/50/occupied"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(1))
+                .andExpect(jsonPath("$[0].state").value("ACTIVE"));
+    }
+
+    @Test
     @DisplayName("GET /api/reservations/state/{state} - Success: Should return filtered reservations")
     @WithMockUser
     void shouldFilterReservationsByStateSuccessfully() throws Exception {
