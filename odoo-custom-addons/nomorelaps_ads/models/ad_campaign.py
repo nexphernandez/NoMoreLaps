@@ -32,7 +32,6 @@ class AdCampaign(models.Model):
     def _compute_total_cost(self):
         for record in self:
             if record.start_date and record.end_date:
-                # Lógica simple de cálculo de días
                 days = (record.end_date - record.start_date).days
                 record.total_cost = (days / 30.0) * record.price
             else:

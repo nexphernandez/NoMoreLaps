@@ -32,13 +32,28 @@ const parkingService = {
    * Caches data locally for offline use.
    */
   getAll: async (): Promise<Parking[]> => {
+    console.log('Diagnostic: [START] getAll called');
     try {
+      console.log('Diagnostic: Fetching from API:', api.defaults.baseURL + '/parkings');
       const response = await api.get<Parking[]>('parkings');
-      databaseService.saveParkings(response.data).catch(err => console.error('Cache error:', err));
+      console.log('Diagnostic: API Success! Received:', response.data.length, 'parkings');
+      
+      console.log('Diagnostic: Saving to local cache...');
+      await databaseService.saveParkings(response.data);
+      console.log('Diagnostic: Cache saved successfully');
+      
       return response.data;
     } catch (error: any) {
-      console.warn('Network failed, trying local cache...');
+      console.error('Diagnostic: [ERROR] getAll failed:', error.message);
+      if (error.response) {
+        console.error('Diagnostic: Response data:', error.response.data);
+        console.error('Diagnostic: Response status:', error.response.status);
+      }
+      
+      console.log('Diagnostic: Trying local cache fallback...');
       const localData = await databaseService.getParkings();
+      console.log('Diagnostic: Local data found:', localData.length, 'rows');
+      
       if (localData.length > 0) {
         return localData.map((row: any) => JSON.parse(row.data));
       }
@@ -80,6 +95,7 @@ const parkingService = {
       const response = await api.get<Parking[]>(`parkings/nearby`, {
         params: { lat, lng, radius }
       });
+      databaseService.saveParkings(response.data).catch(err => console.error('Nearby cache error:', err));
       return response.data;
     } catch (error: any) {
       throw new Error(error.response?.data?.message || 'Error searching nearby parkings');

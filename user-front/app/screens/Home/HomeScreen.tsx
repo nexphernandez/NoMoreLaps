@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import HomeView from './HomeView';
 import { useAuth } from '../../context/AuthContext';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../../navigation/RootNavigator';
 import parkingService, { Parking } from '../../services/parkingService';
@@ -13,21 +13,32 @@ const HomeScreen = () => {
   const [parkings, setParkings] = useState<Parking[]>([]);
   const [ads, setAds] = useState<Ad[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [viewMode, setViewMode] = useState<'list' | 'map'>('map');
 
-  useEffect(() => {
-    loadData();
-    
-    const adInterval = setInterval(() => {
-      loadAds();
-    }, 30000);
+  const handleToggleView = () => {
+    const nextMode = viewMode === 'list' ? 'map' : 'list';
+    setViewMode(nextMode);
+    loadParkings(); 
+  };
 
-    return () => clearInterval(adInterval);
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      loadData();
+    }, [])
+  );
+
 
   const loadData = async () => {
     setLoading(true);
     await Promise.all([loadParkings(), loadAds()]);
     setLoading(false);
+  };
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await loadData();
+    setRefreshing(false);
   };
 
   const loadAds = async () => {
@@ -68,6 +79,10 @@ const HomeScreen = () => {
       onGoToProfile={handleGoToProfile} 
       isLogged={!!userToken}
       isLoading={loading}
+      refreshing={refreshing}
+      onRefresh={onRefresh}
+      viewMode={viewMode}
+      onToggleView={handleToggleView}
     />
   );
 };

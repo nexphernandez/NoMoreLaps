@@ -25,25 +25,23 @@ public class AdController {
     }
 
     @GetMapping("/active")
-    @Operation(summary = "Obtener anuncios activos desde Odoo ERP", 
-               description = "Consulta el módulo personalizado de Odoo para obtener los banners y promociones vigentes.")
+    @Operation(summary = "Obtener anuncios activos desde Odoo ERP", description = "Consulta el módulo personalizado de Odoo para obtener los banners y promociones vigentes.")
     public ResponseEntity<List<AdResponseDTO>> getActiveAds() {
         try {
             Integer uid = odooClient.authenticate();
-            
+
             List<Map<String, Object>> odooAds = odooClient.getActiveAds(uid);
-            
+
             List<AdResponseDTO> response = odooAds.stream().map(ad -> {
                 return new AdResponseDTO(
-                    getStringValue(ad, "name"),
-                    getStringValue(ad, "ad_type"),
-                    getStringValue(ad, "image_url"),
-                    getStringValue(ad, "target_url")
-                );
+                        getStringValue(ad, "name"),
+                        getStringValue(ad, "ad_type"),
+                        getStringValue(ad, "image_url"),
+                        getStringValue(ad, "target_url"));
             }).collect(Collectors.toList());
 
             return ResponseEntity.ok(response);
-            
+
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.internalServerError().build();

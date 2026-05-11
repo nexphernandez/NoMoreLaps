@@ -15,7 +15,7 @@ class DatabaseService {
 
     this.initPromise = (async () => {
       try {
-        this.db = await SQLite.openDatabaseAsync('nomorelaps_v2.db');
+        this.db = await SQLite.openDatabaseAsync('nomorelaps_v3_defensa.db');
 
         await this.db.execAsync(`
           PRAGMA journal_mode = WAL;
@@ -72,7 +72,7 @@ class DatabaseService {
         console.log('Local Database V2 Initialized');
       } catch (error) {
         console.error('Database Init Error:', error);
-        this.initPromise = null; // Allow retry
+        this.initPromise = null; 
         throw error;
       }
     })();

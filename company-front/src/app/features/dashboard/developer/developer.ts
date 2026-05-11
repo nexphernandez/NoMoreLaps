@@ -15,7 +15,7 @@ export class Developer implements OnInit {
   companyId: number | null = null;
   showKey = false;
   loading = true;
-  swaggerUrl = 'http://localhost:8080/swagger-ui/index.html?urls.primaryName=CompanyAPI';
+  swaggerUrl = 'https://merchant-determined-hampton-handhelds.trycloudflare.com/swagger-ui/index.html?urls.primaryName=CompanyAPI';
 
   constructor(
     private companyService: CompanyService,

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, FlatList, TouchableOpacity, Platform, Linking } from 'react-native';
+import { View, StyleSheet, FlatList, TouchableOpacity, Platform, Linking, RefreshControl } from 'react-native';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Typography from '../../components/Typography';
@@ -19,11 +19,25 @@ interface HomeViewProps {
   onGoToProfile: () => void;
   isLogged: boolean;
   isLoading: boolean;
+  refreshing: boolean;
+  onRefresh: () => void;
+  viewMode: 'list' | 'map';
+  onToggleView: () => void;
 }
 
-const HomeView: React.FC<HomeViewProps> = ({ parkings, ads, onSelectParking, onGoToProfile, isLogged, isLoading }) => {
+const HomeView: React.FC<HomeViewProps> = ({ 
+  parkings, 
+  ads, 
+  onSelectParking, 
+  onGoToProfile, 
+  isLogged, 
+  isLoading,
+  refreshing,
+  onRefresh,
+  viewMode,
+  onToggleView
+}) => {
   const { theme } = useTheme();
-  const [viewMode, setViewMode] = useState<'list' | 'map'>('map');
   const [selectedParking, setSelectedParking] = useState<Parking | null>(null);
   const [showAdAlert, setShowAdAlert] = useState(true);
 
@@ -49,7 +63,7 @@ const HomeView: React.FC<HomeViewProps> = ({ parkings, ads, onSelectParking, onG
       {showAdAlert && viewMode === 'map' && ads.length > 0 && (
         <TouchableOpacity 
           style={[styles.adAlert, { backgroundColor: theme.primary }]}
-          onPress={() => ads[0].targetUrl && Linking.openURL(ads[0].targetUrl)}
+          onPress={() => ads[0].target_url && Linking.openURL(ads[0].target_url)}
         >
           <View style={styles.adIconContainer}>
              <MaterialCommunityIcons name="bullhorn-variant-outline" size={24} color="#FFF" />
@@ -80,19 +94,27 @@ const HomeView: React.FC<HomeViewProps> = ({ parkings, ads, onSelectParking, onG
             data={parkings}
             keyExtractor={(item) => item.id.toString()}
             contentContainerStyle={styles.list}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={onRefresh}
+                colors={[theme.primary]} 
+                tintColor={theme.primary} 
+              />
+            }
             ListHeaderComponent={() => (
               <>
-                {ads.filter(a => a.adType === 'featured').map((ad, index) => (
+                {ads.slice(0, 1).map((ad, index) => (
                   <TouchableOpacity 
                     key={index}
                     style={[styles.sponsoredBanner, { backgroundColor: theme.background, borderColor: theme.primary }]}
-                    onPress={() => ad.targetUrl && Linking.openURL(ad.targetUrl)}
+                    onPress={() => ad.target_url && Linking.openURL(ad.target_url)}
                   >
                     <View style={styles.sponsoredBadge}>
                       <Typography variant="label" color="#FFF">PATROCINADO</Typography>
                     </View>
                     <Typography variant="h3">{ad.name}</Typography>
-                    <Typography variant="caption">Campaña especial disponible ahora.</Typography>
+                    <Typography variant="caption">{ad.description || 'Campaña especial disponible ahora.'}</Typography>
                   </TouchableOpacity>
                 ))}
               </>
@@ -101,7 +123,7 @@ const HomeView: React.FC<HomeViewProps> = ({ parkings, ads, onSelectParking, onG
               <ParkingCard
                 name={item.name}
                 distance={item.address}
-                availableSpots={10} // Backend improvement: count available spots
+                availableSpots={10} 
                 onPress={() => onSelectParking(item.id)}
               />
             )}
@@ -177,7 +199,7 @@ const HomeView: React.FC<HomeViewProps> = ({ parkings, ads, onSelectParking, onG
       {/* BOTÓN CONMUTADOR */}
       <TouchableOpacity 
         style={[styles.toggleButton, { backgroundColor: theme.text }]} 
-        onPress={() => setViewMode(viewMode === 'list' ? 'map' : 'list')}
+        onPress={onToggleView}
       >
         <View style={styles.toggleContent}>
           <MaterialCommunityIcons 

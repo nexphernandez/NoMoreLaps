@@ -92,18 +92,18 @@ public class DataInitializer implements CommandLineRunner {
             company = companyService.findAll().stream().findFirst().orElse(null);
         }
 
-        // 4. Create Parkings if map is empty
+        // 4. Create Parkings in Tenerife
         if (parkingService.findAll().isEmpty() && company != null) {
-            // Parking 1: Puerta del Sol, Madrid
-            createParking(company, "Sol Central Parking", "Plaza de la Puerta del Sol, Madrid", 40.4168, -3.7038, 5);
+            // Parking 1: Plaza de España, Tenerife
+            createParking(company, "Parking Plaza de España", "Plaza de España, Santa Cruz de Tenerife", 28.4678, -16.2472, 10);
 
-            // Parking 2: Retiro, Madrid
-            createParking(company, "Retiro Park & Go", "Calle de Alfonso XII, Madrid", 40.4153, -3.6844, 5);
+            // Parking 2: Intercambiador, Tenerife
+            createParking(company, "Parking Intercambiador", "Av. Víctor Zurita Soler, Santa Cruz de Tenerife", 28.4583, -16.2575, 15);
 
-            // Parking 3: Plaza de España, Madrid
-            createParking(company, "Gran Vía West", "Plaza de España, Madrid", 40.4234, -3.7122, 5);
+            // Parking 3: Weyler, Tenerife
+            createParking(company, "Parking Weyler", "Plaza Weyler, Santa Cruz de Tenerife", 28.4641, -16.2547, 8);
 
-            System.out.println("DataInitializer: 3 sample parkings created in Madrid");
+            System.out.println("DataInitializer: 3 sample parkings created in Santa Cruz de Tenerife");
         }
 
         // 5. Create Sample Notifications for the company
@@ -173,33 +173,6 @@ public class DataInitializer implements CommandLineRunner {
                     savedR2.setPrice(savedR2.getPrice() + s2.getAmount());
                     reservationService.update(savedR2);
                 }
-
-                // Reservation 3: Past with Sanction
-                Reservation r3 = new Reservation();
-                r3.setUser(user);
-                r3.setParkingSpot(spots.get(2));
-                r3.setStartTime(LocalDateTime.now().minusDays(1).withHour(14).withMinute(0));
-                r3.setEndTime(LocalDateTime.now().minusDays(1).withHour(15).withMinute(0));
-                r3.setPrice(2.5);
-                r3.setBasePrice(2.5);
-                r3.setState("COMPLETED");
-                r3.setPaid(true);
-                Reservation savedR3 = reservationService.create(r3);
-
-                if (savedR3 != null) {
-                    Sanction s = new Sanction();
-                    s.setReservation(savedR3);
-                    s.setUser(user);
-                    s.setAmount(10.0);
-                    s.setReason("Overtime Fine");
-                    s.setArrivalTime(LocalDateTime.now().minusDays(1).withHour(15).withMinute(30));
-                    s.setPaid(savedR3.isPaid());
-                    sanctionService.create(s);
-
-                    // Update reservation price to include sanction
-                    savedR3.setPrice(savedR3.getPrice() + s.getAmount());
-                    reservationService.update(savedR3);
-                }
             }
         });
         System.out.println("DataInitializer: Sample reservations, sanctions and dynamic prices created.");
@@ -207,7 +180,7 @@ public class DataInitializer implements CommandLineRunner {
 
     private void seedSampleNotifications(Long companyId) {
         Notification n1 = new Notification();
-        n1.setMessage("New reservation received from Test User at Sol Central Parking.");
+        n1.setMessage("New reservation received at Santa Cruz Parking.");
         n1.setType("RESERVATION");
         n1.setCompanyId(companyId);
         n1.setIsRead(false);
@@ -215,7 +188,7 @@ public class DataInitializer implements CommandLineRunner {
         notificationService.create(n1);
 
         Notification n2 = new Notification();
-        n2.setMessage("New sanction for Test User: 15.00€ due to overtime.");
+        n2.setMessage("New sanction: 15.00€ due to overtime.");
         n2.setType("SANCTION");
         n2.setCompanyId(companyId);
         n2.setIsRead(false);

@@ -1,27 +1,86 @@
 services:
+  # --- INFRAESTRUCTURA DE DATOS ---
   db:
     image: postgres:15
+    container_name: nomorelaps-db
+    environment:
+      - POSTGRES_DB=nomorelaps_db
+      - POSTGRES_USER=nomorelaps_user
+      - POSTGRES_PASSWORD=nomorelaps_pass
+    volumes:
+      - app-db-data:/var/lib/postgresql/data
+    networks:
+      - nomorelaps-network
+
+  odoo-db:
+    image: postgres:15
+    container_name: odoo-db
     environment:
       - POSTGRES_DB=postgres
       - POSTGRES_PASSWORD=odoo
       - POSTGRES_USER=odoo
     volumes:
       - odoo-db-data:/var/lib/postgresql/data
+    networks:
+      - nomorelaps-network
 
-  web:
-    image: odoo:17.0
+  # --- BACKEND API ---
+  app-api:
+    build: ./api-back
+    container_name: nomorelaps-api
     depends_on:
       - db
+      - odoo
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/nomorelaps_db
+      - SPRING_DATASOURCE_USERNAME=nomorelaps_user
+      - SPRING_DATASOURCE_PASSWORD=nomorelaps_pass
+      - ODOO_URL=http://odoo:8069
+    ports:
+      - "8080:8080"
+    networks:
+      - nomorelaps-network
+
+  # --- FRONTENDS ---
+  company-front:
+    build: ./company-front
+    container_name: nomorelaps-company
+    ports:
+      - "4200:80"
+    networks:
+      - nomorelaps-network
+
+  # --- ERP ODOO ---
+  odoo:
+    image: odoo:17.0
+    container_name: nomorelaps-odoo
+    depends_on:
+      - odoo-db
     ports:
       - "8069:8069"
     environment:
-      - HOST=db
+      - HOST=odoo-db
       - USER=odoo
       - PASSWORD=odoo
     volumes:
       - odoo-web-data:/var/lib/odoo
       - ./odoo-custom-addons:/mnt/extra-addons
+    networks:
+      - nomorelaps-network
+
+  # --- CLOUDFLARE TUNNEL (Opcional: Requiere configuración manual o token) ---
+  # tunnel:
+  #   image: cloudflare/cloudflared
+  #   container_name: cloudflare-tunnel
+  #   command: tunnel --no-autoupdate run --token ${CF_TUNNEL_TOKEN}
+  #   networks:
+  #     - nomorelaps-network
+
+networks:
+  nomorelaps-network:
+    driver: bridge
 
 volumes:
+  app-db-data:
   odoo-db-data:
   odoo-web-data:

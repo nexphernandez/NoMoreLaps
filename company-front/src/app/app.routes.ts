@@ -11,12 +11,15 @@ import { Billing } from './features/dashboard/billing/billing';
 import { NotificationsComponent } from './features/dashboard/notifications/notifications';
 import { Profile } from './features/dashboard/profile/profile';
 
+import { authGuard } from './core/guards/auth.guard';
+
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'register', component: Register },
   { 
     path: 'dashboard', 
     component: DashboardLayout,
+    canActivate: [authGuard],
     children: [
       { path: '', component: Home },
       { path: 'parkings', component: Parkings },
