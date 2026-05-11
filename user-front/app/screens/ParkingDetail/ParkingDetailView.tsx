@@ -4,9 +4,11 @@ import CustomButton from '../../components/CustomButton';
 import Badge from '../../components/Badge';
 import ScreenContainer from '../../components/ScreenContainer';
 import Typography from '../../components/Typography';
+import AdBanner from '../../components/AdBanner';
 import { useTheme } from '../../context/ThemeContext';
 
 import { ParkingSpot } from '../../services/parkingService';
+import { Ad } from '../../services/adService';
 
 const TIME_STEPS = Array.from({ length: 48 }, (_, i) => i * 0.5);
 
@@ -24,12 +26,13 @@ interface ParkingDetailViewProps {
   endHour: number;
   onEndHourChange: (h: number) => void;
   occupiedReservations: any[];
+  ads: Ad[];
 }
 
 const ParkingDetailView: React.FC<ParkingDetailViewProps> = ({ 
   parkingName, address, spots, selectedSpotId, onSelectSpot, onReserve,
   selectedDate, onDateChange, startHour, onStartHourChange, endHour, onEndHourChange,
-  occupiedReservations
+  occupiedReservations, ads
 }) => {
   const { theme } = useTheme();
 
@@ -117,6 +120,11 @@ const ParkingDetailView: React.FC<ParkingDetailViewProps> = ({
                   );
                 })}
               </ScrollView>
+
+              {/* ADS FROM ODOO */}
+              {ads.length > 0 && (
+                <AdBanner ad={ads[0]} style={{ marginTop: 24 }} />
+              )}
 
               {/* TIME SELECTORS */}
               <Typography variant="label" style={styles.sectionTitle}>2. STAY DURATION</Typography>

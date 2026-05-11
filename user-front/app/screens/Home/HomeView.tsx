@@ -10,16 +10,18 @@ import { useTheme } from '../../context/ThemeContext';
 import { Parking } from '../../services/parkingService';
 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Ad } from '../../services/adService';
 
 interface HomeViewProps {
   parkings: Parking[];
+  ads: Ad[];
   onSelectParking: (id: number) => void;
   onGoToProfile: () => void;
   isLogged: boolean;
   isLoading: boolean;
 }
 
-const HomeView: React.FC<HomeViewProps> = ({ parkings, onSelectParking, onGoToProfile, isLogged, isLoading }) => {
+const HomeView: React.FC<HomeViewProps> = ({ parkings, ads, onSelectParking, onGoToProfile, isLogged, isLoading }) => {
   const { theme } = useTheme();
   const [viewMode, setViewMode] = useState<'list' | 'map'>('map');
   const [selectedParking, setSelectedParking] = useState<Parking | null>(null);
@@ -43,20 +45,23 @@ const HomeView: React.FC<HomeViewProps> = ({ parkings, onSelectParking, onGoToPr
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.lightBackground }]} edges={['top', 'bottom']}>
-      {/* AD ALERT MODAL - Contextual Ad */}
-      {showAdAlert && viewMode === 'map' && (
-        <View style={[styles.adAlert, { backgroundColor: theme.primary }]}>
+      {/* AD ALERT MODAL - Dynamic Ad from Odoo */}
+      {showAdAlert && viewMode === 'map' && ads.length > 0 && (
+        <TouchableOpacity 
+          style={[styles.adAlert, { backgroundColor: theme.primary }]}
+          onPress={() => ads[0].targetUrl && Linking.openURL(ads[0].targetUrl)}
+        >
           <View style={styles.adIconContainer}>
-             <MaterialCommunityIcons name="gift-outline" size={24} color="#FFF" />
+             <MaterialCommunityIcons name="bullhorn-variant-outline" size={24} color="#FFF" />
           </View>
           <View style={{ flex: 1 }}>
-            <Typography variant="label" color="#FFF" style={{ fontWeight: 'bold' }}>NEARBY OFFER</Typography>
-            <Typography variant="body" color="#FFF">20% discount at 'Star Coffee' next to Sol Parking!</Typography>
+            <Typography variant="label" color="#FFF" style={{ fontWeight: 'bold' }}>OFERTA EXCLUSIVA</Typography>
+            <Typography variant="body" color="#FFF">{ads[0].name}</Typography>
           </View>
           <TouchableOpacity onPress={() => setShowAdAlert(false)} style={styles.adClose}>
             <MaterialCommunityIcons name="close" size={20} color="#FFF" />
           </TouchableOpacity>
-        </View>
+        </TouchableOpacity>
       )}
 
       {/* HEADER */}
@@ -76,13 +81,21 @@ const HomeView: React.FC<HomeViewProps> = ({ parkings, onSelectParking, onGoToPr
             keyExtractor={(item) => item.id.toString()}
             contentContainerStyle={styles.list}
             ListHeaderComponent={() => (
-              <TouchableOpacity style={[styles.sponsoredBanner, { backgroundColor: theme.background, borderColor: theme.primary }]}>
-                <View style={styles.sponsoredBadge}>
-                  <Typography variant="label" color="#FFF">SPONSORED</Typography>
-                </View>
-                <Typography variant="h3">Charge & Park</Typography>
-                <Typography variant="caption">Free electric charging with your reservation today at selected spots.</Typography>
-              </TouchableOpacity>
+              <>
+                {ads.filter(a => a.adType === 'featured').map((ad, index) => (
+                  <TouchableOpacity 
+                    key={index}
+                    style={[styles.sponsoredBanner, { backgroundColor: theme.background, borderColor: theme.primary }]}
+                    onPress={() => ad.targetUrl && Linking.openURL(ad.targetUrl)}
+                  >
+                    <View style={styles.sponsoredBadge}>
+                      <Typography variant="label" color="#FFF">PATROCINADO</Typography>
+                    </View>
+                    <Typography variant="h3">{ad.name}</Typography>
+                    <Typography variant="caption">Campaña especial disponible ahora.</Typography>
+                  </TouchableOpacity>
+                ))}
+              </>
             )}
             renderItem={({ item }) => (
               <ParkingCard

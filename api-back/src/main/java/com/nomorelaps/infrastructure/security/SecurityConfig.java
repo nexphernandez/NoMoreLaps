@@ -56,6 +56,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/parkings/nearby").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/parkings/{id}").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/parking-spots/parking/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/ads/**").permitAll()
 
                         .requestMatchers(HttpMethod.POST, "/api/parkings/**").hasAnyRole("COMPANY", "ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/parkings/**").hasAnyRole("COMPANY", "ADMIN")

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Vista de Lista (Tree) -->
+    <record id="view_ad_campaign_tree" model="ir.ui.view">
+        <field name="name">nomorelaps.ad.campaign.tree</field>
+        <field name="model">nomorelaps.ad.campaign</field>
+        <field name="arch" type="xml">
+            <tree string="Campañas Publicitarias">
+                <field name="name"/>
+                <field name="advertiser_id"/>
+                <field name="ad_type"/>
+                <field name="start_date"/>
+                <field name="end_date"/>
+                <field name="state" widget="badge"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Vista de Formulario -->
+    <record id="view_ad_campaign_form" model="ir.ui.view">
+        <field name="name">nomorelaps.ad.campaign.form</field>
+        <field name="model">nomorelaps.ad.campaign</field>
+        <field name="arch" type="xml">
+            <form string="Campaña Publicitaria">
+                <header>
+                    <button name="action_confirm" string="Confirmar Campaña" type="object" class="oe_highlight" invisible="state != 'draft'"/>
+                    <button name="action_expire" string="Finalizar Anuncio" type="object" invisible="state != 'active'"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Ej: Promo Verano 2026"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Información del Cliente">
+                            <field name="advertiser_id"/>
+                            <field name="ad_type"/>
+                        </group>
+                        <group string="Fechas y Costes">
+                            <field name="start_date"/>
+                            <field name="end_date"/>
+                            <field name="price"/>
+                            <field name="total_cost"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Contenido del Anuncio">
+                            <group>
+                                <field name="image_url" widget="url"/>
+                                <field name="target_url" widget="url"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Acción de Ventana -->
+    <record id="action_nomorelaps_ads" model="ir.actions.act_window">
+        <field name="name">Gestión de Anuncios</field>
+        <field name="res_model">nomorelaps.ad.campaign</field>
+        <field name="view_mode">tree,form,kanban</field>
+    </record>
+
+    <!-- Menú Principal -->
+    <menuitem id="menu_nomorelaps_root" name="NoMoreLaps ERP" sequence="10"/>
+    <menuitem id="menu_nomorelaps_ads" name="Publicidad" parent="menu_nomorelaps_root" action="action_nomorelaps_ads" sequence="10"/>
+</odoo>

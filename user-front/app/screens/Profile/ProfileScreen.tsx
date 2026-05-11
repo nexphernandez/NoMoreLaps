@@ -6,6 +6,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../../navigation/RootNavigator';
 import ProfileView from './ProfileView';
 import reservationService, { Reservation } from '../../services/reservationService';
+import { adService, Ad } from '../../services/adService';
 
 const ProfileScreen = () => {
   const { user, logout } = useAuth();
@@ -14,6 +15,7 @@ const ProfileScreen = () => {
   const isFocused = useIsFocused();
   
   const [activeRes, setActiveRes] = useState<Reservation | null>(null);
+  const [ads, setAds] = useState<Ad[]>([]);
   const [timeStr, setTimeStr] = useState<string>('30:00');
 
   useEffect(() => {
@@ -62,7 +64,12 @@ const ProfileScreen = () => {
 
   const loadData = async () => {
     try {
-      const reservations = await reservationService.getByUserId(user!.id);
+      const [reservations, adsData] = await Promise.all([
+        reservationService.getByUserId(user!.id),
+        adService.getActiveAds()
+      ]);
+      setAds(adsData);
+      
       const now = new Date();
       
       const active = reservations
@@ -120,6 +127,7 @@ const ProfileScreen = () => {
       onGoToSanctions={handleGoToSanctions}
       onCalendarSync={handleCalendarSync}
       onEditProfile={handleEditProfile}
+      ads={ads}
     />
   );
 };

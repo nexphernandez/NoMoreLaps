@@ -7,6 +7,7 @@ import { useAuth } from '../../context/AuthContext';
 import ParkingDetailView from './ParkingDetailView';
 import parkingService, { Parking, ParkingSpot } from '../../services/parkingService';
 import reservationService from '../../services/reservationService';
+import { adService, Ad } from '../../services/adService';
 
 type ParkingDetailRouteProp = RouteProp<RootStackParamList, 'ParkingDetail'>;
 
@@ -19,6 +20,7 @@ const ParkingDetailScreen = () => {
 
   const [parking, setParking] = useState<Parking | null>(null);
   const [spots, setSpots] = useState<ParkingSpot[]>([]);
+  const [ads, setAds] = useState<Ad[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedSpotId, setSelectedSpotId] = useState<string | null>(null);
   const [occupiedReservations, setOccupiedReservations] = useState<any[]>([]);
@@ -37,12 +39,14 @@ const ParkingDetailScreen = () => {
       setLoading(true);
       const id = parseInt(parkingId);
       
-      const [parkingData, spotsData] = await Promise.all([
+      const [parkingData, spotsData, adsData] = await Promise.all([
         parkingService.getById(id),
-        parkingService.getAllSpots(id)
+        parkingService.getAllSpots(id),
+        adService.getActiveAds()
       ]);
       setParking(parkingData);
       setSpots(spotsData);
+      setAds(adsData);
 
       try {
         const reservationsData = await reservationService.getOccupiedByParking(id);
@@ -107,6 +111,7 @@ const ParkingDetailScreen = () => {
       endHour={endHour}
       onEndHourChange={setEndHour}
       occupiedReservations={occupiedReservations}
+      ads={ads}
     />
   );
 };

@@ -5,9 +5,11 @@ import CustomButton from '../../components/CustomButton';
 import Divider from '../../components/Divider';
 import Card from '../../components/Card';
 import ScreenContainer from '../../components/ScreenContainer';
+import AdBanner from '../../components/AdBanner';
 import { useTheme } from '../../context/ThemeContext';
 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Ad } from '../../services/adService';
 
 interface ProfileViewProps {
   userName: string;
@@ -21,10 +23,11 @@ interface ProfileViewProps {
   onGoToSanctions: () => void;
   onEditProfile: () => void;
   onCalendarSync: () => void;
+  ads: Ad[];
 }
 
 const ProfileView: React.FC<ProfileViewProps> = ({
-  userName, userEmail, userAvatar, activeReservation, themeMode, onThemeChange, onLogout, onViewHistory, onGoToSanctions, onEditProfile, onCalendarSync
+  userName, userEmail, userAvatar, activeReservation, themeMode, onThemeChange, onLogout, onViewHistory, onGoToSanctions, onEditProfile, onCalendarSync, ads
 }) => {
   const { theme } = useTheme();
 
@@ -153,6 +156,11 @@ const ProfileView: React.FC<ProfileViewProps> = ({
           </View>
           <MaterialCommunityIcons name="chevron-right" size={24} color={theme.border} />
         </TouchableOpacity>
+
+        {/* ADS FROM ODOO */}
+        {ads.length > 0 && (
+          <AdBanner ad={ads[0]} style={{ marginTop: 32 }} />
+        )}
       </View>
 
       {/* BOTÓN DE LOGOUT */}

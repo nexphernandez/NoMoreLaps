@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Acción de Informe -->
+    <record id="action_report_ad_campaign" model="ir.actions.report">
+        <field name="name">Contrato de Publicidad</field>
+        <field name="model">nomorelaps.ad.campaign</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">nomorelaps_ads.report_ad_campaign_template</field>
+        <field name="report_file">nomorelaps_ads.report_ad_campaign_template</field>
+        <field name="print_report_name">'Contrato_Publicidad_%s' % (object.name)</field>
+        <field name="binding_model_id" ref="model_nomorelaps_ad_campaign"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!-- Plantilla del Informe -->
+    <template id="report_ad_campaign_template">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <div class="oe_structure"/>
+                        <h2>Contrato de Inserción Publicitaria</h2>
+                        <div class="row mt32 mb32">
+                            <div class="col-6">
+                                <strong>Anunciante:</strong>
+                                <p t-field="o.advertiser_id.name"/>
+                            </div>
+                            <div class="col-6">
+                                <strong>Fecha de Emisión:</strong>
+                                <p t-field="o.create_date" t-options='{"widget": "date"}'/>
+                            </div>
+                        </div>
+
+                        <table class="table table-sm o_main_table">
+                            <thead>
+                                <tr>
+                                    <th>Campaña</th>
+                                    <th>Tipo</th>
+                                    <th>Desde</th>
+                                    <th>Hasta</th>
+                                    <th class="text-right">Coste Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span t-field="o.name"/></td>
+                                    <td><span t-field="o.ad_type"/></td>
+                                    <td><span t-field="o.start_date"/></td>
+                                    <td><span t-field="o.end_date"/></td>
+                                    <td class="text-right">
+                                        <span t-field="o.total_cost" t-options='{"widget": "monetary", "display_currency": o.advertiser_id.currency_id}'/>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <div class="mt32">
+                            <p>Este documento sirve como comprobante de reserva de espacio publicitario en la plataforma NoMoreLaps.</p>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>
