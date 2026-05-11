@@ -117,7 +117,7 @@ class DataInitializerTest {
         verify(userService, times(2)).create(any());
         verify(companyService).create(any());
         verify(parkingService, times(3)).create(any());
-        verify(parkingSpotService, times(15)).create(any());
+        verify(parkingSpotService, times(33)).create(any());
     }
 
     @Test

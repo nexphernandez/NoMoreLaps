@@ -69,6 +69,13 @@
 			<scope>test</scope>
 		</dependency>
 
+		<!-- H2 in-memory database for tests (replaces PostgreSQL Docker dependency) -->
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<scope>test</scope>
+		</dependency>
+
 		<dependency>
 			<groupId>org.apache.cxf</groupId>
 			<artifactId>cxf-spring-boot-starter-jaxws</artifactId>
@@ -243,6 +250,29 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+
+			<!-- Force H2 datasource for all tests via system properties -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<systemPropertyVariables>
+						<spring.datasource.url>jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE</spring.datasource.url>
+						<spring.datasource.driver-class-name>org.h2.Driver</spring.datasource.driver-class-name>
+						<spring.datasource.username>sa</spring.datasource.username>
+						<spring.datasource.password></spring.datasource.password>
+						<spring.jpa.database-platform>org.hibernate.dialect.H2Dialect</spring.jpa.database-platform>
+						<spring.jpa.hibernate.ddl-auto>create-drop</spring.jpa.hibernate.ddl-auto>
+						<app.jwt.secret>TEST_SECRET_AT_LEAST_32_CHARACTERS_LONG_FOR_SECURITY</app.jwt.secret>
+						<app.jwt.expiration-minutes>60</app.jwt.expiration-minutes>
+						<google.maps.api.key>TEST_KEY</google.maps.api.key>
+						<odoo.url>http://localhost:8069</odoo.url>
+						<odoo.db>test_db</odoo.db>
+						<odoo.username>test_user</odoo.username>
+						<odoo.password>test_pass</odoo.password>
+					</systemPropertyVariables>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
