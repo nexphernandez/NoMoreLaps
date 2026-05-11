@@ -7,6 +7,8 @@ import { ButtonComponent } from '../../../../shared/components/button/button';
 import { ParkingService } from '../../../../core/services/parking';
 import { AuthService } from '../../../../core/services/auth';
 
+declare var leafletLib: any;
+
 @Component({
   selector: 'app-parking-create',
   standalone: true,
@@ -19,6 +21,8 @@ export class ParkingCreate implements OnInit {
   loading = false;
   isEditMode = false;
   parkingId: number | null = null;
+  private map: any;
+  private marker: any;
 
   constructor(
     private fb: FormBuilder,
@@ -47,6 +51,51 @@ export class ParkingCreate implements OnInit {
     }
   }
 
+  ngAfterViewInit() {
+    this.initMap();
+  }
+
+  private initMap() {
+    
+    const lat = this.parkingForm.get('latitude')?.value || 28.4678;
+    const lon = this.parkingForm.get('longitude')?.value || -16.2472;
+
+    this.map = leafletLib.map('map').setView([lat, lon], 13);
+
+    leafletLib.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(this.map);
+
+    this.marker = leafletLib.marker([lat, lon], { draggable: false }).addTo(this.map);
+
+    this.map.on('click', (e: any) => {
+      const { lat, lng } = e.latlng;
+      this.updateLocation(lat, lng);
+    });
+  }
+
+  private updateLocation(lat: number, lon: number) {
+    this.parkingForm.patchValue({
+      latitude: parseFloat(lat.toFixed(6)),
+      longitude: parseFloat(lon.toFixed(6))
+    });
+
+    if (this.marker) {
+      this.marker.setLatLng([lat, lon]);
+    }
+
+    this.map.panTo([lat, lon]);
+
+    fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.display_name) {
+          this.parkingForm.patchValue({ address: data.display_name });
+        }
+      })
+      .catch(err => console.error('Geocoding error:', err));
+  }
+
   loadParking(id: number) {
     this.loading = true;
 
@@ -63,6 +112,11 @@ export class ParkingCreate implements OnInit {
             sanctionIntervalInMinutes: parking.sanctionIntervalInMinutes,
             totalSpots: parking.totalSpots
           });
+          
+          if (this.map && this.marker) {
+            this.marker.setLatLng([parking.latitude, parking.longitude]);
+            this.map.setView([parking.latitude, parking.longitude], 15);
+          }
         }
         this.loading = false;
       },

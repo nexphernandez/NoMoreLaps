@@ -5,7 +5,7 @@ import { Alert } from 'react-native';
 /**
  * Base Axios configuration for connecting to the Spring Boot backend.
  */
-const API_URL = 'https://merchant-determined-hampton-handhelds.trycloudflare.com/api/';
+const API_URL = 'https://toolbar-routine-thru-charlie.trycloudflare.com/api';
 
 const api = axios.create({
   baseURL: API_URL,

@@ -25,12 +25,12 @@ interface HomeViewProps {
   onToggleView: () => void;
 }
 
-const HomeView: React.FC<HomeViewProps> = ({ 
-  parkings, 
-  ads, 
-  onSelectParking, 
-  onGoToProfile, 
-  isLogged, 
+const HomeView: React.FC<HomeViewProps> = ({
+  parkings,
+  ads,
+  onSelectParking,
+  onGoToProfile,
+  isLogged,
   isLoading,
   refreshing,
   onRefresh,
@@ -61,12 +61,12 @@ const HomeView: React.FC<HomeViewProps> = ({
     <SafeAreaView style={[styles.container, { backgroundColor: theme.lightBackground }]} edges={['top', 'bottom']}>
       {/* AD ALERT MODAL - Dynamic Ad from Odoo */}
       {showAdAlert && viewMode === 'map' && ads.length > 0 && (
-        <TouchableOpacity 
+        <TouchableOpacity
           style={[styles.adAlert, { backgroundColor: theme.primary }]}
           onPress={() => ads[0].target_url && Linking.openURL(ads[0].target_url)}
         >
           <View style={styles.adIconContainer}>
-             <MaterialCommunityIcons name="bullhorn-variant-outline" size={24} color="#FFF" />
+            <MaterialCommunityIcons name="bullhorn-variant-outline" size={24} color="#FFF" />
           </View>
           <View style={{ flex: 1 }}>
             <Typography variant="label" color="#FFF" style={{ fontWeight: 'bold' }}>OFERTA EXCLUSIVA</Typography>
@@ -82,9 +82,9 @@ const HomeView: React.FC<HomeViewProps> = ({
       <View style={[styles.header, { backgroundColor: theme.background, borderBottomColor: theme.border }]}>
         <Typography variant="h2" color={theme.primary}>NoMoreLaps</Typography>
         <TouchableOpacity onPress={onGoToProfile} style={[styles.profileIcon, { backgroundColor: theme.lightBackground }]}>
-           <Typography variant="label" color={theme.primary}>
-             {isLogged ? 'Profile' : 'Sign in'}
-           </Typography>
+          <Typography variant="label" color={theme.primary}>
+            {isLogged ? 'Profile' : 'Sign in'}
+          </Typography>
         </TouchableOpacity>
       </View>
 
@@ -98,14 +98,14 @@ const HomeView: React.FC<HomeViewProps> = ({
               <RefreshControl
                 refreshing={refreshing}
                 onRefresh={onRefresh}
-                colors={[theme.primary]} 
-                tintColor={theme.primary} 
+                colors={[theme.primary]}
+                tintColor={theme.primary}
               />
             }
             ListHeaderComponent={() => (
               <>
                 {ads.slice(0, 1).map((ad, index) => (
-                  <TouchableOpacity 
+                  <TouchableOpacity
                     key={index}
                     style={[styles.sponsoredBanner, { backgroundColor: theme.background, borderColor: theme.primary }]}
                     onPress={() => ad.target_url && Linking.openURL(ad.target_url)}
@@ -123,7 +123,7 @@ const HomeView: React.FC<HomeViewProps> = ({
               <ParkingCard
                 name={item.name}
                 distance={item.address}
-                availableSpots={10} 
+                availableSpots={10}
                 onPress={() => onSelectParking(item.id)}
               />
             )}
@@ -150,9 +150,9 @@ const HomeView: React.FC<HomeViewProps> = ({
               .map(parking => (
                 <Marker
                   key={parking.id}
-                  coordinate={{ 
-                    latitude: Number(parking.latitude), 
-                    longitude: Number(parking.longitude) 
+                  coordinate={{
+                    latitude: Number(parking.latitude),
+                    longitude: Number(parking.longitude)
                   }}
                   pinColor={theme.primary}
                   onPress={(e) => {
@@ -172,24 +172,24 @@ const HomeView: React.FC<HomeViewProps> = ({
             <View style={{ flex: 1 }}>
               <Typography variant="h2">{selectedParking.name}</Typography>
               <Typography variant="body" color={theme.textSecondary}>{selectedParking.address}</Typography>
-              <Typography variant="h3" color={theme.primary} style={{marginTop: 4}}>2.00 €/h</Typography>
+              <Typography variant="h3" color={theme.primary} style={{ marginTop: 4 }}>2.00 €/h</Typography>
             </View>
             <TouchableOpacity onPress={() => setSelectedParking(null)} style={styles.closeBtn}>
               <Typography variant="h3">✕</Typography>
             </TouchableOpacity>
           </View>
           <View style={styles.cardButtons}>
-            <View style={{flex:1}}>
-               <CustomButton 
-                 variant="outline"
-                 title="Directions" 
-                 onPress={() => openInGoogleMaps(selectedParking.latitude, selectedParking.longitude)} 
-               />
+            <View style={{ flex: 1 }}>
+              <CustomButton
+                variant="outline"
+                title="Directions"
+                onPress={() => openInGoogleMaps(selectedParking.latitude, selectedParking.longitude)}
+              />
             </View>
-            <View style={{flex:1}}>
-              <CustomButton 
-                title="View Spots" 
-                onPress={() => onSelectParking(selectedParking.id)} 
+            <View style={{ flex: 1 }}>
+              <CustomButton
+                title="View Spots"
+                onPress={() => onSelectParking(selectedParking.id)}
               />
             </View>
           </View>
@@ -197,15 +197,15 @@ const HomeView: React.FC<HomeViewProps> = ({
       )}
 
       {/* BOTÓN CONMUTADOR */}
-      <TouchableOpacity 
-        style={[styles.toggleButton, { backgroundColor: theme.text }]} 
+      <TouchableOpacity
+        style={[styles.toggleButton, { backgroundColor: theme.text }]}
         onPress={onToggleView}
       >
         <View style={styles.toggleContent}>
-          <MaterialCommunityIcons 
-            name={viewMode === 'list' ? 'map-outline' : 'view-list-outline'} 
-            size={20} 
-            color={theme.background} 
+          <MaterialCommunityIcons
+            name={viewMode === 'list' ? 'map-outline' : 'view-list-outline'}
+            size={20}
+            color={theme.background}
           />
           <Typography color={theme.background} style={{ fontWeight: 'bold', marginLeft: 8 }}>
             {viewMode === 'list' ? 'Map View' : 'List View'}

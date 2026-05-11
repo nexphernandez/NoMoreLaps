@@ -53,7 +53,7 @@ public class DataInitializer implements CommandLineRunner {
             User user = new User();
             user.setName("Test User");
             user.setEmail("test@test.com");
-            user.setPassword("123456");
+            user.setPassword(passwordEncoder.encode("123456"));
             user.setRole(userRole);
             user.setCalendarEnable(true);
             user.setCreateAt(LocalDateTime.now());
@@ -66,7 +66,7 @@ public class DataInitializer implements CommandLineRunner {
             User companyUser = new User();
             companyUser.setName("Company Manager");
             companyUser.setEmail("company@test.com");
-            companyUser.setPassword("123456");
+            companyUser.setPassword(passwordEncoder.encode("123456"));
             companyUser.setRole(companyRole);
             companyUser.setCreateAt(LocalDateTime.now());
             userService.create(companyUser);

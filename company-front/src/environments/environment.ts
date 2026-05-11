@@ -1,4 +1,4 @@
 export const environment = {
   production: false,
-  apiUrl: 'https://merchant-determined-hampton-handhelds.trycloudflare.com/api'
+  apiUrl: 'https://toolbar-routine-thru-charlie.trycloudflare.com/api'
 };
