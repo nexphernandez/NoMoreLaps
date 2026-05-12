@@ -1,4 +1,7 @@
+const baseUrl = 'https://toolbar-routine-thru-charlie.trycloudflare.com';
+
 export const environment = {
   production: false,
-  apiUrl: 'https://toolbar-routine-thru-charlie.trycloudflare.com/api'
+  apiUrl: `${baseUrl}/api`,
+  swaggerUrl: `${baseUrl}/swagger-ui/index.html?urls.primaryName=CompanyAPI`
 };

@@ -2,6 +2,7 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CompanyService } from '../../../core/services/company';
 import { AuthService } from '../../../core/services/auth';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-developer',
@@ -15,7 +16,7 @@ export class Developer implements OnInit {
   companyId: number | null = null;
   showKey = false;
   loading = true;
-  swaggerUrl = 'https://merchant-determined-hampton-handhelds.trycloudflare.com/swagger-ui/index.html?urls.primaryName=CompanyAPI';
+  swaggerUrl = environment.swaggerUrl;
 
   constructor(
     private companyService: CompanyService,
