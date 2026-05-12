@@ -7,7 +7,7 @@ import { ButtonComponent } from '../../../../shared/components/button/button';
 import { ParkingService } from '../../../../core/services/parking';
 import { AuthService } from '../../../../core/services/auth';
 
-declare var leafletLib: any;
+declare var L: any;
 
 @Component({
   selector: 'app-parking-create',
@@ -60,13 +60,13 @@ export class ParkingCreate implements OnInit {
     const lat = this.parkingForm.get('latitude')?.value || 28.4678;
     const lon = this.parkingForm.get('longitude')?.value || -16.2472;
 
-    this.map = leafletLib.map('map').setView([lat, lon], 13);
+    this.map = L.map('map').setView([lat, lon], 13);
 
-    leafletLib.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap contributors'
     }).addTo(this.map);
 
-    this.marker = leafletLib.marker([lat, lon], { draggable: false }).addTo(this.map);
+    this.marker = L.marker([lat, lon], { draggable: false }).addTo(this.map);
 
     this.map.on('click', (e: any) => {
       const { lat, lng } = e.latlng;
