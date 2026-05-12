@@ -1,50 +1,51 @@
-# 📱 Manual de Usuario: Ecosistema NoMoreLaps
+# Manual de Usuario Completo: Ecosistema NoMoreLaps
 
-## 1. Aplicación Móvil (Usuario Final)
-La aplicación móvil permite a los conductores encontrar, reservar y gestionar plazas de aparcamiento de forma eficiente.
+## 1. Aplicación Móvil (Experiencia del Conductor)
+NoMoreLaps transforma la búsqueda de aparcamiento en una experiencia fluida y sin estrés.
 
-### 🔑 Registro e Inicio de Sesión
-*   **Acceso:** Abre la App y ve a la sección "Profile".
-*   **Login:** Introduce tu email (`test@test.com`) y contraseña (`123456`).
-*   **Modo Invitado:** Puedes explorar el mapa y ver parkings sin iniciar sesión, pero necesitarás una cuenta para reservar.
+### Gestión de Identidad
+*   **Registro:** Crea tu cuenta con email y contraseña. El sistema validará que el email no esté en uso.
+*   **Perfil Personalizado:** Gestiona tu historial de reservas y consulta el estado de tus sanciones desde una interfaz limpia y moderna.
 
-### 🗺️ Búsqueda de Parkings
-*   **Mapa Interactivo:** Visualiza los parkings cercanos con pines de color azul. Haz clic en un pin para ver detalles rápidos.
-*   **Vista de Lista:** Cambia a la vista de lista para ver todos los parkings ordenados por cercanía.
-*   **Ficha de Detalle:** Consulta la dirección, precio por hora y plazas disponibles en tiempo real.
+### Interfaz de Usuario e Interacción
+*   **Modos de Vista:** Conmuta entre el mapa interactivo (para navegación) y la lista (para una comparativa rápida).
+*   **Banners Dinámicos:** Visualiza promociones en tiempo real sincronizadas desde el ERP Odoo de la empresa.
+*   **Filtros Inteligentes:** El sistema prioriza los parkings más cercanos a tu posición actual.
 
-### 📅 Proceso de Reserva
-1.  Selecciona un parking.
-2.  Elige una plaza disponible (color verde).
-3.  Confirma el tiempo estimado de estancia.
-4.  **Sincronización:** Recibirás una notificación confirmando tu plaza.
+### Flujo de Reserva y Pagos
+1.  **Selección de Plaza:** Elige visualmente tu plaza. El color verde indica disponibilidad, el rojo ocupación.
+2.  **Smart Calendar:** La App permite configurar reservas inteligentes basadas en tu calendario personal.
+3.  **Confirmación y Pago:** Una vez seleccionada la estancia, la reserva se bloquea en el servidor para evitar duplicados.
 
----
-
-## 2. Panel Web (Empresa/Administrador)
-El panel de control permite a los dueños de parkings gestionar su red de ubicaciones.
-
-### 🏢 Gestión de Parkings
-*   **Dashboard:** Visualiza un resumen de ocupación y reservas activas.
-*   **Añadir Parking:** Usa el nuevo mapa interactivo para seleccionar la ubicación exacta. Al hacer clic, se rellenarán automáticamente las coordenadas y la dirección.
-*   **Configuración de Sanciones:** Define el importe de la multa y el intervalo de tiempo para usuarios que excedan su reserva.
-
-### 🔔 Notificaciones y Perfil
-*   Recibe avisos en tiempo real sobre nuevas reservas o sanciones emitidas.
-*   Gestiona los datos maestros de tu empresa desde el perfil.
+### Funcionamiento Offline
+Si pierdes la conexión dentro de un parking:
+*   Puedes consultar tus reservas guardadas.
+*   Puedes realizar una nueva reserva que se enviará automáticamente cuando recuperes la señal.
 
 ---
 
-## 3. Gestión de Publicidad (ERP Odoo)
-Las campañas publicitarias que aparecen en la App se gestionan desde Odoo.
+## 2. Panel Administrativo (Gestión Empresarial)
+Una herramienta potente para que las empresas maximicen la rentabilidad de sus plazas.
 
-1.  Accede a la instancia de Odoo (`http://localhost:8069`).
-2.  Ve al módulo **"NoMoreLaps Ads"**.
-3.  Crea una nueva **Campaign**:
-    *   **Name:** Título de la oferta (ej: "¡50% Descuento Findes!").
-    *   **Target URL:** Enlace a la web de la promo.
-    *   **Ad Type:** Selecciona entre BANNER o POPUP.
-    *   **Estado:** Cambia a "Activo" para que aparezca en la App móvil.
+### Dashboard de Control
+*   Visualiza en tiempo real la ocupación de toda tu red de parkings.
+*   Acceso rápido a las últimas notificaciones (reservas entrantes, impagos).
+
+### Gestión de Infraestructura
+*   **Alta Asistida:** Crea parkings simplemente haciendo clic en un mapa. El sistema calcula la dirección y coordenadas por ti.
+*   **Configuración de Plazas:** Gestiona de forma individual cada plaza de aparcamiento.
+
+### Precios Dinámicos y Sanciones
+*   **Tarifas Programables:** Configura precios que varían según el día de la semana o la franja horaria.
+*   **Sistema Automático de Sanciones:** Si un usuario excede su tiempo, el sistema genera automáticamente una sanción vinculada a su perfil.
 
 ---
-*Manual de usuario para la plataforma NoMoreLaps - Versión 1.0*
+
+## 3. Gestión de Publicidad (Odoo ERP)
+NoMoreLaps utiliza Odoo como cerebro logístico para el marketing.
+
+1.  **Creación de Campañas:** Define el nombre, el tipo de anuncio (Banner/Popup)
+2.  **Segmentación:** Elige cuándo activar o desactivar una campaña con un solo clic en Odoo.
+3.  **Impacto:** Las campañas activas se reflejan instantáneamente en la pantalla de inicio de todos los usuarios de la App.
+
+
