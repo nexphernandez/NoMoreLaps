@@ -1,4 +1,4 @@
-const baseUrl = 'https://immigrants-spreading-agree-structured.trycloudflare.com';
+const baseUrl = 'https://compiled-originally-base-hired.trycloudflare.com';
 
 export const environment = {
   production: false,
