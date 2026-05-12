@@ -145,4 +145,51 @@ class DataInitializerTest {
 
         verify(parkingService, never()).create(any());
     }
+
+    @Test
+    @DisplayName("run - Should skip seedSampleNotifications if company already has notifications")
+    void shouldSkipNotificationsIfAlreadyExist() throws Exception {
+        User compUser = new User();
+        compUser.setEmail("company@test.com");
+        when(userService.findByEmail("company@test.com")).thenReturn(Optional.of(compUser));
+        when(userService.findByEmail("test@test.com")).thenReturn(Optional.of(new User()));
+
+        Company company = new Company();
+        company.setId(1L);
+        when(companyService.findAll()).thenReturn(List.of(company));
+
+        when(parkingService.findAll()).thenReturn(List.of(new Parking()));
+
+        when(notificationService.findByCompanyId(1L)).thenReturn(List.of(new Notification()));
+        lenient().when(reservationService.findByCompanyId(anyLong())).thenReturn(Collections.emptyList());
+
+        dataInitializer.run();
+
+        verify(notificationService, never()).create(any());
+    }
+
+    @Test
+    @DisplayName("run - Should skip seedSampleReservations if company already has reservations")
+    void shouldSkipReservationsIfAlreadyExist() throws Exception {
+        User testUser = new User();
+        testUser.setEmail("test@test.com");
+        when(userService.findByEmail("test@test.com")).thenReturn(Optional.of(testUser));
+
+        User compUser = new User();
+        compUser.setEmail("company@test.com");
+        when(userService.findByEmail("company@test.com")).thenReturn(Optional.of(compUser));
+
+        Company company = new Company();
+        company.setId(1L);
+        when(companyService.findAll()).thenReturn(List.of(company));
+
+        when(parkingService.findAll()).thenReturn(List.of(new Parking()));
+
+        when(reservationService.findByCompanyId(1L)).thenReturn(List.of(new Reservation()));
+        lenient().when(notificationService.findByCompanyId(anyLong())).thenReturn(List.of(new Notification()));
+
+        dataInitializer.run();
+
+        verify(reservationService, never()).create(any());
+    }
 }

@@ -2,6 +2,7 @@ package com.nomorelaps.adapters.mapper;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Set;
 
@@ -13,9 +14,11 @@ import org.mapstruct.factory.Mappers;
 import com.nomorelaps.adapters.in.api.ReservationRequest;
 import com.nomorelaps.adapters.in.api.ReservationResponse;
 import com.nomorelaps.adapters.out.persistence.jpa.ReservationJpaEntity;
+import com.nomorelaps.adapters.out.persistence.jpa.SanctionJpaEntity;
 import com.nomorelaps.domain.models.Parking;
 import com.nomorelaps.domain.models.ParkingSpot;
 import com.nomorelaps.domain.models.Reservation;
+import com.nomorelaps.domain.models.Sanction;
 import com.nomorelaps.domain.models.User;
 
 /**
@@ -26,7 +29,7 @@ import com.nomorelaps.domain.models.User;
 class ReservationMapperTest {
 
     private final ReservationMapper mapper = Mappers.getMapper(ReservationMapper.class);
-    
+
     private Reservation testReservation;
     private User testUser;
     private ParkingSpot testParkingSpot;
@@ -138,7 +141,7 @@ class ReservationMapperTest {
         testUser.setName(null);
         testParkingSpot.setId(null);
         testParking.setName(null);
-        
+
         ReservationResponse response = mapper.toResponse(testReservation);
 
         assertNotNull(response);
@@ -178,7 +181,7 @@ class ReservationMapperTest {
         method.setAccessible(true);
 
         assertNull(method.invoke(mapper, (Reservation) null));
-        
+
         testReservation.setUser(null);
         assertNull(method.invoke(mapper, testReservation));
 
@@ -197,7 +200,7 @@ class ReservationMapperTest {
         method.setAccessible(true);
 
         assertNull(method.invoke(mapper, (Reservation) null));
-        
+
         testReservation.setUser(null);
         assertNull(method.invoke(mapper, testReservation));
 
@@ -216,7 +219,7 @@ class ReservationMapperTest {
         method.setAccessible(true);
 
         assertNull(method.invoke(mapper, (Reservation) null));
-        
+
         testReservation.setParkingSpot(null);
         assertNull(method.invoke(mapper, testReservation));
 
@@ -235,7 +238,7 @@ class ReservationMapperTest {
         method.setAccessible(true);
 
         assertNull(method.invoke(mapper, (Reservation) null));
-        
+
         testReservation.setParkingSpot(null);
         assertNull(method.invoke(mapper, testReservation));
 
@@ -270,5 +273,49 @@ class ReservationMapperTest {
         method.setAccessible(true);
 
         assertNull(method.invoke(mapper, (Set) null));
+    }
+
+    @Test
+    @DisplayName("Internal: sanctionSetToSanctionJpaEntitySet - Should map each Sanction in the Set (covers for loop)")
+    void shouldMapNonEmptySetInSanctionSetToSanctionJpaEntitySet() throws Exception {
+        Field sanctionMapperField = mapper.getClass().getDeclaredField("sanctionMapper");
+        sanctionMapperField.setAccessible(true);
+        sanctionMapperField.set(mapper, Mappers.getMapper(SanctionMapper.class));
+
+        Method method = mapper.getClass().getDeclaredMethod("sanctionSetToSanctionJpaEntitySet", Set.class);
+        method.setAccessible(true);
+
+        Sanction sanction = new Sanction();
+        sanction.setAmount(25.0);
+        sanction.setReason("Overtime");
+
+        @SuppressWarnings("unchecked")
+        Set<Object> result = (Set<Object>) method.invoke(mapper, Set.of(sanction));
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    @DisplayName("Internal: sanctionJpaEntitySetToSanctionSet - Should map each SanctionJpaEntity in the Set (covers for loop)")
+    void shouldMapNonEmptySetInSanctionJpaEntitySetToSanctionSet() throws Exception {
+        Field sanctionMapperField = mapper.getClass().getDeclaredField("sanctionMapper");
+        sanctionMapperField.setAccessible(true);
+        sanctionMapperField.set(mapper, Mappers.getMapper(SanctionMapper.class));
+
+        Method method = mapper.getClass().getDeclaredMethod(
+                "sanctionJpaEntitySetToSanctionSet",
+                Set.class);
+        method.setAccessible(true);
+
+        SanctionJpaEntity entity = new SanctionJpaEntity();
+        entity.setAmount(10.0);
+        entity.setReason("Speed violation");
+
+        @SuppressWarnings("unchecked")
+        Set<Object> result = (Set<Object>) method.invoke(mapper, Set.of(entity));
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
     }
 }
