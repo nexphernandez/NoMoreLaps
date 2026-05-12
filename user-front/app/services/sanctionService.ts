@@ -7,9 +7,9 @@ import databaseService from './databaseService';
 export interface Sanction {
   id: number;
   amount: number;
-  reason: string;   // backend field name
-  paid: boolean;    // backend field name (not isPaid)
-  arrivalTime: string; // backend field name (not sanctionDate)
+  reason: string;
+  paid: boolean;
+  arrivalTime: string;
 }
 
 const sanctionService = {

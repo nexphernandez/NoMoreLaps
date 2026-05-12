@@ -113,7 +113,6 @@ const ReservationConfirmScreen = () => {
     );
   }
 
-  // DEFINICIÓN ÚNICA - RENOMBRADA PARA EVITAR CACHÉ
   const finalSummaryData: ReservationSummary = {
     parkingName: parking?.name || '...',
     spot: spotNumber.toString(),

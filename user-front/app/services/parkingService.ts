@@ -67,13 +67,11 @@ const parkingService = {
   getById: async (id: number): Promise<Parking> => {
     try {
       const response = await api.get<Parking>(`parkings/${id}`);
-      // Also update this single parking in cache
       databaseService.saveParkings([response.data]).catch(err => console.error('Single parking cache error:', err));
       return response.data;
     } catch (error: any) {
       console.warn(`[OFFLINE] Fetching parking ${id} from local cache...`);
       const localData = await databaseService.getParkings();
-      // Robust comparison converting both to Number
       const parking = localData.find((row: any) => Number(row.id) === Number(id));
       if (parking) {
         console.log(`[OFFLINE] Found parking ${id} in cache.`);
@@ -128,7 +126,6 @@ const parkingService = {
       console.warn('Network failed, trying local spot cache...');
       const localData = await databaseService.getParkingSpots(parkingId);
       if (localData.length > 0) {
-        // Filter those that were available (state 1) in our cache
         return localData
           .filter((row: any) => row.state === 1)
           .map((row: any) => JSON.parse(row.data));

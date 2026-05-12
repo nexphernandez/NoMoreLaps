@@ -39,8 +39,8 @@ const SanctionsScreen = () => {
   }
 
   return (
-    <SanctionsView 
-      sanctions={sanctions} 
+    <SanctionsView
+      sanctions={sanctions}
     />
   );
 };

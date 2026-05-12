@@ -49,14 +49,12 @@ const userService = {
   updateProfile: async (user: User): Promise<User> => {
     try {
       const response = await api.put<User>(`users/${user.id}`, user);
-      // Update cache
       databaseService.saveUserProfile(user.id, response.data).catch(err => console.error('Profile cache update error:', err));
       return response.data;
     } catch (error: any) {
       if (!error.response) {
         console.warn('Network error, queueing profile update...');
         await databaseService.addPendingUpdate('PROFILE', user);
-        // Optimistic update in cache
         databaseService.saveUserProfile(user.id, user).catch(err => console.error('Optimistic cache error:', err));
         return user;
       }

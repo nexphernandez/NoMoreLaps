@@ -95,8 +95,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#E2E8F0', // Borde sutil
-    elevation: 3,
+    borderColor: '#E2E8F0', 
     shadowColor: '#000',
     shadowOpacity: 0.1,
     shadowRadius: 10,

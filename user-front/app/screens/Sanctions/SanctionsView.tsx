@@ -34,21 +34,21 @@ const SanctionsView: React.FC<SanctionsViewProps> = ({ sanctions }) => {
           <Card>
             <View style={styles.cardHeader}>
               <Typography variant="h3">Sanction #{item.id}</Typography>
-              <Badge 
-                label={item.paid ? 'Paid' : 'Unpaid'} 
-                type={item.paid ? 'success' : 'danger'} 
+              <Badge
+                label={item.paid ? 'Paid' : 'Unpaid'}
+                type={item.paid ? 'success' : 'danger'}
               />
             </View>
 
             <View style={styles.cardBody}>
               <View style={styles.detailItem}>
                 <Typography variant="label">Reason</Typography>
-                <Typography variant="body" style={{fontWeight: '500'}}>{item.reason}</Typography>
+                <Typography variant="body" style={{ fontWeight: '500' }}>{item.reason}</Typography>
               </View>
               <View style={styles.row}>
                 <View style={styles.detailItem}>
                   <Typography variant="label">Date</Typography>
-                  <Typography variant="body" style={{fontWeight: '600'}}>{new Date(item.arrivalTime).toLocaleDateString()}</Typography>
+                  <Typography variant="body" style={{ fontWeight: '600' }}>{new Date(item.arrivalTime).toLocaleDateString()}</Typography>
                 </View>
                 <View style={styles.amountContainer}>
                   <Typography variant="label">Fine Amount</Typography>
@@ -62,7 +62,7 @@ const SanctionsView: React.FC<SanctionsViewProps> = ({ sanctions }) => {
           <View style={styles.emptyContainer}>
             <MaterialCommunityIcons name="check-circle-outline" size={80} color={theme.success} style={{ marginBottom: 20 }} />
             <Typography variant="h2">You're all clear!</Typography>
-            <Typography variant="caption" style={{textAlign: 'center', marginTop: 8}}>You don't have any active sanctions.</Typography>
+            <Typography variant="caption" style={{ textAlign: 'center', marginTop: 8 }}>You don't have any active sanctions.</Typography>
           </View>
         )}
       />

@@ -8,7 +8,7 @@ export const Colors = {
     lightBackground: '#F8F9FA',
     text: '#202124',
     textSecondary: '#5F6368',
-    danger: '#F87171', // Rojo coral suave (menos intenso)
+    danger: '#F87171', 
     success: '#34A853',
     border: '#DADCE0',
     tint: tintColorLight,

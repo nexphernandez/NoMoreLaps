@@ -5,7 +5,7 @@ import { Alert } from 'react-native';
 /**
  * Base Axios configuration for connecting to the Spring Boot backend.
  */
-const API_URL = 'https://toolbar-routine-thru-charlie.trycloudflare.com/api';
+const API_URL = 'https://immigrants-spreading-agree-structured.trycloudflare.com/api';
 
 const api = axios.create({
   baseURL: API_URL,
@@ -39,7 +39,6 @@ api.interceptors.response.use(
     if (error.response && error.response.status === 401) {
       const { url, method } = error.config;
 
-      // Routes that should NOT trigger a "Session Expired" alert
       const isAuthRoute = url.includes('auth/');
       const isPublicGet = method === 'get' && (url.includes('parkings') || url.includes('parking-spots'));
 
@@ -54,7 +53,6 @@ api.interceptors.response.use(
           [{ text: 'OK' }]
         );
       } else if (isPublicGet) {
-        // If it was a public GET, we just clear the token silently so next calls go without it
         await SecureStore.deleteItemAsync('userToken');
         await SecureStore.deleteItemAsync('userData');
       }

@@ -42,7 +42,6 @@ const EditProfileScreen = () => {
 
         setLoading(true);
         try {
-            // 1. Guardar en el servidor
             await userService.updateProfile({
                 id: user.id,
                 name,
@@ -50,7 +49,6 @@ const EditProfileScreen = () => {
                 calendarEnable: user.calendarEnable || false 
             });
             
-            // 2. Actualizar el contexto global
             await updateUser({ 
               name, 
               email, 

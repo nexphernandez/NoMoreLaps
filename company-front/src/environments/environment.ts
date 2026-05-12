@@ -1,4 +1,4 @@
-const baseUrl = 'https://toolbar-routine-thru-charlie.trycloudflare.com';
+const baseUrl = 'https://immigrants-spreading-agree-structured.trycloudflare.com';
 
 export const environment = {
   production: false,
