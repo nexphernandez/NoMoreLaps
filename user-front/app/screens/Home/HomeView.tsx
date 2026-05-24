@@ -172,7 +172,9 @@ const HomeView: React.FC<HomeViewProps> = ({
             <View style={{ flex: 1 }}>
               <Typography variant="h2">{selectedParking.name}</Typography>
               <Typography variant="body" color={theme.textSecondary}>{selectedParking.address}</Typography>
-              <Typography variant="h3" color={theme.primary} style={{ marginTop: 4 }}>2.00 €/h</Typography>
+              <Typography variant="h3" color={theme.primary} style={{ marginTop: 4 }}>
+                {((selectedParking.pricePerHour !== undefined && selectedParking.pricePerHour !== null) ? selectedParking.pricePerHour : 2.00).toFixed(2)} €/h
+              </Typography>
             </View>
             <TouchableOpacity onPress={() => setSelectedParking(null)} style={styles.closeBtn}>
               <Typography variant="h3">✕</Typography>

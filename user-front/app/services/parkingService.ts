@@ -14,6 +14,7 @@ export interface Parking {
   closingTime: string;
   sanctionAmount?: number;
   sanctionIntervalInMinutes?: number;
+  pricePerHour?: number;
 }
 
 /**
