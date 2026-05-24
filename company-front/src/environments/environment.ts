@@ -1,4 +1,4 @@
-const baseUrl = 'https://compiled-originally-base-hired.trycloudflare.com';
+const baseUrl = 'https://required-carries-customize-hereby.trycloudflare.com';
 
 export const environment = {
   production: false,

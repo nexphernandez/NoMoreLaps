@@ -60,7 +60,7 @@
   margin-top: -1rem;
 }
 
-.coords-row, .sanction-row {
+.coords-row, .sanction-row, .capacity-price-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1.5rem;
@@ -92,7 +92,7 @@
 }
 
 @media (max-width: 640px) {
-  .coords-row, .sanction-row {
+  .coords-row, .sanction-row, .capacity-price-row {
     grid-template-columns: 1fr;
     gap: 0;
   }

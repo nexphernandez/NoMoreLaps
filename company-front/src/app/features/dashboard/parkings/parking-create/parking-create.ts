@@ -36,6 +36,7 @@ export class ParkingCreate implements OnInit {
       address: ['', [Validators.required]],
       latitude: [40.4168, [Validators.required]],
       longitude: [-3.7038, [Validators.required]],
+      pricePerHour: [2.00, [Validators.required, Validators.min(0)]],
       sanctionAmount: [15.00, [Validators.required, Validators.min(0)]],
       sanctionIntervalInMinutes: [30, [Validators.required, Validators.min(1)]],
       totalSpots: [10, [Validators.required, Validators.min(1)]]
@@ -108,6 +109,7 @@ export class ParkingCreate implements OnInit {
             address: parking.address,
             latitude: parking.latitude,
             longitude: parking.longitude,
+            pricePerHour: parking.pricePerHour,
             sanctionAmount: parking.sanctionAmount,
             sanctionIntervalInMinutes: parking.sanctionIntervalInMinutes,
             totalSpots: parking.totalSpots

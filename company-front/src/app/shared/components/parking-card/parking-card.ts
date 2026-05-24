@@ -18,9 +18,15 @@ import { CommonModule } from '@angular/common';
       </p>
       
       <div class="card-footer">
-        <div class="stat">
-          <span class="label">Capacity</span>
-          <span class="value">{{ capacity }} spots</span>
+        <div class="stat-group">
+          <div class="stat">
+            <span class="label">Capacity</span>
+            <span class="value">{{ capacity }} spots</span>
+          </div>
+          <div class="stat">
+            <span class="label">Price</span>
+            <span class="value">{{ price | number:'1.2-2' }} €/h</span>
+          </div>
         </div>
         
         <div class="actions">
@@ -78,6 +84,10 @@ import { CommonModule } from '@angular/common';
       display: flex;
       justify-content: space-between;
       align-items: center;
+    }
+    .stat-group {
+      display: flex;
+      gap: 1.5rem;
     }
     .stat {
       display: flex;
@@ -143,6 +153,7 @@ export class ParkingCard {
   @Input() address = '';
   @Input() capacity = 0;
   @Input() status = 'Open';
+  @Input() price = 2.00;
 
   @Output() edit = new EventEmitter<number>();
   @Output() delete = new EventEmitter<number>();

@@ -9,6 +9,7 @@ export interface Parking {
   sanctionIntervalInMinutes: number;
   status: 'Open' | 'Closed';
   totalSpots?: number;
+  pricePerHour?: number;
 }
 
 export interface ParkingRequest {
@@ -20,4 +21,5 @@ export interface ParkingRequest {
   sanctionAmount: number;
   sanctionIntervalInMinutes: number;
   totalSpots: number;
+  pricePerHour: number;
 }

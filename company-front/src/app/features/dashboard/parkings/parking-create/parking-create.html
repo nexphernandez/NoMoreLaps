@@ -45,12 +45,21 @@
           <div id="map" class="map-container"></div>
         </div>
 
-        <app-input 
-          label="Capacity (Number of Spots)" 
-          placeholder="10"
-          type="number"
-          formControlName="totalSpots"
-        ></app-input>
+        <div class="capacity-price-row">
+          <app-input 
+            label="Capacity (Number of Spots)" 
+            placeholder="10"
+            type="number"
+            formControlName="totalSpots"
+          ></app-input>
+
+          <app-input 
+            label="Price per Hour (€)" 
+            placeholder="2.00"
+            type="number"
+            formControlName="pricePerHour"
+          ></app-input>
+        </div>
       </div>
 
       <div class="form-section">
